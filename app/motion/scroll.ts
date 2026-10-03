@@ -168,6 +168,12 @@ export function followScroll(follower: () => boolean): () => void {
   return () => followers.delete(follower);
 }
 
+/**
+ * Relance le rappel par image pour une autre cause que le défilement (le pointeur
+ * sur la photo du hero, par exemple) ; il s'arrête de lui-même au repos.
+ */
+export const requestTick = () => wake();
+
 /** Overlays (menu) : le défilement de la page s'arrête pendant qu'ils sont ouverts. */
 export function pauseScroll() {
   paused = true;

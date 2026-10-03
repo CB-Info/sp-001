@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { followScroll, scroll } from '~/motion/scroll';
+import { canBlur, createMotionBlur, type MotionBlur } from '~/motion/motion-blur';
+import { followScroll, requestTick, scroll } from '~/motion/scroll';
 import { duration } from '~/motion/tokens';
 import type { HomeContent } from '~/types/content';
 
@@ -14,8 +15,10 @@ import type { HomeContent } from '~/types/content';
  * Mouvement (docs/analyse/annexes/a6-motion.md §2.2 et §4.1) :
  * - intro « Vitesse → Arrêt » en keyframes CSS, pilotée par les classes que pose
  *   app/motion/boot.inline.js : elle n'attend ni l'hydratation ni GSAP ;
- * - au défilement (GSAP) : les stries reviennent avec la vitesse, et FORGE /
- *   TA FORCE s'écartent pendant que le hero sort de l'écran.
+ * - au défilement (GSAP) : la photo se file avec la vitesse, et FORGE / TA FORCE
+ *   s'écartent pendant que le hero sort de l'écran. Le filé est un vrai flou de
+ *   bougé en WebGL (overdrive O1, qui suit aussi le pointeur) sur les appareils
+ *   qui le portent, la plaque de stries ailleurs.
  */
 const props = defineProps<{ content: HomeContent['hero'] }>();
 
@@ -25,50 +28,115 @@ const titleId = 'hero-titre';
 const STREAKS = '/images/hero/hero-streaks.jpg';
 const streaksUrl = useImage()(STREAKS, { format: 'webp' });
 
-/** Stries liées à la vitesse : opacité = min(|vitesse| × gain, plafond), lissée. */
-const STREAK_GAIN = 0.015; // par px/image : plafond atteint vers 37 px/image (défilement vif)
+/** Filé lié à la vitesse, de 0 à 1 : plein à partir de FULL_SPEED px/image (défilement vif). */
+const FULL_SPEED = 37;
+/** En dessous (px/image), la photo ne se file pas : un défilement de lecture la laisse nette. */
+const DEADZONE = 2;
+/** Le pointeur file la photo (flou WebGL seulement) : plein à POINTER_FULL_SPEED px/image. */
+const POINTER_FULL_SPEED = 60;
+/** Opacité de la plaque de stries à plein filé. */
 const STREAK_MAX = 0.55;
 const STREAK_LERP = 0.15; // rapprochement par image à 60 i/s : retour à 0 en ≈ 300 ms
+/** En dessous, le filé est éteint. */
+const REST = 0.02;
 
 const hero = useTemplateRef<HTMLElement>('hero');
 
 useMotion(hero, ({ gsap, ScrollTrigger }, root) => {
+  const media = root.querySelector<HTMLElement>('.hero__media');
+  const photo = root.querySelector<HTMLImageElement>('.hero__photo');
   const plate = root.querySelector<HTMLImageElement>('.hero__streaks');
-  if (!plate) return undefined;
+  if (!media || !photo || !plate) return undefined;
+
+  /** Rendu du filé : le flou WebGL quand il existe, sinon la plaque de stries. */
+  let blur: MotionBlur | undefined;
+  const paint = (amount: number) => {
+    if (blur) {
+      blur.draw(amount);
+      return;
+    }
+    if (amount === 0) {
+      plate.style.removeProperty('opacity');
+      plate.style.removeProperty('will-change');
+      return;
+    }
+    // Calque promu seulement le temps de l'effet.
+    plate.style.willChange = 'opacity';
+    plate.style.opacity = (amount * STREAK_MAX).toFixed(3);
+  };
 
   let level = 0;
-  const rest = () => {
-    level = 0;
-    plate.style.removeProperty('opacity');
-    plate.style.removeProperty('will-change');
-  };
-  /** Une image de l'effet ; `true` tant que les stries ne sont pas éteintes. */
+  /** Déplacement horizontal du pointeur depuis la dernière image, en px. */
+  let pointer = 0;
+  let pointerX: number | undefined;
+  /** Une image de l'effet ; `true` tant que le filé n'est pas éteint. */
   const follow = () => {
-    const target = Math.min(Math.abs(scroll.velocity) * STREAK_GAIN, STREAK_MAX);
+    const speed = Math.max(
+      (Math.abs(scroll.velocity) - DEADZONE) / FULL_SPEED,
+      blur ? (Math.abs(pointer) - DEADZONE) / POINTER_FULL_SPEED : 0,
+      0,
+    );
+    pointer = 0;
+    const target = Math.min(speed, 1);
     if (target === 0 && level === 0) return false;
-    // Calque promu seulement le temps de l'effet.
-    if (level === 0) plate.style.willChange = 'opacity';
     // Lissage indépendant de la cadence d'affichage.
     level += (target - level) * (1 - (1 - STREAK_LERP) ** gsap.ticker.deltaRatio(60));
-    if (target === 0 && level < 0.01) {
-      rest();
-      return false;
-    }
-    plate.style.opacity = level.toFixed(3);
-    return true;
+    if (target === 0 && level < REST) level = 0;
+    paint(level);
+    return level > 0;
   };
+
   // Rien ne tourne quand le hero est hors de l'écran.
-  let unfollow: (() => void) | undefined;
+  let following: (() => void) | undefined;
+  const rest = () => {
+    following?.();
+    following = undefined;
+    level = 0;
+    paint(0);
+  };
   ScrollTrigger.create({
     trigger: root,
     start: 'top bottom',
     end: 'bottom top',
     onToggle: ({ isActive }) => {
-      unfollow?.();
       rest();
-      unfollow = isActive ? followScroll(follow) : undefined;
+      if (isActive) following = followScroll(follow);
     },
   });
+  // Écarts de clientX plutôt que movementX, dont l'échelle varie selon les navigateurs.
+  const onPointer = (event: PointerEvent) => {
+    if (!blur || !following || event.pointerType !== 'mouse') return;
+    if (pointerX !== undefined) pointer += event.clientX - pointerX;
+    pointerX = event.clientX;
+    requestTick();
+  };
+  const onLeave = () => (pointerX = undefined);
+  root.addEventListener('pointermove', onPointer, { passive: true });
+  root.addEventListener('pointerleave', onLeave, { passive: true });
+
+  // O1 : le flou WebGL se prépare quand le navigateur est libre, photo décodée.
+  let disposed = false;
+  const prepare = async () => {
+    await photo.decode().catch(() => {});
+    if (disposed) return;
+    const instance = await createMotionBlur(photo, media, {
+      focal: props.content.image.focal ?? '50% 50%',
+      // Contexte perdu (pilote, mémoire) : retour à la plaque de stries.
+      onLost: () => {
+        blur?.destroy();
+        blur = undefined;
+      },
+    });
+    if (!instance) return;
+    if (disposed) {
+      instance.destroy();
+      return;
+    }
+    // Relais en plein filé : la plaque s'efface, le flou reprend au niveau courant.
+    paint(0);
+    blur = instance;
+  };
+  if (canBlur()) requestIdleCallback(() => void prepare(), { timeout: 2000 });
 
   // Sortie : les deux lignes du titre (et leurs échos) s'écartent de 4vw. La
   // valeur suit la progression avec un léger amorti (quickTo) : si l'on a déjà
@@ -85,8 +153,12 @@ useMotion(hero, ({ gsap, ScrollTrigger }, root) => {
   });
 
   return () => {
-    unfollow?.();
+    disposed = true;
     rest();
+    root.removeEventListener('pointermove', onPointer);
+    root.removeEventListener('pointerleave', onLeave);
+    blur?.destroy();
+    blur = undefined;
   };
 });
 
@@ -236,6 +308,20 @@ const photoSizes = {
 
 html.has-motion .hero__streaks {
   display: block;
+}
+
+/* Flou WebGL (motion-blur.ts) : posé sur la photo, visible seulement quand il file. */
+.hero__media :deep(.hero__blur) {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.hero__media :deep(.hero__blur[data-visible]) {
+  visibility: visible;
 }
 
 /*
