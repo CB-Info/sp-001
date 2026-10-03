@@ -17,6 +17,12 @@ const safeIn =
   (...args) =>
     context.add(() => callback(...args));
 
+/**
+ * Rend la main au navigateur : les zones qui approchent ensemble préparent chacune
+ * leur mouvement dans leur propre tâche, au lieu d'une seule tâche longue.
+ */
+const nextTask = () => new Promise<void>((resolve) => setTimeout(resolve));
+
 type Setup = (
   motion: Motion,
   root: HTMLElement,
@@ -55,6 +61,8 @@ export function useMotion(scope: Readonly<Ref<HTMLElement | null>>, setup: Setup
         if (!entry?.isIntersecting) return;
         observer?.disconnect();
         const motion = await loadGsap();
+        await nextTask();
+        if (!scope.value) return;
         const context = motion.gsap.context(() => {
           motion.gsap
             .matchMedia()
