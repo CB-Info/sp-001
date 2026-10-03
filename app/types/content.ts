@@ -69,6 +69,8 @@ export interface HomeContent {
     titleLines: [string, string];
     leadLines: [string, string];
     image: ImageAsset;
+    /** La même photo recadrée en 3:4, servie aux écrans verticaux (scripts/build-images.mjs). */
+    portrait: Omit<ImageAsset, 'alt'>;
   };
   about: {
     eyebrow: string;

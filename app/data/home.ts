@@ -40,6 +40,13 @@ export const home: HomeContent = typesetDeep<HomeContent>({
       height: 2204,
       focal: '56% 32%',
     },
+    // Découpe centrée sur le point focal horizontal ci-dessus (56 %) : il y est au centre.
+    portrait: {
+      src: '/images/hero/hero-athlete-portrait.jpg',
+      width: 1653,
+      height: 2204,
+      focal: '50% 32%',
+    },
   },
 
   about: {

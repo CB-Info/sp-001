@@ -36,3 +36,12 @@ Sur Cloudflare (static assets), ces URL sont canonicalisées : **« & » comme �
   - rendu identique à la version IPX (écart moyen de 0,33/255) ;
   - e2e 20/20 ;
   - 0 redirection et 0 erreur console via `wrangler dev`.
+
+## Complément (v0.3) : dérivées et recadrage dirigé
+
+Le même script produit aussi des images dérivées des masters, référencées dans le manifeste comme les autres :
+
+- **Plaque de stries** du hero (WebP de 4,9 Ko) : la photo réduite à 16 colonnes puis réétirée, pour l'intro « Vitesse → Arrêt ».
+- **Recadrage portrait** de la photo du hero (`CROPS`) : une découpe 3:4 centrée sur le point focal horizontal. Sur un écran vertical, `cover` ne montre qu'un tiers de la photo entière, mais le navigateur la téléchargeait en entier. Le hero sert donc un `<picture>` dirigé (`media="(max-aspect-ratio: 3/4)"`), avec un préchargement par cadrage et des `srcset` construits sur les largeurs réellement produites.
+  - Mesuré : une seule photo par écran, préchargement compris (téléphones, tablette, bureau, fenêtre carrée).
+  - Un téléphone reçoit 60 Ko au lieu de 85 Ko pour l'image LCP, soit 25 à 30 % de moins. Lighthouse mobile simulé : LCP médian 3,23 → 3,16 s.

@@ -14,7 +14,8 @@
 // contenu jamais, d'où un cache « immutable » (public/_headers). Incrémental : une
 // variante déjà présente n'est pas refaite ; les variantes orphelines sont supprimées.
 //
-// Plus une plaque de stries (STREAKS) pour l'intro du hero : voir plus bas.
+// Plus une plaque de stries (STREAKS) pour l'intro du hero et des recadrages dirigés
+// (CROPS) pour les écrans verticaux : voir plus bas.
 //
 // Usage : node scripts/build-images.mjs [--force]
 import { createHash } from 'node:crypto';
@@ -76,26 +77,66 @@ async function fingerprint(master) {
     .slice(0, 8);
 }
 
-async function processMaster(master) {
-  const { width, height } = await sharp(master).metadata();
+/**
+ * Écrit les variantes manquantes d'une image : une par largeur de l'échelle (jusqu'à
+ * `width`) et par format. `render(w)` donne l'image redimensionnée, avant encodage.
+ */
+async function writeVariants({ name, width, hash, master, render }) {
   const widths = [...LADDER.filter((w) => w < width), width];
-  const rel = relative(MASTERS, master).replace(/\.jpg$/, '');
-  const hash = await fingerprint(master);
-  const xmp = xmpFor(master);
   const files = [];
   let written = 0;
   for (const w of widths) {
     for (const [ext, encode] of Object.entries(encoders(master))) {
-      const output = join(OUTPUT, `${rel}-${w}.${hash}.${ext}`);
+      const output = join(OUTPUT, `${name}-${w}.${hash}.${ext}`);
       files.push(output);
       if (!force && (await stat(output).catch(() => null))) continue;
       await mkdir(dirname(output), { recursive: true });
-      await encode(sharp(master).resize({ width: w }).withXmp(xmp)).toFile(output);
+      await encode(render(w).withXmp(xmpFor(master))).toFile(output);
       written++;
     }
   }
+  return { widths, files, written };
+}
+
+async function processMaster(master) {
+  const { width, height } = await sharp(master).metadata();
+  const name = relative(MASTERS, master).replace(/\.jpg$/, '');
+  const hash = await fingerprint(master);
+  const render = (w) => sharp(master).resize({ width: w });
+  const variants = await writeVariants({ name, width, hash, master, render });
   // Clé = chemin logique utilisé par le contenu (app/data/home.ts).
-  return { src: `/images/${rel}.jpg`, width, height, widths, hash, files, written };
+  return { src: `/images/${name}.jpg`, width, height, hash, ...variants };
+}
+
+/**
+ * Recadrages dirigés : une découpe du master servie à sa place là où la photo
+ * entière serait surtout perdue. La photo du hero couvre l'écran ; sur un écran
+ * vertical, `cover` n'en montre qu'un tiers de la largeur, mais le navigateur
+ * télécharge le tout. La découpe 3:4, centrée sur le point focal horizontal de
+ * app/data/home.ts, pèse moitié moins (picture > source, HeroSection.vue).
+ */
+const CROPS = [
+  { master: 'hero/hero-athlete', name: 'hero/hero-athlete-portrait', aspect: 3 / 4, focalX: 0.56 },
+];
+
+async function processCrop({ master, name, aspect, focalX }) {
+  const file = join(MASTERS, `${master}.jpg`);
+  const source = await sharp(file).metadata();
+  const height = source.height;
+  const width = Math.round(height * aspect);
+  const left = Math.min(
+    Math.max(Math.round(source.width * focalX - width / 2), 0),
+    source.width - width,
+  );
+  const region = { left, top: 0, width, height };
+  const hash = createHash('sha1')
+    .update(await fingerprint(file))
+    .update(JSON.stringify(region))
+    .digest('hex')
+    .slice(0, 8);
+  const render = (w) => sharp(file).extract(region).resize({ width: w });
+  const variants = await writeVariants({ name, width, hash, master: file, render });
+  return { src: `/images/${name}.jpg`, width, height, hash, ...variants };
 }
 
 /**
@@ -158,6 +199,7 @@ for (let i = 0; i < masters.length; i += pool) {
   results.push(...(await Promise.all(masters.slice(i, i + pool).map(processMaster))));
 }
 results.push(...(await Promise.all(STREAKS.map(processStreaks))));
+results.push(...(await Promise.all(CROPS.map(processCrop))));
 
 // Variantes orphelines (master modifié ou supprimé, réglages changés) : supprimées.
 const expected = new Set(results.flatMap((r) => r.files));

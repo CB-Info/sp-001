@@ -4,6 +4,7 @@ import { followScroll, requestTick, scroll } from '~/motion/scroll';
 import { approach, intensity } from '~/motion/speed';
 import { duration } from '~/motion/tokens';
 import type { HomeContent } from '~/types/content';
+import variants from '../../data/image-variants.json';
 
 /**
  * Hero : photo pleine page (élément LCP), cadre de filets, repères de calage,
@@ -110,7 +111,6 @@ useMotion(hero, ({ gsap, ScrollTrigger }, root) => {
     await photo.decode().catch(() => {});
     if (disposed) return;
     const instance = await createMotionBlur(photo, media, {
-      focal: props.content.image.focal ?? '50% 50%',
       // Contexte perdu (pilote, mémoire) : retour à la plaque de stries.
       onLost: () => {
         blur?.destroy();
@@ -153,18 +153,58 @@ useMotion(hero, ({ gsap, ScrollTrigger }, root) => {
 });
 
 /*
- * Largeur réellement affichée : la photo couvre max(100vw, hauteur × 1,31). En
- * portrait, elle déborde donc largement de la fenêtre (≈ 2,8 × sur un téléphone).
- * Clés = largeur minimale de fenêtre (@nuxt/image).
+ * Photo (élément LCP), cadrée selon l'écran. Sur un écran vertical, `cover` ne
+ * montre qu'un tiers de la photo entière : la découpe 3:4 la remplace (25 à 30 %
+ * plus légère à densité égale). Même condition qu'en CSS (point focal).
  */
-const photoSizes = {
-  390: '280vw',
-  sm: '200vw',
-  md: '175vw',
-  lg: '100vw',
-  xl: '100vw',
-  '2xl': '100vw',
-};
+const PORTRAIT = '(max-aspect-ratio: 3/4)';
+/*
+ * Largeur affichée. Écran vertical : la découpe couvre la hauteur du hero (au moins
+ * 100vh), soit 75vh de large. Sinon, la photo (1,31:1) couvre max(100vw, 131vh).
+ */
+const PORTRAIT_SIZES = '75vh';
+const LANDSCAPE_SIZES = '(max-aspect-ratio: 131/100) 131vh, 100vw';
+
+const $img = useImage();
+const photo = props.content.image;
+const portrait = props.content.portrait;
+
+/** srcset de toutes les variantes produites d'une image (scripts/build-images.mjs), dans un format. */
+function srcset(src: string, format: 'avif' | 'webp' | 'jpg') {
+  const widths = (variants as Record<string, { widths: number[] }>)[src]?.widths ?? [];
+  return widths.map((width) => `${$img(src, { width, format })} ${width}w`).join(', ');
+}
+
+const sources = (['avif', 'webp'] as const).flatMap((format) => [
+  {
+    media: PORTRAIT,
+    type: `image/${format}`,
+    srcset: srcset(portrait.src, format),
+    sizes: PORTRAIT_SIZES,
+  },
+  {
+    media: undefined,
+    type: `image/${format}`,
+    srcset: srcset(photo.src, format),
+    sizes: LANDSCAPE_SIZES,
+  },
+]);
+
+// Préchargée dans le cadrage que l'écran choisira : jamais les deux.
+useHead({
+  link: [
+    { media: PORTRAIT, src: portrait.src, sizes: PORTRAIT_SIZES },
+    { media: `not all and ${PORTRAIT}`, src: photo.src, sizes: LANDSCAPE_SIZES },
+  ].map(({ media, src, sizes }) => ({
+    rel: 'preload',
+    as: 'image',
+    type: 'image/avif',
+    fetchpriority: 'high',
+    media,
+    imagesrcset: srcset(src, 'avif'),
+    imagesizes: sizes,
+  })),
+});
 </script>
 
 <template>
@@ -172,23 +212,33 @@ const photoSizes = {
     <div
       class="hero__media"
       data-motion="hero-photo"
-      :style="{ '--streaks': `url(${streaksUrl})`, '--focal': props.content.image.focal }"
+      :style="{
+        '--streaks': `url(${streaksUrl})`,
+        '--focal': photo.focal,
+        '--focal-portrait': portrait.focal,
+      }"
     >
-      <NuxtPicture
-        :src="props.content.image.src"
-        :alt="props.content.image.alt"
-        :width="props.content.image.width"
-        :height="props.content.image.height"
-        format="avif,webp"
-        :sizes="photoSizes"
-        loading="eager"
-        :preload="{ fetchPriority: 'high' }"
-        :img-attrs="{
-          class: 'hero__photo',
-          fetchpriority: 'high',
-          style: { objectPosition: props.content.image.focal },
-        }"
-      />
+      <picture>
+        <source
+          v-for="source in sources"
+          :key="`${source.type} ${source.media}`"
+          :media="source.media"
+          :type="source.type"
+          :srcset="source.srcset"
+          :sizes="source.sizes"
+        />
+        <img
+          class="hero__photo"
+          :src="$img(photo.src, { width: 1280, format: 'jpg' })"
+          :srcset="srcset(photo.src, 'jpg')"
+          :sizes="LANDSCAPE_SIZES"
+          :width="photo.width"
+          :height="photo.height"
+          :alt="photo.alt"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </picture>
       <!--
         Décorative. Priorité par défaut, découverte après le préchargement de la
         photo (LCP) : jamais devant elle, mais promue à l'affichage pour être là
@@ -281,6 +331,13 @@ const photoSizes = {
 
 .hero__media :deep(.hero__photo) {
   object-fit: cover;
+  object-position: var(--focal);
+}
+
+@media (max-aspect-ratio: 3/4) {
+  .hero__media :deep(.hero__photo) {
+    object-position: var(--focal-portrait);
+  }
 }
 
 /* Calque de stries : n'existe qu'avec le mouvement ; invisible au repos. */

@@ -93,7 +93,7 @@ const SOFTWARE_RENDERER = /swiftshader|llvmpipe|software/i;
 export async function createMotionBlur(
   photo: HTMLImageElement,
   host: HTMLElement,
-  { focal, onLost }: { focal: string; onLost: () => void },
+  { onLost }: { onLost: () => void },
 ): Promise<MotionBlur | undefined> {
   const canvas = document.createElement('canvas');
   // Premier contexte demandé, il fixe les attributs : OGL réutilisera celui-ci.
@@ -128,11 +128,14 @@ export async function createMotionBlur(
     program: new Program(gl, { vertex: VERTEX, fragment: FRAGMENT, uniforms }),
   });
 
-  // object-position de la photo, en fractions (« 56% 32% »).
-  const [fx = 0.5, fy = 0.5] = focal.split(/\s+/).map((value) => Number.parseFloat(value) / 100);
-
-  /** object-fit: cover, recalculé à chaque taille : la photo et le canvas coïncident. */
+  /**
+   * object-fit: cover et object-position de la photo, relus à chaque taille : la
+   * photo et le canvas coïncident, quel que soit le cadrage servi (portrait ou non).
+   */
   function fit() {
+    const [fx = 0.5, fy = 0.5] = getComputedStyle(photo)
+      .objectPosition.split(' ')
+      .map((value) => Number.parseFloat(value) / 100);
     const width = host.clientWidth;
     const height = host.clientHeight;
     renderer.dpr = Math.min(devicePixelRatio, MAX_DPR);

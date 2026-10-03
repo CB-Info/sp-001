@@ -267,5 +267,21 @@
       560
     ],
     "hash": "ba797190"
+  },
+  "/images/hero/hero-athlete-portrait.jpg": {
+    "width": 1653,
+    "height": 2204,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1280,
+      1600,
+      1653
+    ],
+    "hash": "d7704399"
   }
 }
