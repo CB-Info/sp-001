@@ -8,7 +8,7 @@ test.use({ contextOptions: { reducedMotion: 'no-preference' } });
 
 /** Styles qu'une animation pose en ligne (GSAP) et qui doivent disparaître à l'arrêt. */
 const MOTION_STYLE =
-  /opacity|transform|translate|rotate|scale|clip-path|visibility|will-change|--fx|--ft|--fb|--sink|--rule|--follow|--rise|--number-turn|--hero-drift/;
+  /opacity|transform|translate|rotate|scale|clip-path|visibility|will-change|overflow|--fx|--ft|--fb|--sink|--rule|--follow|--rise|--number-turn|--hero-drift|--print-shade|--arrive|--echo/;
 
 /** Parcourt toute la page par tiers d'écran : chaque zone charge et joue son entrée. */
 async function scrollThrough(page: Page) {
