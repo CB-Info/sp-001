@@ -62,6 +62,18 @@ export default defineNuxtConfig({
   },
 
   hooks: {
+    /*
+     * Le mouvement se charge à la demande, et seulement s'il sert : GSAP pas en
+     * mouvement réduit, Lenis et OGL pas sur mobile. Pas de préchargement spéculatif
+     * de ces bibliothèques (≈ 73 Ko gzip) qui concurrence la photo du hero.
+     */
+    'build:manifest'(manifest) {
+      for (const resource of Object.values(manifest)) {
+        if (/\/node_modules\/(gsap|lenis|ogl)\//.test(resource.src ?? '')) {
+          resource.prefetch = false;
+        }
+      }
+    },
     // Les pages de laboratoire (prévisualisation d'une section isolée) n'existent qu'en dev.
     'pages:extend'(pages) {
       if (process.env.NODE_ENV !== 'production') return;
