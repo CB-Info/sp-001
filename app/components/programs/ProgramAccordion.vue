@@ -125,7 +125,12 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="root" class="program-accordion" :data-instant="instant || undefined">
+  <div
+    ref="root"
+    class="program-accordion"
+    :data-instant="instant || undefined"
+    data-motion="programs-accordion"
+  >
     <ProgramItem
       v-for="(program, index) in items"
       :key="program.id"
@@ -144,12 +149,34 @@ onBeforeUnmount(() => {
 <style scoped>
 .program-accordion {
   --accordion-duration: var(--dur-layout);
+  /* Filet du haut, à l'entrée de la section : part tracée depuis la gauche, chaleur de sa pointe. */
+  --rule-trace: 1;
+  --rule-heat: 0;
 
+  position: relative;
   /* Les titres s'ajustent à la largeur de la colonne (cqi). */
   container-type: inline-size;
-  border-block-start: 1px solid var(--rule);
+  /* Même filet que les éléments (ProgramItem) : bordure transparente, trait en ::before. */
+  border-block-start: 1px solid transparent;
   /* La compensation de défilement est faite à la main : pas d'ancrage natif en plus. */
   overflow-anchor: none;
+}
+
+.program-accordion::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: -1px;
+  block-size: 1px;
+  background: linear-gradient(
+      to right,
+      transparent 55%,
+      color-mix(in srgb, var(--accent) calc(var(--rule-heat) * 100%), transparent)
+    )
+    var(--rule);
+  scale: var(--rule-trace) 1;
+  transform-origin: 0 0;
+  pointer-events: none;
 }
 
 .program-accordion[data-instant] {

@@ -9,8 +9,9 @@ import type { Coach, Program } from '~/types/content';
  * la recherche dans la page (Ctrl+F) le trouve et émet `beforematch`, relayé ici
  * en `reveal`.
  *
- * La hauteur s'anime par une grille 0fr → 1fr (aucune mesure en JS) ; le contenu
- * arrive ensuite en cascade : description, pastilles, coach.
+ * La hauteur s'anime par une grille 0fr → 1fr (aucune mesure en JS). Le reste du
+ * mouvement est dans ProgramsSection : la cascade des détails (`programs-detail`)
+ * et le tracé du filet (`--rule-trace`).
  */
 const props = defineProps<{
   program: Program;
@@ -57,13 +58,15 @@ const panelId = `programme-${props.program.id}-panneau`;
         @beforematch="emit('reveal')"
       >
         <div class="program-item__content">
-          <p class="program-item__description">{{ program.description }}</p>
+          <p class="program-item__description" data-motion="programs-detail">
+            {{ program.description }}
+          </p>
           <ul role="list" class="program-item__tags">
             <li
-              v-for="(tag, index) in program.tags"
+              v-for="tag in program.tags"
               :key="tag.label"
               class="program-item__tag"
-              :style="{ '--order': index + 1 }"
+              data-motion="programs-detail"
             >
               <TagPill :tag="tag" />
             </li>
@@ -73,7 +76,7 @@ const panelId = `programme-${props.program.id}-panneau`;
             class="program-item__coach"
             :coach="coach"
             :meta="program.coachMeta"
-            :style="{ '--order': program.tags.length + 1 }"
+            data-motion="programs-detail"
           />
         </div>
       </div>
@@ -92,12 +95,37 @@ const panelId = `programme-${props.program.id}-panneau`;
   --item-pad-start: var(--header-gap);
   --item-title-gap: clamp(1rem, 0.814rem + 0.762vw, 1.5rem);
   --item-rhythm: clamp(1.5rem, 1.129rem + 1.524vw, 2.5rem);
+  /* Filet du bas, à l'entrée de la section : part tracée depuis la gauche, chaleur de sa pointe. */
+  --rule-trace: 1;
+  --rule-heat: 0;
 
   position: relative;
-  border-block-end: 1px solid var(--rule);
+  /*
+   * La bordure, transparente, réserve la place du filet et le montre en contrastes
+   * forcés ; le filet visible est ::before, qui peut se tracer.
+   */
+  border-block-end: 1px solid transparent;
 }
 
-/* Le filet du bas se trace en rouge depuis la gauche (survol, focus clavier). */
+.program-item::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: -1px;
+  block-size: 1px;
+  /* En mouvement, la pointe est rouge ; elle refroidit en gris quand le trait s'arrête. */
+  background: linear-gradient(
+      to right,
+      transparent 55%,
+      color-mix(in srgb, var(--accent) calc(var(--rule-heat) * 100%), transparent)
+    )
+    var(--rule);
+  scale: var(--rule-trace) 1;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+
+/* Par-dessus, le filet se trace en rouge depuis la gauche (survol, focus clavier). */
 .program-item::after {
   content: '';
   position: absolute;
@@ -203,8 +231,6 @@ const panelId = `programme-${props.program.id}-panneau`;
 }
 
 .program-item__content {
-  --order: 0;
-
   display: grid;
   justify-items: start;
   gap: var(--item-rhythm);
@@ -220,19 +246,6 @@ const panelId = `programme-${props.program.id}-panneau`;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-12);
-}
-
-/* Fermeture : le contenu s'efface vite, avant que la hauteur ne se replie. */
-.program-item__description,
-.program-item__tag,
-.program-item__coach {
-  opacity: 0;
-  transition: opacity var(--dur-feedback) var(--ease-in);
-}
-
-.program-item--open :is(.program-item__description, .program-item__tag, .program-item__coach) {
-  opacity: 1;
-  transition: opacity 150ms linear;
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -268,24 +281,6 @@ const panelId = `programme-${props.program.id}-panneau`;
   .program-item__title {
     transition: translate var(--dur-state) var(--ease-out);
   }
-
-  /* Cascade d'arrivée : la description, puis chaque pastille, puis le coach. */
-  .program-item__description,
-  .program-item__tag,
-  .program-item__coach {
-    translate: 0 var(--step-md-b);
-    transition:
-      opacity var(--dur-feedback) var(--ease-in),
-      translate var(--dur-feedback) var(--ease-in);
-  }
-
-  .program-item--open :is(.program-item__description, .program-item__tag, .program-item__coach) {
-    translate: 0 0;
-    transition-duration: var(--dur-state);
-    transition-timing-function: var(--ease-out);
-    /* Mesuré au brief : 120 ms après le début de l'ouverture, pas de 40 ms. */
-    transition-delay: calc(120ms + var(--order) * 40ms);
-  }
 }
 
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
@@ -314,11 +309,12 @@ const panelId = `programme-${props.program.id}-panneau`;
     content-visibility: visible;
   }
 
+  /* Les détails d'un panneau fermé gardent l'état en ligne du mouvement (invisibles). */
   .program-item__description,
   .program-item__tag,
   .program-item__coach {
-    opacity: 1;
-    translate: none;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 </style>

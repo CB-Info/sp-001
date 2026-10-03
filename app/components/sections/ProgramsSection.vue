@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { duration, length } from '~/motion/tokens';
 import type { Coach, HomeContent } from '~/types/content';
 
 /**
@@ -8,6 +9,16 @@ import type { Coach, HomeContent } from '~/types/content';
  * Correctif de la référence : son alignement « bas de photo = bas de l'accordéon »
  * casse dès qu'un autre élément s'ouvre. Ici la photo est collante dans sa colonne :
  * elle accompagne la lecture de l'accordéon et rejoint son bas en fin de course.
+ *
+ * Mouvement (docs/analyse/annexes/a6-motion.md §4.4). Le H2 ne bouge pas.
+ * - Entrée, tirée des filets : chacun se trace depuis la gauche quand il arrive à
+ *   85 % de l'écran (ceux qui arrivent ensemble, en cascade), pointe rouge tant
+ *   qu'il file, gris une fois arrêté ; la photo se soulève de son socle, ses
+ *   encoches s'ouvrent et l'image se pose dans le cadre.
+ * - Changement de programme (la hauteur reste la grille 0fr → 1fr de l'accordéon) :
+ *   les détails du panneau qui se ferme s'effacent ; ceux du panneau ouvert montent
+ *   d'un pas, un à un. La photo se ré-encoche au même rythme : elle s'enfonce le
+ *   temps du clic, s'arrête net, puis se relève avec les détails.
  */
 const props = defineProps<{ content: HomeContent['programs']; coaches: Coach[] }>();
 
@@ -20,10 +31,174 @@ const openId = ref<string | null>(props.content.items[0]?.id ?? null);
  * 519 px au plus). Clés = largeur minimale de fenêtre (@nuxt/image).
  */
 const photoSizes = { 390: '100vw', sm: '100vw', md: '100vw', lg: '36vw', '2xl': '520px' };
+
+const section = useTemplateRef<HTMLElement>('section');
+
+/** Accompagne le changement de programme ouvert ; branché seulement quand le mouvement tourne. */
+let onSwitch: (() => void) | undefined;
+// Après le rendu : les en-têtes portent déjà le nouvel état (aria-expanded).
+watch(openId, () => onSwitch?.(), { flush: 'post' });
+
+/** a6 §3.2 : une sortie va plus vite que l'entrée qu'elle défait. */
+const EXIT = 0.65;
+/** a6 §3.6 : en se soulevant, l'image se pose dans son cadre (échelle 1,06 → 1). */
+const IMAGE_SETTLE = 1.06;
+/** Cadre à plat : les deux plaques confondues, sans encoche. */
+const FLAT = { '--fx': '0%', '--ft': '0%', '--fb': '0%' };
+const NOTCH = '--fx,--ft,--fb';
+
+/** Décalage entre éléments d'une liste (--stagger-*), en secondes : une durée comme une autre. */
+const stagger = (token: `--stagger-${string}`) => duration(token as `--dur-${string}`);
+
+/** Au-delà de 6 éléments, les suivants partagent le dernier délai (a6 §3.4). */
+const capped = (each: number) => (index: number) => Math.min(index, 5) * each;
+
+const hooks = (scope: ParentNode, name: string) => [
+  ...scope.querySelectorAll<HTMLElement>(`[data-motion="programs-${name}"]`),
+];
+
+useMotion(section, ({ gsap, ScrollTrigger }, root) => {
+  const [photo] = hooks(root, 'photo');
+  const [accordion] = hooks(root, 'accordion');
+  if (!photo || !accordion) return undefined;
+  const items = hooks(root, 'item');
+  const details = (item: HTMLElement) => hooks(item, 'detail');
+  const isOpen = (item: HTMLElement) => item.querySelector('[aria-expanded="true"]') !== null;
+
+  const focal = duration('--dur-focal');
+  const layout = duration('--dur-layout');
+  const state = duration('--dur-state');
+  const beat = duration('--dur-feedback');
+  const rise = length('--move-s');
+  const cascade = capped(stagger('--stagger-tight'));
+  const rulesCascade = capped(stagger('--stagger-list'));
+
+  /*
+   * Filets : celui du haut est le bord haut de l'accordéon, celui de chaque élément
+   * son bord bas. Un filet déjà à l'écran (ancre, rechargement) reste entier.
+   */
+  const edge = (owner: Element) => (owner === accordion ? 'top' : 'bottom');
+  const rules = [accordion, ...items].filter(
+    (owner) => owner.getBoundingClientRect()[edge(owner)] >= innerHeight,
+  );
+  const traces = new Map<Element, gsap.core.Timeline>(
+    rules.map((owner) => [
+      owner,
+      gsap
+        .timeline({ paused: true, defaults: { duration: focal } })
+        .fromTo(owner, { '--rule-trace': 0 }, { '--rule-trace': 1, clearProps: '--rule-trace' }, 0)
+        // La pointe reste chaude pendant la course et refroidit à l'arrêt.
+        .fromTo(
+          owner,
+          { '--rule-heat': 1 },
+          { '--rule-heat': 0, ease: 'in-out', clearProps: '--rule-heat' },
+          0,
+        ),
+    ]),
+  );
+  ScrollTrigger.batch(rules, {
+    start: (self) => `${edge(self.trigger ?? accordion)} 85%`,
+    once: true,
+    onEnter: (batch) =>
+      batch.forEach((owner, index) => traces.get(owner)?.delay(rulesCascade(index)).restart(true)),
+  });
+
+  // Les encoches de repos, lues sur le cadre : le mouvement y revient toujours.
+  const frame = getComputedStyle(photo);
+  const notch = {
+    '--fx': frame.getPropertyValue('--fx'),
+    '--ft': frame.getPropertyValue('--ft'),
+    '--fb': frame.getPropertyValue('--fb'),
+  };
+  /** Mouvement en cours du cadre (entrée, puis ré-encoches) : une commande remplace la précédente. */
+  let notching: gsap.core.Animation | undefined;
+  if (photo.getBoundingClientRect().top >= innerHeight) {
+    notching = gsap.fromTo(photo, FLAT, { ...notch, duration: focal, clearProps: NOTCH });
+    gsap
+      .timeline({ scrollTrigger: { trigger: photo, start: 'top 85%', once: true } })
+      .add(notching, 0)
+      .fromTo(
+        photo.querySelector('img'),
+        { scale: IMAGE_SETTLE },
+        { scale: 1, duration: focal, clearProps: 'transform' },
+        0,
+      );
+  }
+
+  // Panneaux fermés : leurs détails attendent un pas plus bas, invisibles.
+  gsap.set(items.filter((item) => !isOpen(item)).flatMap(details), { opacity: 0, y: rise });
+
+  /** Mouvement en cours des détails de chaque élément. */
+  const settling = new Map<HTMLElement, gsap.core.Tween>();
+  let refresh: gsap.core.Tween | undefined;
+
+  /*
+   * Chaque commande repart de l'état courant et remplace la précédente (jamais de
+   * file d'attente) : après une rafale de clics, seul l'état demandé en dernier compte,
+   * et le panneau ouvert finit toujours entièrement visible.
+   */
+  onSwitch = () => {
+    for (const item of items) {
+      const targets = details(item);
+      settling.get(item)?.kill();
+      settling.delete(item);
+      if (isOpen(item)) {
+        // Le contenu attend que la hauteur ait pris son élan (a6 : ≈ 120 ms).
+        settling.set(
+          item,
+          gsap.to(targets, {
+            opacity: 1,
+            y: 0,
+            duration: state,
+            delay: beat,
+            stagger: cascade,
+            clearProps: 'opacity,transform',
+          }),
+        );
+        continue;
+      }
+      const visible = targets.filter((detail) => Number(gsap.getProperty(detail, 'opacity')) > 0);
+      if (visible.length) {
+        settling.set(
+          item,
+          gsap.to(visible, { opacity: 0, y: rise, duration: state * EXIT, ease: 'in' }),
+        );
+      }
+    }
+
+    /*
+     * La plaque s'enfonce d'un coup, le temps du clic, et s'arrête net ; elle se
+     * relève ensuite posément, au pas de l'accordéon, pendant que les détails montent.
+     */
+    notching?.kill();
+    notching = gsap
+      .timeline()
+      .to(photo, { ...FLAT, duration: beat, ease: 'in' })
+      .to(photo, { ...notch, duration: layout, ease: 'in-out', clearProps: NOTCH });
+
+    // La page a changé de hauteur : les déclencheurs plus bas se recalent, une fois la grille posée.
+    refresh?.kill();
+    refresh = gsap.delayedCall(layout, () => ScrollTrigger.refresh());
+  };
+
+  return () => {
+    onSwitch = undefined;
+    refresh?.kill();
+    notching?.kill();
+    settling.forEach((tween) => tween.kill());
+    gsap.set([photo, ...items.flatMap(details)], { clearProps: `opacity,transform,${NOTCH}` });
+  };
+});
 </script>
 
 <template>
-  <section id="programmes" class="programs" data-surface="paper" :aria-labelledby="titleId">
+  <section
+    id="programmes"
+    ref="section"
+    class="programs"
+    data-surface="paper"
+    :aria-labelledby="titleId"
+  >
     <RuledGrid variant="strip" fade />
 
     <div class="programs__inner container">
