@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { motionAllowed } from '~/motion/env';
+import { scrollToTarget } from '~/motion/scroll';
+import { ENTRY, reached } from '~/motion/sequence';
+import { duration } from '~/motion/tokens';
 import type { HomeContent } from '~/types/content';
 
 /**
@@ -9,6 +13,12 @@ import type { HomeContent } from '~/types/content';
  *
  * Mesures @1440 (a1 §2.8, v2 §1.7), scène de 849 px : titre à y 126, panneaux de
  * 266 à 615, capitales du wordmark de 657 à 814 (157 px), à ≈ 32 px du bas.
+ *
+ * Mouvement (docs/analyse/annexes/a6-motion.md §2.3 et §4.8). Le H2 ne bouge pas.
+ * - Serre-livre : à son entrée, CLUSEM™ rejoue le geste du hero. Le mot arrive
+ *   lancé de 0,4 em, deux échos rouges le rattrapent et s'éteignent (HeroHeadline).
+ * - Les liens vers le haut de page remontent en défilement lissé ; le focus passe
+ *   à la cible du lien d'évitement.
  */
 defineProps<{ content: HomeContent['footer']; marquee: HomeContent['marquee'] }>();
 
@@ -27,10 +37,111 @@ const photoSizes = {
   xl: '110vw',
   '2xl': '100vw',
 };
+
+/** Haut de page, et cible du lien d'évitement (pages/index.vue). */
+const PAGE_TOP = '#haut';
+const SKIP_TARGET = '#contenu';
+
+/**
+ * « Retour en haut » et « Accueil » : quand le mouvement est permis, la page remonte
+ * en défilement lissé au lieu de sauter, et le focus va au contenu principal, comme
+ * après « Aller au contenu ». Sinon (mouvement réduit, sans JS, clic modifié pour
+ * un nouvel onglet), l'ancre native fait tout.
+ */
+function onClick(event: MouseEvent) {
+  const modified =
+    event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+  if (event.defaultPrevented || modified || !motionAllowed()) return;
+  const link = (event.target as Element).closest(`a[href="${PAGE_TOP}"]`);
+  const content = document.querySelector<HTMLElement>(SKIP_TARGET);
+  if (!link || !content || !document.querySelector(PAGE_TOP)) return;
+  event.preventDefault();
+  content.focus({ preventScroll: true });
+  scrollToTarget(PAGE_TOP, { travel: true });
+}
+
+const footer = useTemplateRef<HTMLElement>('footer');
+
+useMotion(footer, ({ gsap }, root) => {
+  const wordmark = root.querySelector<HTMLElement>('[data-motion="footer-wordmark"]');
+  const brand = root.querySelector<HTMLElement>('[data-motion="footer-brand"]');
+  // Déjà à l'écran quand GSAP arrive (ancre, rechargement) : l'état final reste.
+  if (!wordmark || !brand || reached(wordmark)) return undefined;
+
+  /*
+   * Échos : deux copies décoratives du mot (™ compris), posées sous lui le temps
+   * de l'arrivée. Le mot est déjà masqué aux lecteurs d'écran ; les copies aussi.
+   */
+  const glyphs = [...wordmark.childNodes];
+  let echoes: HTMLElement[] = [];
+  const echo = () => {
+    const copy = document.createElement('span');
+    copy.className = 'site-footer__echo';
+    copy.setAttribute('aria-hidden', 'true');
+    copy.append(...glyphs.map((node) => node.cloneNode(true)));
+    return copy;
+  };
+  const release = () => {
+    echoes.forEach((copy) => copy.remove());
+    echoes = [];
+    delete wordmark.dataset.echoing;
+  };
+
+  /*
+   * Le mot attend hors de vue, en retrait de sa course ; il apparaît lancé, comme
+   * les lignes du hero à leur première image. Les variables tombent à 0 : le
+   * retrait et les échos s'annulent (voir le CSS).
+   */
+  gsap.set(wordmark, { visibility: 'hidden' });
+  const arrival = gsap
+    .timeline({
+      scrollTrigger: { trigger: wordmark, ...ENTRY },
+      defaults: { duration: duration('--dur-focal') },
+      onStart: () => {
+        echoes = [echo(), echo()];
+        wordmark.prepend(...echoes);
+        wordmark.dataset.echoing = '';
+        gsap.set(wordmark, { clearProps: 'visibility' });
+      },
+      onComplete: release,
+    })
+    .fromTo(wordmark, { '--arrive': 1 }, { '--arrive': 0, clearProps: '--arrive' }, 0)
+    // Les échos rattrapent le mot sur une courbe plus douce : la traînée s'étire, puis se résorbe.
+    .fromTo(
+      wordmark,
+      { '--echo-lag': 1 },
+      { '--echo-lag': 0, ease: 'out-soft', clearProps: '--echo-lag' },
+      0,
+    )
+    .fromTo(
+      wordmark,
+      { '--echo-fade': 1 },
+      {
+        '--echo-fade': 0,
+        ease: 'in-out',
+        duration: duration('--dur-overlay'),
+        clearProps: '--echo-fade',
+      },
+      0,
+    );
+
+  // Clavier : un réseau focalisé avant le déclencheur (bas de l'écran) fait arriver le mot.
+  const play = () => arrival.play();
+  brand.addEventListener('focusin', play, { once: true });
+  return () => {
+    brand.removeEventListener('focusin', play);
+    release();
+  };
+});
 </script>
 
 <template>
-  <footer id="contact" class="site-footer" data-surface="hot">
+  <!--
+    Le clic est délégué aux liens vers le haut de page (panneau et navigation) :
+    le footer lui-même n'est pas interactif.
+  -->
+  <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -->
+  <footer id="contact" ref="footer" class="site-footer" data-surface="hot" @click="onClick">
     <MarqueeBand :content="marquee" />
 
     <div class="site-footer__stage">
@@ -66,7 +177,7 @@ const photoSizes = {
           :motto="content.motto"
         />
 
-        <div class="site-footer__brand">
+        <div class="site-footer__brand" data-motion="footer-brand">
           <Wordmark
             as="p"
             class="site-footer__wordmark"
@@ -184,6 +295,53 @@ const photoSizes = {
   margin-inline-start: -0.045em;
   color: var(--ink);
   text-box: trim-both cap alphabetic;
+}
+
+/*
+ * Arrivée du wordmark (GSAP) : --arrive passe de 1 à 0. Sans la variable, la
+ * déclaration est invalide et `translate` reste nul : rien ne bouge sans GSAP.
+ */
+.site-footer__wordmark {
+  /* a6 §3.3 : seule course hors des pas mesurés, celle de la typo focale. */
+  --wordmark-travel: 0.4em;
+
+  translate: calc(var(--arrive) * var(--wordmark-travel) * -1) 0;
+}
+
+.site-footer__wordmark[data-echoing] {
+  position: relative;
+  isolation: isolate;
+  will-change: translate;
+}
+
+/*
+ * Échos (copies posées par le script) : rouges, sous le mot, partis un et deux pas
+ * (--move-l) derrière lui. Même course que ceux du hero : leur translation compte
+ * celle du mot qui les porte.
+ */
+.site-footer__wordmark :deep(.site-footer__echo) {
+  --echo-offset: calc(var(--move-l) * -1);
+  --echo-opacity: 0.6;
+
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  color: var(--red-500);
+  text-box: inherit;
+  translate: calc(
+      var(--echo-lag, 0) * (var(--echo-offset) - var(--wordmark-travel)) + var(--arrive, 0) *
+        var(--wordmark-travel)
+    )
+    0;
+  opacity: calc(var(--echo-fade, 0) * var(--echo-opacity));
+  pointer-events: none;
+  user-select: none;
+  will-change: translate, opacity;
+}
+
+.site-footer__wordmark :deep(.site-footer__echo + .site-footer__echo) {
+  --echo-offset: calc(var(--move-l) * -2);
+  --echo-opacity: 0.3;
 }
 
 .site-footer__grid {

@@ -8,7 +8,10 @@
  * la référence, rendu interactif. Le panneau mis en avant (`featured`) porte ce
  * rouge au repos, et son survol le fonce d'un ton (même geste).
  *
- * Les bordures sont posées par la liste parente (filets partagés, jamais doublés).
+ * Filets partagés, jamais doublés : le panneau trace son filet du haut et son
+ * filet de droite, la liste parente ferme la gauche et le bas. Le filet du haut est
+ * un trait (::before) et non une bordure, pour pouvoir se tracer à l'entrée
+ * (`--rule-trace`, `--rule-heat` : FooterPanels).
  * `--panel-active` (0 → 1 quand l'en-tête est survolé ou focalisé) est exposé au
  * contenu du corps, qui peut y répondre (cran de l'astérisque).
  */
@@ -30,8 +33,8 @@ withDefaults(
     :class="{ 'footer-panel--featured': featured }"
     data-motion="footer-panel"
   >
-    <a :href="href" class="footer-panel__head">
-      <span class="footer-panel__title">{{ title }}</span>
+    <a :href="href" class="footer-panel__head" data-motion="footer-panel-head">
+      <span class="footer-panel__title" data-motion="footer-panel-title">{{ title }}</span>
       <Icon
         name="arrow-right"
         size="1.25rem"
@@ -50,12 +53,35 @@ withDefaults(
   /* Filets fournis par le footer (--footer-rule), sinon ceux de la matière. */
   --panel-rule: var(--footer-rule, var(--rule));
   --head-fill: var(--accent-fill);
+  /* Filet du haut : part tracée depuis la gauche, chaleur de sa pointe (au repos : 1 et 0). */
+  --rule-trace: 1;
+  --rule-heat: 0;
 
+  position: relative;
   container-type: inline-size;
   display: flex;
   flex-direction: column;
+  /* La rangée du filet du haut, que trace ::before. */
+  padding-block-start: 1px;
   border-inline-end: 1px solid var(--panel-rule);
-  border-block-end: 1px solid var(--panel-rule);
+}
+
+/* Tracé depuis la gauche ; tant qu'il file, sa pointe est rouge (même geste que Programmes). */
+.footer-panel::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  block-size: 1px;
+  background: linear-gradient(
+      to right,
+      transparent 55%,
+      color-mix(in srgb, var(--red-500) calc(var(--rule-heat) * 100%), transparent)
+    )
+    var(--panel-rule);
+  scale: var(--rule-trace) 1;
+  transform-origin: 0 0;
+  pointer-events: none;
 }
 
 .footer-panel:has(> .footer-panel__head:focus-visible) {
@@ -193,6 +219,11 @@ withDefaults(
 }
 
 @media (forced-colors: active) {
+  .footer-panel::before {
+    forced-color-adjust: none;
+    background: CanvasText;
+  }
+
   .footer-panel__head::before {
     display: none;
   }
