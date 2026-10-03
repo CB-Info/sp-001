@@ -16,8 +16,24 @@ export const capped =
   (index: number, _target?: unknown, list: ArrayLike<unknown> = []) =>
     Math.min(fromEnd ? list.length - 1 - index : index, CASCADE_LIMIT - 1) * each;
 
-/** Entrée d'une section ou d'un élément : à 85 % de l'écran, une seule fois, jamais rejouée. */
-export const ENTRY = { start: 'top 85%', once: true } as const;
+/** a6 §3.5 : un élément entre quand son haut passe à 85 % de la hauteur de l'écran. */
+const ENTRY_LINE = 0.85;
+
+/**
+ * Entrée d'une section ou d'un élément : son haut à 85 % de l'écran, une seule fois,
+ * jamais rejouée. Un élément trop près du bas du document pour atteindre cette ligne
+ * entre juste avant la butée, au lieu de rester dans son état initial : ScrollTrigger
+ * ne recale ce cas qu'à un rafraîchissement global, pas pour un déclencheur créé
+ * plus tard, comme les nôtres.
+ */
+export const ENTRY = {
+  start: ({ trigger }: { trigger?: Element }) => {
+    if (!trigger) return `top ${ENTRY_LINE * 100}%`;
+    const line = trigger.getBoundingClientRect().top + scrollY - innerHeight * ENTRY_LINE;
+    return Math.min(line, document.documentElement.scrollHeight - innerHeight - 1);
+  },
+  once: true,
+} as const;
 
 /**
  * Déjà à l'écran, ou dépassé, quand GSAP arrive (ancre, rechargement, défilement
