@@ -1,0 +1,202 @@
+/*
+ * Design tokens — SOURCE UNIQUE.
+ *
+ * Toutes les valeurs visuelles du site partent d'ici. Le JS les lit au montage
+ * (getComputedStyle) au lieu de les recopier. Origine des valeurs : mesures de la
+ * référence, docs/analyse/00-synthese.md (§3, §4, §5, §9).
+ *
+ * Trois niveaux :
+ *   1. primitives (couleurs brutes, échelles) : jamais utilisées dans un composant ;
+ *   2. sémantiques (rôles) : les seules que les composants consomment ;
+ *   3. surfaces : [data-surface] redéfinit les rôles pour une matière donnée.
+ */
+@layer tokens {
+  :root {
+    /* ── 1. Primitives : couleurs ─────────────────────────────────────────── */
+    --red-400: #f64d57; /* texte rouge sur nuit (5,67:1) */
+    --red-500: #f02b42; /* rouge de marque mesuré : display, glyphes, surfaces sans texte */
+    --red-600: #e41e3a; /* remplissage sous texte blanc (4,62:1) */
+    --red-700: #c2152c; /* petit texte rouge sur papier (6,11:1) */
+    --red-800: #8d0c0f; /* rouge photo moyen */
+    --red-900: #600305; /* vignette du hero */
+    --red-950: #290101;
+
+    --ink-900: #171a32; /* encre marine des titres (valeur dominante mesurée) */
+    --ink-700: #3c4253;
+    --black: #000;
+    --grey-600: #68696c; /* texte secondaire sur papier (5,49:1) */
+    --grey-500: #7f8083;
+    --grey-300: #dcdcdc; /* filets et trames */
+    --grey-200: #ececec;
+    --grey-150: #e3e5e5; /* tuile « précédent » */
+    --paper-0: #fff;
+    --paper-50: #f5f5f5;
+
+    --night-950: #040f0e; /* nuit sarcelle de la section Why */
+    --night-900: #0b1817;
+    --night-800: #1f2a29;
+    --night-500: #788382; /* labels sur nuit (4,97:1) */
+    --night-400: #939e9d;
+    --night-200: #c4cecd;
+    --carbon-850: #1e1e1e;
+
+    /* ── 1. Primitives : typographie ──────────────────────────────────────── */
+    --font-display: 'Tektur', 'Tektur Fallback', 'Arial Narrow', sans-serif;
+    --font-lead: 'Inter Tight', 'Inter Tight Fallback', system-ui, sans-serif;
+    --font-body: 'Inter', 'Inter Fallback', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+    /* Échelle fluide 390 → 1440 px. Bornes en rem : le zoom texte reste respecté (WCAG 1.4.4). */
+    --text-hero: clamp(3.5rem, 0.6214rem + 11.8095vw, 11.25rem); /* 180 px à 1440 */
+    --text-figure: clamp(6rem, 4.05rem + 8vw, 11.25rem); /* chiffres 01 / 02 */
+    --text-heading: clamp(2rem, 1.4429rem + 2.2857vw, 3.5rem); /* H2 : 56 px */
+    --text-stat: clamp(2.5rem, 2.1286rem + 1.5238vw, 3.5rem);
+    --text-logo: clamp(1.5rem, 0.9429rem + 2.2857vw, 3rem); /* logo du header : 48 px */
+    --text-lead: clamp(1.5rem, 1.1286rem + 1.5238vw, 2.5rem); /* 40 px */
+    --text-subheading: clamp(1.5rem, 1.2214rem + 1.1429vw, 2.25rem); /* H3 unifiés : 36 px */
+    --text-accent: clamp(1.25rem, 1.1571rem + 0.381vw, 1.5rem); /* 24 px */
+    --text-quote: clamp(1.25rem, 1.0643rem + 0.7619vw, 1.75rem); /* 28 px */
+    --text-ui: clamp(1rem, 0.9536rem + 0.1905vw, 1.125rem); /* 18 px */
+    --text-body: 1rem;
+    --text-label: clamp(0.875rem, 0.8286rem + 0.1905vw, 1rem);
+    --text-micro: 0.875rem; /* jamais en dessous de 14 px */
+
+    --leading-display: 0.82;
+    --leading-heading: 1;
+    --leading-tight: 1.05;
+    --leading-snug: 1.15;
+    --leading-body: 1.45;
+
+    --tracking-display: -0.02em;
+    --tracking-heading: -0.015em;
+    --tracking-label: 0.02em;
+
+    /* ── 1. Primitives : espace (base 4, trois séries qui doublent) ───────── */
+    --space-4: 0.25rem;
+    --space-8: 0.5rem;
+    --space-12: 0.75rem;
+    --space-16: 1rem;
+    --space-20: 1.25rem;
+    --space-24: 1.5rem;
+    --space-32: 2rem;
+    --space-40: 2.5rem;
+    --space-48: 3rem;
+    --space-60: 3.75rem;
+    --space-80: 5rem;
+    --space-120: 7.5rem;
+
+    /* ── 2. Sémantiques : mise en page ────────────────────────────────────── */
+    --page-gutter: clamp(
+      1.25rem,
+      0.3214rem + 3.8095vw,
+      3.75rem
+    ); /* 60 px à 1440, 20 px en mobile */
+    --content-max: 82.5rem; /* 1320 px */
+    --gap: clamp(1rem, 0.9071rem + 0.381vw, 1.25rem); /* gouttière entre tuiles : 20 px */
+    --section-pad: clamp(4rem, 2.7rem + 5.3333vw, 7.5rem); /* 120 px à 1440 */
+    --header-gap: clamp(2rem, 1.6286rem + 1.5238vw, 3rem); /* titre → contenu : 48 px */
+    --block-gap: clamp(3rem, 2.2571rem + 3.0476vw, 5rem); /* 80 px */
+    --frame-inset: clamp(
+      0.75rem,
+      0.3321rem + 1.7143vw,
+      1.875rem
+    ); /* cadre de filets du hero : 30 px */
+    --feature-ratio: 1.414; /* piste mise en avant ≈ √2 */
+
+    /* Silhouette en escalier (deux plaques de même couleur). sx = pas horizontal,
+       st = décalage haut de la plaque arrière, sb = débord bas. Mesures à 1440. */
+    --step-sm-x: 5px;
+    --step-sm-t: 2px;
+    --step-sm-b: 5px;
+    --step-md-x: 12px;
+    --step-md-t: 4px;
+    --step-md-b: 11px;
+    --step-lg-x: 13px;
+    --step-lg-t: 6px;
+    --step-lg-b: 14px;
+
+    /* ── 2. Sémantiques : mouvement ───────────────────────────────────────── */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* arrivées */
+    --ease-out-soft: cubic-bezier(0.25, 1, 0.5, 1); /* changements d'état */
+    --ease-in: cubic-bezier(0.7, 0, 0.84, 0); /* sorties */
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* layout */
+    --ease-strike: cubic-bezier(0.87, 0, 0.13, 1); /* crans de l'astérisque */
+    --dur-press: 90ms;
+    --dur-feedback: 140ms;
+    --dur-state: 240ms;
+    --dur-layout: 420ms;
+    --dur-overlay: 480ms;
+    --dur-focal: 700ms;
+
+    /* ── 2. Sémantiques : couleurs (surface papier par défaut) ────────────── */
+    --bg: var(--paper-0);
+    --surface: var(--paper-50);
+    --surface-inverse: var(--black);
+    --ink: var(--ink-900);
+    --ink-strong: var(--black); /* gros chiffres */
+    --ink-secondary: var(--ink-700);
+    --ink-muted: var(--grey-600);
+    --rule: var(--grey-200);
+    --pattern-line: #e9e9e9;
+    --accent: var(--red-500);
+    --accent-ink: var(--red-700);
+    --accent-fill: var(--red-600);
+    --accent-fill-hover: var(--red-700);
+    --on-accent: var(--paper-0);
+    --focus: var(--ink-900);
+    --selection-bg: var(--red-600);
+    --selection-ink: var(--paper-0);
+
+    color-scheme: light;
+  }
+
+  /* ── 3. Surfaces ─────────────────────────────────────────────────────────── */
+  [data-surface='paper-alt'] {
+    --bg: var(--paper-50);
+    --surface: var(--paper-0);
+    --rule: #e3e3e3;
+    --pattern-line: var(--grey-300);
+  }
+
+  [data-surface='night'] {
+    --bg: var(--night-950);
+    --surface: var(--night-900);
+    --ink: var(--paper-0);
+    --ink-strong: var(--paper-0);
+    --ink-secondary: var(--night-200);
+    --ink-muted: var(--night-400);
+    --rule: var(--night-800);
+    --pattern-line: #1c2726;
+    --accent-ink: var(--red-400);
+    --focus: var(--paper-0);
+    --selection-bg: var(--red-400);
+    --selection-ink: var(--night-950);
+
+    color-scheme: dark;
+  }
+
+  [data-surface='hot'] {
+    --bg: var(--black);
+    --surface: var(--carbon-850);
+    --ink: var(--paper-0);
+    --ink-strong: var(--paper-0);
+    --ink-secondary: #f4d6d3;
+    --ink-muted: #d9b3ae;
+    --rule: rgb(255 255 255 / 0.18);
+    --pattern-line: rgb(255 255 255 / 0.08);
+    --accent: var(--paper-0); /* l'astérisque devient blanc sur la photo rouge */
+    --accent-ink: var(--paper-0);
+    --focus: var(--paper-0);
+    --selection-bg: var(--paper-0);
+    --selection-ink: var(--red-800);
+
+    color-scheme: dark;
+  }
+
+  [data-surface='signal'] {
+    --bg: var(--red-600);
+    --ink: var(--paper-0);
+    --accent: var(--paper-0);
+    --focus: var(--paper-0);
+  }
+}

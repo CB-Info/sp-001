@@ -1,0 +1,77 @@
+/* Base : typographie par défaut, surfaces navigateur thématisées (craft-floor). */
+@layer base {
+  html {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 100%;
+    line-height: var(--leading-body);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scrollbar-color: var(--ink-900) var(--paper-50);
+    scrollbar-gutter: stable;
+    hanging-punctuation: first last;
+  }
+
+  body {
+    font-size: var(--text-body);
+    background: var(--bg);
+    color: var(--ink);
+    caret-color: var(--accent-fill);
+    accent-color: var(--accent-fill);
+  }
+
+  /* Les surfaces portent leur propre fond et leur propre encre. */
+  [data-surface] {
+    background-color: var(--bg);
+    color: var(--ink);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: var(--leading-heading);
+    letter-spacing: var(--tracking-heading);
+    text-wrap: balance;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--selection-bg);
+    color: var(--selection-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  a:where(:not([class])) {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  /* L'en-tête collant ne doit jamais masquer la cible d'une ancre (WCAG 2.4.11). */
+  :target {
+    scroll-margin-top: 6rem;
+  }
+
+  @media (forced-colors: active) {
+    :focus-visible {
+      outline-color: CanvasText;
+    }
+  }
+}

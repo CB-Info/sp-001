@@ -1,0 +1,7 @@
+.nuxt
+.output
+node_modules
+pnpm-lock.yaml
+public/fonts
+docs/analyse/annexes
+app/assets/css/fonts.css

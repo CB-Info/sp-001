@@ -1,0 +1,187 @@
+/*
+ * Silhouette en escalier — LA primitive de l'identité.
+ *
+ * Union de deux plaques de MÊME couleur, encoches en haut à droite et en bas à
+ * gauche. Ce n'est pas une ombre : on ne l'écrit jamais en box-shadow.
+ *   sx = pas horizontal, st = décalage haut de la plaque arrière, sb = débord bas.
+ *
+ * Deux implémentations, mêmes tokens :
+ *   - .step        (contrôles) : la plaque avant est l'élément, la plaque arrière son
+ *                    ::before. Tout passe par `translate` : animé sur le compositeur.
+ *   - .step-frame  (médias)    : une seule image découpée par un polygone à 8 points,
+ *                    pour que la photo reste continue sur les deux plaques.
+ *
+ * Grammaire physique (brief §3) : la plaque se soulève au survol (la trace
+ * s'allonge) et s'enfonce à l'appui (la trace se résorbe).
+ */
+/* Propriétés typées : animables (transition, GSAP). Hors couche, comme l'exige @property. */
+@property --fx {
+  syntax: '<length-percentage>';
+  inherits: true;
+  initial-value: 0%;
+}
+
+@property --ft {
+  syntax: '<length-percentage>';
+  inherits: true;
+  initial-value: 0%;
+}
+
+@property --fb {
+  syntax: '<length-percentage>';
+  inherits: true;
+  initial-value: 0%;
+}
+
+@layer components {
+  .step {
+    --sx: var(--step-md-x);
+    --st: var(--step-md-t);
+    --sb: var(--step-md-b);
+    --step-fill: var(--accent-fill);
+    --step-ink: var(--on-accent);
+
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--step-fill);
+    color: var(--step-ink);
+    /* L'empreinte au sol inclut la plaque arrière. */
+    margin-inline-end: var(--sx);
+    margin-block-end: var(--sb);
+    translate: 0 0;
+    transition: translate var(--dur-feedback) var(--ease-out-soft);
+  }
+
+  .step::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    height: calc(100% + var(--sb) - var(--st));
+    background: var(--step-fill);
+    translate: var(--sx) var(--st);
+    transition: translate var(--dur-feedback) var(--ease-out-soft);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .step:hover {
+      translate: calc(var(--sx) * -0.35) calc(var(--st) * -0.75);
+    }
+
+    .step:hover::before {
+      /* La plaque arrière reste au sol : elle compense le soulèvement de l'avant. */
+      translate: calc(var(--sx) * 1.35) calc(var(--st) * 1.75);
+    }
+  }
+
+  .step:active {
+    translate: calc(var(--sx) * 0.55) calc(var(--st) * 0.55);
+    transition-duration: var(--dur-press);
+    transition-timing-function: linear;
+  }
+
+  .step:active::before {
+    translate: calc(var(--sx) * 0.45) calc(var(--st) * 0.45);
+    transition-duration: var(--dur-press);
+    transition-timing-function: linear;
+  }
+
+  .step:focus-visible {
+    outline-offset: 4px;
+  }
+
+  .step[aria-disabled='true'],
+  .step:disabled {
+    --step-fill: var(--grey-150);
+    --step-ink: var(--grey-600);
+
+    translate: 0 0;
+    cursor: not-allowed;
+  }
+
+  .step[aria-disabled='true']::before,
+  .step:disabled::before {
+    translate: var(--sx) var(--st);
+  }
+
+  /* Tailles */
+  .step--sm {
+    --sx: var(--step-sm-x);
+    --st: var(--step-sm-t);
+    --sb: var(--step-sm-b);
+  }
+
+  .step--lg {
+    --sx: var(--step-lg-x);
+    --st: var(--step-lg-t);
+    --sb: var(--step-lg-b);
+  }
+
+  /* Remplissages */
+  .step--red {
+    --step-fill: var(--red-600);
+    --step-ink: var(--paper-0);
+  }
+
+  .step--black {
+    --step-fill: var(--black);
+    --step-ink: var(--paper-0);
+  }
+
+  .step--white {
+    --step-fill: var(--paper-0);
+    --step-ink: var(--ink-900);
+  }
+
+  .step--grey {
+    --step-fill: var(--grey-150);
+    --step-ink: var(--ink-900);
+  }
+
+  /* En mode contrastes forcés, les fonds disparaissent : on garde une bordure. */
+  @media (forced-colors: active) {
+    .step {
+      border: 1px solid ButtonText;
+    }
+
+    .step::before {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .step,
+    .step::before {
+      transition: none;
+    }
+  }
+
+  /* ── Médias ─────────────────────────────────────────────────────────────── */
+  .step-frame {
+    /* Pas proportionnels mesurés : ≈ 13 % de la largeur, 6 % et 14 % de la hauteur. */
+    --fx: 13%;
+    --ft: 6%;
+    --fb: 14%;
+
+    overflow: hidden;
+    clip-path: polygon(
+      0 0,
+      calc(100% - var(--fx)) 0,
+      calc(100% - var(--fx)) var(--ft),
+      100% var(--ft),
+      100% 100%,
+      var(--fx) 100%,
+      var(--fx) calc(100% - var(--fb)),
+      0 calc(100% - var(--fb))
+    );
+  }
+
+  .step-frame > :where(img, picture, video) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}

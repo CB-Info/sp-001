@@ -1,0 +1,17 @@
+/* Mise en page : cadre de page (marges, contenu de 1320 px), sections. */
+@layer layout {
+  .container {
+    width: min(100% - 2 * var(--page-gutter), var(--content-max));
+    margin-inline: auto;
+  }
+
+  .section {
+    position: relative;
+    padding-block: var(--section-pad);
+  }
+
+  /* Le contenu sous les titres de section commence toujours au même écart. */
+  .section__body {
+    margin-block-start: var(--header-gap);
+  }
+}

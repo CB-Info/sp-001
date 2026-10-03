@@ -1,0 +1,32 @@
+/*
+ * Polices de repli à métriques ajustées : pendant le chargement, le texte occupe
+ * la même place qu'avec la police finale, donc aucun saut de mise en page (CLS).
+ * Valeurs calculées avec fontTools : chasse moyenne de la police comparée à Arial
+ * (size-adjust), puis ascendante et descendante divisées par ce facteur.
+ */
+@font-face {
+  font-family: 'Tektur Fallback';
+  src: local('Arial');
+  size-adjust: 104.6%;
+  ascent-override: 95.6%;
+  descent-override: 28.7%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial');
+  size-adjust: 104.6%;
+  ascent-override: 92.6%;
+  descent-override: 23.1%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Inter Tight Fallback';
+  src: local('Arial');
+  size-adjust: 94.8%;
+  ascent-override: 102.2%;
+  descent-override: 25.4%;
+  line-gap-override: 0%;
+}

@@ -1,0 +1,15 @@
+/*
+ * Point d'entrée CSS. L'ordre des couches est déclaré une fois ici ; les styles
+ * scopés des composants Vue sont hors couche et l'emportent donc sur le global,
+ * ce qui est voulu (voir README, section Architecture).
+ */
+@layer reset, tokens, base, layout, components, utilities;
+
+@import './fonts.css';
+@import './fonts-fallback.css';
+@import './reset.css';
+@import './tokens.css';
+@import './base.css';
+@import './layout.css';
+@import './step.css';
+@import './utilities.css';
