@@ -14,6 +14,8 @@
 // contenu jamais, d'où un cache « immutable » (public/_headers). Incrémental : une
 // variante déjà présente n'est pas refaite ; les variantes orphelines sont supprimées.
 //
+// Plus une plaque de stries (STREAKS) pour l'intro du hero : voir plus bas.
+//
 // Usage : node scripts/build-images.mjs [--force]
 import { createHash } from 'node:crypto';
 import { glob, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
@@ -96,6 +98,55 @@ async function processMaster(master) {
   return { src: `/images/${rel}.jpg`, width, height, widths, hash, files, written };
 }
 
+/**
+ * Plaques de stries : la photo réduite à quelques colonnes puis réétirée aux
+ * proportions du master. Le flou de vitesse horizontal est donc cuit dans un
+ * fichier de quelques Ko ; affiché en `object-fit: cover` avec le même point
+ * focal, il se superpose exactement à la photo nette (intro « Vitesse → Arrêt »
+ * du hero, docs/analyse/annexes/a6-motion.md §2.2, et stries liées au défilement).
+ * WebP seul. L'entrée du manifeste a le même format que les autres : le provider
+ * la résout sans cas particulier ($img('/images/hero/hero-streaks.jpg', { format: 'webp' })).
+ */
+const STREAKS = [
+  { master: 'hero/hero-athlete', name: 'hero/hero-streaks', columns: 16, width: 560, quality: 50 },
+];
+
+async function processStreaks({ master, name, columns, width, quality }) {
+  const file = join(MASTERS, `${master}.jpg`);
+  const source = await sharp(file).metadata();
+  const height = Math.round((width * source.height) / source.width);
+  const hash = createHash('sha1')
+    .update(await readFile(file))
+    .update(JSON.stringify({ ENCODING, columns, width, quality }))
+    .digest('hex')
+    .slice(0, 8);
+  const output = join(OUTPUT, `${name}-${width}.${hash}.webp`);
+  let written = 0;
+  if (force || !(await stat(output).catch(() => null))) {
+    // Intermédiaire sans perte : seul l'encodage final compte dans le poids.
+    const smear = await sharp(file)
+      .resize({ width: columns, height, fit: 'fill' })
+      .png()
+      .toBuffer();
+    await mkdir(dirname(output), { recursive: true });
+    await sharp(smear)
+      .resize({ width, height, fit: 'fill', kernel: 'mitchell' })
+      .webp({ quality, effort: 6 })
+      .withXmp(xmpFor(file))
+      .toFile(output);
+    written = 1;
+  }
+  return {
+    src: `/images/${name}.jpg`,
+    width,
+    height,
+    widths: [width],
+    hash,
+    files: [output],
+    written,
+  };
+}
+
 const masters = [];
 for await (const file of glob('**/*.jpg', { cwd: MASTERS })) masters.push(join(MASTERS, file));
 masters.sort();
@@ -106,6 +157,7 @@ const results = [];
 for (let i = 0; i < masters.length; i += pool) {
   results.push(...(await Promise.all(masters.slice(i, i + pool).map(processMaster))));
 }
+results.push(...(await Promise.all(STREAKS.map(processStreaks))));
 
 // Variantes orphelines (master modifié ou supprimé, réglages changés) : supprimées.
 const expected = new Set(results.flatMap((r) => r.files));

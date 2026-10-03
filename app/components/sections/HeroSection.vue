@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { scroll } from '~/motion/scroll';
+import { duration } from '~/motion/tokens';
 import type { HomeContent } from '~/types/content';
 
 /**
@@ -8,10 +10,84 @@ import type { HomeContent } from '~/types/content';
  * Hauteur : max(100svh, 40rem) au lieu des 1 102 px de la référence, pour que
  * « FORGE / TA FORCE » soit entièrement visible au chargement (correctif P1) :
  * les écarts verticaux se resserrent avec la hauteur de la fenêtre.
+ *
+ * Mouvement (docs/analyse/annexes/a6-motion.md §2.2 et §4.1) :
+ * - intro « Vitesse → Arrêt » en keyframes CSS, pilotée par les classes que pose
+ *   app/motion/boot.inline.js : elle n'attend ni l'hydratation ni GSAP ;
+ * - au défilement (GSAP) : les stries reviennent avec la vitesse, et FORGE /
+ *   TA FORCE s'écartent pendant que le hero sort de l'écran.
  */
 const props = defineProps<{ content: HomeContent['hero'] }>();
 
 const titleId = 'hero-titre';
+
+/** Plaque de stries : la photo étalée à l'horizontale (scripts/build-images.mjs). */
+const STREAKS = '/images/hero/hero-streaks.jpg';
+const streaksUrl = useImage()(STREAKS, { format: 'webp' });
+
+/** Stries liées à la vitesse : opacité = min(|vitesse| × gain, plafond), lissée. */
+const STREAK_GAIN = 0.015; // par px/image : plafond atteint vers 37 px/image (défilement vif)
+const STREAK_MAX = 0.55;
+const STREAK_LERP = 0.15; // rapprochement par image à 60 i/s : retour à 0 en ≈ 300 ms
+
+const hero = useTemplateRef<HTMLElement>('hero');
+
+useMotion(hero, ({ gsap, ScrollTrigger }, root) => {
+  const plate = root.querySelector<HTMLImageElement>('.hero__streaks');
+  if (!plate) return undefined;
+
+  let level = 0;
+  const rest = () => {
+    level = 0;
+    plate.style.removeProperty('opacity');
+    plate.style.removeProperty('will-change');
+  };
+  const follow = () => {
+    const target = Math.min(Math.abs(scroll.velocity) * STREAK_GAIN, STREAK_MAX);
+    if (target === 0 && level === 0) return;
+    // Calque promu seulement le temps de l'effet.
+    if (level === 0) plate.style.willChange = 'opacity';
+    // Lissage indépendant de la cadence d'affichage.
+    level += (target - level) * (1 - (1 - STREAK_LERP) ** gsap.ticker.deltaRatio(60));
+    if (target === 0 && level < 0.01) {
+      rest();
+      return;
+    }
+    plate.style.opacity = level.toFixed(3);
+  };
+  // Rien ne tourne quand le hero est hors de l'écran.
+  ScrollTrigger.create({
+    trigger: root,
+    start: 'top bottom',
+    end: 'bottom top',
+    onToggle: ({ isActive }) => {
+      if (isActive) gsap.ticker.add(follow);
+      else {
+        gsap.ticker.remove(follow);
+        rest();
+      }
+    },
+  });
+
+  // Sortie : les deux lignes du titre (et leurs échos) s'écartent de 4vw. La
+  // valeur suit la progression avec un léger amorti (quickTo) : si l'on a déjà
+  // défilé quand GSAP arrive, le titre rejoint sa place au lieu de sauter.
+  const lines = root.querySelectorAll('[data-motion="hero-title-line"]');
+  gsap.set(lines, { '--hero-drift': 0 });
+  const drift = gsap.quickTo(lines, '--hero-drift', { duration: duration('--dur-state') });
+  ScrollTrigger.create({
+    trigger: root,
+    start: 'top top',
+    end: 'bottom top',
+    onUpdate: ({ progress }) => drift(progress),
+    onRefresh: ({ progress }) => drift(progress),
+  });
+
+  return () => {
+    gsap.ticker.remove(follow);
+    rest();
+  };
+});
 
 /*
  * Largeur réellement affichée : la photo couvre max(100vw, hauteur × 1,31). En
@@ -29,8 +105,12 @@ const photoSizes = {
 </script>
 
 <template>
-  <section class="hero" data-surface="hot" :aria-labelledby="titleId">
-    <div class="hero__media" data-motion="hero-photo">
+  <section ref="hero" class="hero" data-surface="hot" :aria-labelledby="titleId">
+    <div
+      class="hero__media"
+      data-motion="hero-photo"
+      :style="{ '--streaks': `url(${streaksUrl})`, '--focal': props.content.image.focal }"
+    >
       <NuxtPicture
         :src="props.content.image.src"
         :alt="props.content.image.alt"
@@ -45,6 +125,19 @@ const photoSizes = {
           fetchpriority: 'high',
           style: { objectPosition: props.content.image.focal },
         }"
+      />
+      <!--
+        Décorative. Priorité par défaut, découverte après le préchargement de la
+        photo (LCP) : jamais devant elle, mais promue à l'affichage pour être là
+        quand l'intro démarre.
+      -->
+      <NuxtImg
+        class="hero__streaks"
+        :src="STREAKS"
+        format="webp"
+        densities="x1"
+        alt=""
+        decoding="async"
       />
     </div>
 
@@ -85,6 +178,20 @@ const photoSizes = {
   --hero-asterisk: min(clamp(2.5rem, 1.6rem + 3.2vw, 4.4375rem), 8svh);
   --hero-marks-gap: clamp(1.5rem, 6svh, 4.5rem);
 
+  /*
+   * Partition de l'intro (a6 §2.2) : départs comptés depuis html.hero-ready,
+   * lus aussi par HeroHeadline et HeroSlogans. La dernière couche (5e filet des
+   * slogans) finit à 1 240 ms, sous --seq-max. Avant hero-ready, tout attend en
+   * pause sur sa première image clé.
+   */
+  --intro-title: 120ms;
+  --intro-frame: 450ms;
+  --intro-slogans: 520ms;
+  --intro-asterisk: 600ms;
+  --intro-lead: 700ms;
+  --intro-arrows: 800ms;
+  --intro-state: running;
+
   position: relative;
   isolation: isolate;
   display: grid;
@@ -111,6 +218,23 @@ const photoSizes = {
 
 .hero__media :deep(.hero__photo) {
   object-fit: cover;
+}
+
+/* Calque de stries : n'existe qu'avec le mouvement ; invisible au repos. */
+.hero__streaks {
+  position: absolute;
+  inset: 0;
+  display: none;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  object-position: var(--focal);
+  opacity: 0;
+  pointer-events: none;
+}
+
+html.has-motion .hero__streaks {
+  display: block;
 }
 
 /*
@@ -248,6 +372,118 @@ const photoSizes = {
   /* mesuré : 19 px entre le filet et les capitales, 18 px sous la ligne de base (à 180 px) */
   .hero__band {
     padding-block-end: calc(var(--hero-title) * 0.04);
+  }
+}
+
+/*
+ * ── Intro « Vitesse → Arrêt » ────────────────────────────────────────────────
+ * Sous html.hero-intro seulement : sans elle (mouvement réduit, arrivée par une
+ * ancre, retour du bfcache, JS absent), la page est déjà dans son état final.
+ * Remplissage « backwards » seul : une animation finie ne retient plus rien.
+ */
+html.hero-intro:not(.hero-ready) .hero {
+  --intro-state: paused;
+}
+
+/*
+ * Les stries se compriment et s'éteignent, comme au freinage. Courbe douce : la
+ * vitesse reste lisible pendant que le titre arrive (≈ 300 ms), puis tout se fige.
+ */
+html.hero-intro .hero__streaks {
+  transform-origin: left;
+  animation: hero-brake var(--dur-focal) var(--ease-out-soft) backwards var(--intro-state);
+}
+
+/*
+ * La photo nette (LCP) reste visible dès la première image : elle ne fait que
+ * glisser. Son bord droit découvre alors la plaque de stries, aux mêmes couleurs,
+ * jamais le fond noir.
+ */
+html.hero-intro .hero__media {
+  background: var(--streaks) var(--focal) / cover no-repeat;
+}
+
+html.hero-intro .hero__media :deep(picture) {
+  animation: hero-settle var(--dur-focal) var(--ease-out) backwards var(--intro-state);
+}
+
+/*
+ * Le cadre se trace depuis les repères : les filets verticaux depuis leur
+ * hauteur, les horizontaux depuis le premier repère (centre à 0,75rem du bord du
+ * conteneur). Hauteur des repères, depuis le bas : marge basse, bande du titre
+ * (2 lignes de 0,82 + marges de 0,0456 et 0,04 = 1,7256 × le titre), écart des
+ * repères, demi-repère. Sous 64em, sans repères, le point tombe dans le titre.
+ */
+html.hero-intro .hero__rule--start,
+html.hero-intro .hero__rule--end {
+  transform-origin: 50%
+    calc(
+      100% - var(--hero-pad-bottom) - 1.7256 * var(--hero-title) - var(--hero-marks-gap) - 0.75rem
+    );
+  animation: hero-trace-y var(--dur-focal) var(--ease-out) var(--intro-frame) backwards
+    var(--intro-state);
+}
+
+html.hero-intro .hero__rule--top,
+html.hero-intro .hero__rule--bottom {
+  transform-origin: calc(
+      max(var(--page-gutter) - var(--frame-inset), (100% - var(--content-max)) / 2) + 0.75rem
+    )
+    50%;
+  animation: hero-trace-x var(--dur-focal) var(--ease-out) var(--intro-frame) backwards
+    var(--intro-state);
+}
+
+/* Les repères se « verrouillent » pendant que les filets en partent. */
+html.hero-intro .hero__marks :deep([data-motion='hero-crosshair']) {
+  animation: hero-lock var(--dur-layout) var(--ease-out) var(--intro-frame) backwards
+    var(--intro-state);
+}
+
+/*
+ * Un cran de l'astérisque. −45° est identique à 0° (8 branches) : seul le clic se
+ * voit. `transform` se compose avec `rotate`, qui porte le cliquet global
+ * (--ratchet) : les deux mouvements ne se contrarient pas.
+ */
+html.hero-intro .hero__asterisk {
+  animation: hero-strike var(--dur-strike) var(--ease-strike) var(--intro-asterisk) backwards
+    var(--intro-state);
+}
+
+@keyframes hero-brake {
+  from {
+    opacity: 1;
+    transform: scaleX(1.12);
+  }
+}
+
+@keyframes hero-settle {
+  from {
+    transform: translateX(calc(var(--move-l) * -1));
+  }
+}
+
+@keyframes hero-trace-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes hero-trace-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@keyframes hero-lock {
+  from {
+    transform: rotate(45deg) scale(0.6);
+  }
+}
+
+@keyframes hero-strike {
+  from {
+    transform: rotate(-45deg);
   }
 }
 </style>
