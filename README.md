@@ -1,13 +1,15 @@
-# VYRON — reconstruction animée (projet portfolio)
+# CLUSEM — reconstruction animée (projet portfolio)
 
-Reconstruction d'une landing page de salle de sport, adaptée et animée, pour mon portfolio. Elle s'inspire d'un shot Dribbble d'un autre designer ; le crédit sera ajouté dans ce README, dans le footer de la démo et dans l'étude de cas.
+Reconstruction fidèle et animée d'une landing page de salle de sport, sous la marque fictive CLUSEM, pour mon portfolio. Elle reproduit un shot Dribbble (« VYRON ») d'un autre designer ; le crédit sera ajouté dans ce README, dans le footer de la démo et dans l'étude de cas.
 
 ## Statut
 
-**Phase d'analyse.** Aucun code du site n'est encore écrit.
+**Phase de cadrage.** Aucun code du site n'est encore écrit.
 
-- Analyse de la référence et recommandations, dont la stack : [`docs/analyse/00-synthese.md`](docs/analyse/00-synthese.md)
-- Rapports d'analyse détaillés : [`docs/analyse/annexes/`](docs/analyse/annexes/)
+- Analyse de la référence et recommandations : [`docs/analyse/00-synthese.md`](docs/analyse/00-synthese.md) (rapports détaillés dans [`docs/analyse/annexes/`](docs/analyse/annexes/))
+- Produit (Impeccable `init`) : [`PRODUCT.md`](PRODUCT.md)
+- Décision de stack, Nuxt 4.5 + GSAP : [`docs/adr/0001-stack-nuxt-gsap.md`](docs/adr/0001-stack-nuxt-gsap.md)
+- Brief de la page (Impeccable `shape`), en attente de validation : [`docs/brief/accueil.md`](docs/brief/accueil.md)
 
 ## Méthode
 

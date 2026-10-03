@@ -6,6 +6,14 @@
 > **Sources** : 4 captures de la référence. Une page entière basse définition (407 × 2000) et trois zooms 1600 × 1200 : hero, Services, Why VYRON.
 > **Annexes** : les 11 rapports d'analyse complets sont dans [`annexes/`](annexes/). Ce document en est la synthèse arbitrée.
 
+> **Décisions de l'auteur, le 2026-10-03.** Elles priment sur les recommandations de ce document :
+> - stack **Nuxt 4.5 + GSAP** ([ADR 0001](../adr/0001-stack-nuxt-gsap.md)), qui remplace la recommandation Astro du §12 ;
+> - adaptation **« fidèle + correctifs »** : les tensions du §8 sont tranchées en faveur de la référence, et seuls les correctifs d'accessibilité, de responsive, d'états et de cohérence sont appliqués ;
+> - marque **CLUSEM** ;
+> - **une seule page**, avec un niveau d'animation maximal.
+>
+> Voir [`PRODUCT.md`](../../PRODUCT.md) et le brief [`docs/brief/accueil.md`](../brief/accueil.md).
+
 ---
 
 ## 0. L'essentiel en 10 points
