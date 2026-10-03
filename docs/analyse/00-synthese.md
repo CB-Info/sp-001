@@ -31,7 +31,7 @@
 4. **La maquette est desktop uniquement.**
    - Aucune version mobile.
    - Le hero mesure 1 103 px à 1440 : sur un écran 1440 × 900, « STRENGTH » passe sous la ligne de flottaison.
-5. **Polices identifiées par rendu réel et score de recouvrement (IoU)** : **Tektur** (IoU 0,94 à 0,97), **Inter** (largeur d'Inter Tight) et **IBM Plex Mono**. Toutes sont libres (OFL) et auto-hébergeables.
+5. **Polices identifiées par rendu réel et score de recouvrement (IoU), puis confirmées par une vérification adverse** (76 concurrents rendus) : **Tektur** (IoU 0,91 à 0,97), **Inter Tight** pour le lead, **Inter** pour le corps et **IBM Plex Mono**. Toutes sont libres (OFL) et auto-hébergeables.
 6. **Cinq habitudes de la référence vont contre le « craft-floor » d'Impeccable** : eyebrows, numéros décoratifs, cartes « hero-metric », mono en costume et display au-delà de 6rem. Règle « the brief wins » : c'est **toi** qui tranches. Mes recommandations sont au §8.
 7. **Motion.** Un **seul moment signature**, « Vitesse → Arrêt » : le flou de bougé de la photo se fige et devient l'escalier des boutons. S'y ajoute **une grammaire** : la plaque se soulève au survol et s'enfonce au clic. Tout le reste passe en micro-interactions. Ni préchargeur ni curseur personnalisé.
 8. **Images.**
@@ -69,7 +69,7 @@
 | Stack, vérifiée sur npm, MDN BCD et CHANGELOG | — | [s1](annexes/s1-stack.md) |
 
 - **Trois vérifications adverses** :
-  - **v1** : ré-identification des polices, en partant du principe qu'il faut réfuter ([annexe](annexes/v1-fonts.md)) ;
+  - **v1b** : ré-identification des polices, en partant du principe qu'il faut réfuter, avec 76 concurrents rendus ([annexe](annexes/v1b-fonts.md)) ;
   - **v2** : critique de complétude, qui a relevé 14 erreurs factuelles et des oublis ([annexe](annexes/v2-completeness.md)) ;
   - **v3 et v3b** : deux revues adverses **indépendantes** de la stack, avec vérification de 46 puis 55 affirmations ([v3](annexes/v3-stack-adversary.md), [v3b](annexes/v3b-stack-adversary.md)). Toutes deux concluent **AMEND**, pas REPLACE.
 - **Statut de chaque valeur** : **[M]** mesuré au pixel (PIL/numpy), **[E]** estimé, **[I]** inféré. Le texte illisible est signalé, jamais inventé.
@@ -170,12 +170,16 @@ En mobile, ces valeurs deviennent fluides : marges de 60 à 20, padding de secti
 
 | Rôle | Police | Graisses | Preuve |
 |---|---|---|---|
-| Display, titres, logo, boutons, tags, chiffres | **Tektur** (Google Fonts, OFL, variable `wght` 400–900 et `wdth` 75–100) | 500 display · 600 titres et logo · 700 wordmark du footer · 400 boutons | IoU **0,94 à 0,97** sur BUILD, STRENGTH, SERVICES. et les H2. Meilleur concurrent : 0,76. Signatures : **Y dessiné comme un « y » minuscule**, I à empattements, P ouvert, S/G/C chanfreinés, 4 ouvert, « 1 » à pied en `tnum` |
-| Lead, corps, UI | **Inter** (dessin d'Inter, chasse d'**Inter Tight**) | 400 (corps en 300 dans le shot) | IoU 0,78 à 0,88 contre 0,62 pour le suivant |
-| Labels, notes | **IBM Plex Mono** | 400 | IoU 0,73 à 0,80 |
+| Display, titres, logo, boutons, tags, chiffres | **Tektur** (Google Fonts, OFL, variable `wght` 400–900 et `wdth` 75–100) | 500 display et chiffres-affiche · 600 H2 et H3 · **700 logo (header et footer), tracking 0** · 400 boutons | IoU **0,96 à 0,97** sur BUILD, STRENGTH et SERVICES., **0,91 à 0,92** sur les H2, **0,94** sur le logo. Meilleur concurrent : 0,77. Signatures : **Y dessiné comme un « y » minuscule**, I à empattements, P ouvert, S à un seul chanfrein en bas à droite, G à barre en marche, R à jambe diagonale, « 1 » à drapeau et pied **dans les chiffres par défaut** |
+| Lead | **Inter Tight** | 400, −0,01em | IoU 0,77 à 0,81. Inter seul, même resserré, reste en dessous |
+| Corps, UI | **Inter** | 300 ou 400 dans le shot (graisse incertaine) | IoU 0,68 à 0,88 selon la zone |
+| Labels, notes | **IBM Plex Mono** | 400, tracking 0 | IoU 0,72 à 0,78 ; le r à empattement de pied élimine Fira, Inconsolata, JetBrains et Red Hat |
 
 - **Les H2 et le display sont-ils de la même famille ?** Oui : c'est Tektur partout, seules la graisse et la taille changent.
-- **Ce qu'en dit la vérification v1** : voir la note de fin de section, ajoutée quand v1 a rendu son verdict.
+- **La vérification adverse (v1b) confirme les trois familles** : aucun des 76 concurrents rendus ne s'en approche. Elle corrige trois détails de a2 :
+  - le logo est en **700, tracking 0** (et non en 600 à +0,02em) ;
+  - les chiffres 01/02 sont les **chiffres par défaut**, pas `tnum` ;
+  - Tektur **contient** la flèche →, mais seulement dans le fichier complet, pas dans le sous-ensemble « latin » de Google Fonts.
 - **Rôles non résolus**, trop petits dans la capture basse définition et donc attribués par analogie : marquee, navigation du footer, tags, légendes des stats d'About.
 
 ### 4.2 Échelle mesurée (@1440)
@@ -185,9 +189,9 @@ En mobile, ces valeurs deviennent fluides : marges de 60 à 20, padding de secti
 | Affiche | SERVICES. (ajusté à 97 % du conteneur) | **≈ 273 px** | 1 ligne | −0,02em |
 | Wordmark footer | VYRON™ | ≈ 224 px | — | +0,02em |
 | Display hero | BUILD / STRENGTH (retrait de 215 px) | **≈ 180 px** | **0,81** | −0,02em |
-| Chiffres-affiche | 01✱ / 02✱ | ≈ 180 px | — | ≈ −0,04em |
+| Chiffres-affiche | 01✱ / 02✱ (chiffres par défaut) | ≈ 180 px | — | ≈ −0,02 à −0,04em |
 | H2 | « HIGH-INTENSITY TRAINING… » | **56 px** | 1,0 | −0,01 à −0,02em |
-| Logo header | VYRON™ | 48 px | — | +0,02em |
+| Logo header | VYRON™ | 48 px (Tektur 700) | — | 0 |
 | Lead | « Redefine Your Physical Potential » | 40 px | 0,98 | ≈ −0,045em |
 | H3 | cartes, accordéon, phrase About | **32 / 34 / 39 px** (trois valeurs pour un même rôle) | ≈ 1,03 | −0,01em |
 | Accent | « Results are built, not given. » | 24 px | 1,15 | — |
@@ -204,7 +208,7 @@ En mobile, ces valeurs deviennent fluides : marges de 60 à 20, padding de secti
 
 ### 4.3 Recommandations typographiques
 
-1. **Tektur reste l'autorité.** Quatre graisses par rôle, `wdth 100`, `tabular-nums` sur tous les chiffres (fidèle au « 1 » à pied et indispensable pour les compteurs animés).
+1. **Tektur reste l'autorité.** Quatre graisses par rôle, `wdth 100`. Les chiffres-affiche gardent les **chiffres par défaut** (fidèles à la référence). `tabular-nums` est réservé aux chiffres qui **changent** (compteurs à rouleaux, « 01 / 03 »), pour qu'ils ne sautillent pas.
 2. **Corps en Inter 400**, 16 px, tracking −0,011em, interligne **1,45 sur clair** et **1,5 sur sombre**, au lieu du Light serré du shot.
 3. **Fusionner les H3 à 36 px.** **Deux rôles de label** au lieu de quatre : la métadonnée en mono, la catégorie en Tektur 500 capitales à +0,02em. **Rien sous 14 px.**
 4. **Échelle fluide** en `clamp()` avec des bornes en rem (respect du zoom, WCAG 1.4.4). Les mots ajustés à la largeur (SERVICES., wordmark) passent en **unités `cqi`**, pas en `vw`, pour éviter le débordement dû à la barre de défilement. Le tableau complet des 14 rôles est en [annexe a2 §5](annexes/a2-typography.md).
@@ -214,14 +218,14 @@ En mobile, ces valeurs deviennent fluides : marges de 60 à 20, padding de secti
    - **Découpage du texte** (SplitText) **seulement après `document.fonts.ready`**, sinon les coupures de lignes sont fausses (CLS).
    - **Alignement optique** : BUILD est compensé d'environ −0,056em, SERVICES. ne l'est pas. Il faut une règle unique.
 6. **Livraison** :
-   - Tektur variable : 19,2 Ko (latin) ;
-   - Inter variable : 72,9 Ko (ou 44,9 Ko en Inter Tight) ;
+   - Tektur variable : 19,2 Ko (latin), avec un sous-ensemble sur mesure si l'on veut la flèche → native ;
+   - Inter Tight (lead) : 44,9 Ko, plus Inter variable (corps) : 72,9 Ko. Pour n'avoir que trois fichiers, Inter seul à −0,05em, au prix d'une fidélité moindre (IoU −0,07) ;
    - Plex Mono 400 : 14,7 Ko.
    - Toutes sont auto-hébergées, et **seule Tektur est préchargée** (le texte du hero est candidat LCP).
    - Polices de repli à métriques ajustées.
    - `font-synthesis: none`.
 
-> **Vérification v1** : *section complétée à réception du verdict v1, voir la fin du document.*
+> **Couverture du français (v1b)** : Tektur 1.005 couvre É È Ê À Â Ç Î Ô Ù Û Ü Ÿ Œ Æ « » ’ “ ” … – —, l'espace insécable et ™. **Seule l'espace fine insécable U+202F manque** (même chose pour Plex Mono) : le navigateur la prend dans la police de repli, ou l'on utilise U+00A0. Pas d'astérisque dans Tektur : l'astérisque à 8 branches est un SVG.
 
 ---
 
@@ -768,7 +772,9 @@ docs/{adr,analyse}/ + PRODUCT.md + DESIGN.md
 | Hauteur de l'onglet rouge du footer | 43 (a1) contre 61–63 (a4, v2) | **≈ 62** |
 | Item d'accordéon ouvert | ~460 (a4) contre ~400 (a1, v2) | **≈ 400** ; items fermés de 173 à 177 |
 | Phrase d'About | H2 (a4) contre taille H3 (a1, a2, v2) | **Taille H3** (capitale ≈ 25 contre 39 pour les H2) |
-| Wordmark du footer | « Face chanfreinée du display » (a4) contre « Tektur plus gras » (a2, v2) | **Tektur 600–700**, la face des H2 et du logo en plus lourd |
+| Wordmark et logo | « Face chanfreinée du display » (a4) contre « Tektur 600 à 700 » (a2, v2) | **Tektur 700, tracking 0**, au header comme au footer (v1b, IoU 0,94) |
+| Chiffres 01/02 | `tnum` (a2) contre chiffres par défaut (v1b) | **Chiffres par défaut** (IoU 0,90 contre 0,70 en `tnum`) |
+| Flèche → | absente de Tektur (a2) contre présente (v1b) | **Présente** dans le fichier complet, absente du sous-ensemble « latin » ; les flèches restent de toute façon des SVG |
 | Correctif du rouge | `#E3293E`, `#E3213A`, `#E01028`, `#D8273B`… | **Rampe `#E41E3A` / `#C2152C` / `#F64D57`** (a3), recalculée (§5.4) |
 
 ---
@@ -837,6 +843,6 @@ docs/{adr,analyse}/ + PRODUCT.md + DESIGN.md
 
 ---
 
-## Annexe : vérification typographique v1
+## Annexe : vérification typographique
 
-*Section complétée à réception du verdict v1.*
+La vérification adverse des polices est intégrée au §4.1 et détaillée dans [`annexes/v1b-fonts.md`](annexes/v1b-fonts.md). Une première tentative (v1) a été interrompue par un redémarrage du conteneur, puis relancée.
