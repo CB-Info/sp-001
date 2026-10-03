@@ -1,5 +1,10 @@
 // Configuration Nuxt : génération statique d'une page unique.
 // Les décisions de stack sont documentées dans docs/adr/0001-stack-nuxt-gsap.md.
+import { readFileSync } from 'node:fs';
+
+// Amorce du mouvement (classes de <html>), exécutée avant le premier rendu.
+const motionBoot = readFileSync(new URL('./app/motion/boot.inline.js', import.meta.url), 'utf8');
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-10-01',
 
@@ -10,7 +15,7 @@ export default defineNuxtConfig({
 
   devtools: { enabled: false },
 
-  css: ['~/assets/css/main.css'],
+  css: ['lenis/dist/lenis.css', '~/assets/css/main.css'],
 
   app: {
     head: {
@@ -28,6 +33,7 @@ export default defineNuxtConfig({
       ],
       // Icône déclarée : sans elle, le navigateur demande /favicon.ico (404 en console).
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      script: [{ innerHTML: motionBoot, tagPriority: 'critical' }],
     },
   },
 

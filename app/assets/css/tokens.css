@@ -131,6 +131,18 @@
     --dur-overlay: 480ms;
     --dur-focal: 700ms;
     --dur-strike: 220ms; /* un cran de l'astérisque */
+    --seq-max: 1300ms; /* plafond de toute séquence (intro du hero comprise) */
+
+    /* Distances d'entrée : les pas mesurés de l'escalier, jamais d'autres valeurs. */
+    --move-xs: 5px;
+    --move-s: 12px;
+    --move-l: 27px;
+    --move-xl: var(--step-xl); /* 70 px */
+
+    /* Décalages entre éléments d'une liste ; au-delà de 6 éléments, le dernier délai est partagé. */
+    --stagger-tight: 40ms; /* pastilles, points */
+    --stagger-list: 60ms; /* slogans, portraits, piliers */
+    --stagger-lines: 85ms; /* lignes de display, liens du menu */
     --dur-underline-in: 200ms; /* souligné : tracé depuis la gauche… */
     --dur-underline-out: 160ms; /* … rétraction vers la droite */
 
