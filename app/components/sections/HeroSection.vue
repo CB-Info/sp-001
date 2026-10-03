@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { canBlur, createMotionBlur, type MotionBlur } from '~/motion/motion-blur';
 import { followScroll, requestTick, scroll } from '~/motion/scroll';
+import { approach, intensity } from '~/motion/speed';
 import { duration } from '~/motion/tokens';
 import type { HomeContent } from '~/types/content';
 
@@ -28,17 +29,10 @@ const titleId = 'hero-titre';
 const STREAKS = '/images/hero/hero-streaks.jpg';
 const streaksUrl = useImage()(STREAKS, { format: 'webp' });
 
-/** Filé lié à la vitesse, de 0 à 1 : plein à partir de FULL_SPEED px/image (défilement vif). */
-const FULL_SPEED = 37;
-/** En dessous (px/image), la photo ne se file pas : un défilement de lecture la laisse nette. */
-const DEADZONE = 2;
 /** Le pointeur file la photo (flou WebGL seulement) : plein à POINTER_FULL_SPEED px/image. */
 const POINTER_FULL_SPEED = 60;
 /** Opacité de la plaque de stries à plein filé. */
 const STREAK_MAX = 0.55;
-const STREAK_LERP = 0.15; // rapprochement par image à 60 i/s : retour à 0 en ≈ 300 ms
-/** En dessous, le filé est éteint. */
-const REST = 0.02;
 
 const hero = useTemplateRef<HTMLElement>('hero');
 
@@ -69,19 +63,15 @@ useMotion(hero, ({ gsap, ScrollTrigger }, root) => {
   /** Déplacement horizontal du pointeur depuis la dernière image, en px. */
   let pointer = 0;
   let pointerX: number | undefined;
-  /** Une image de l'effet ; `true` tant que le filé n'est pas éteint. */
+  /** Une image de l'effet (filé de 0 à 1) ; `true` tant qu'il n'est pas éteint. */
   const follow = () => {
-    const speed = Math.max(
-      (Math.abs(scroll.velocity) - DEADZONE) / FULL_SPEED,
-      blur ? (Math.abs(pointer) - DEADZONE) / POINTER_FULL_SPEED : 0,
-      0,
+    const target = Math.max(
+      Math.abs(intensity(scroll.velocity)),
+      blur ? Math.abs(intensity(pointer, POINTER_FULL_SPEED)) : 0,
     );
     pointer = 0;
-    const target = Math.min(speed, 1);
     if (target === 0 && level === 0) return false;
-    // Lissage indépendant de la cadence d'affichage.
-    level += (target - level) * (1 - (1 - STREAK_LERP) ** gsap.ticker.deltaRatio(60));
-    if (target === 0 && level < REST) level = 0;
+    level = approach(level, target, gsap.ticker.deltaRatio(60));
     paint(level);
     return level > 0;
   };

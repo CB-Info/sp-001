@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { followScroll, scroll } from '~/motion/scroll';
 import { ENTRY, reached } from '~/motion/sequence';
-import { duration } from '~/motion/tokens';
+import { approach, intensity } from '~/motion/speed';
+import { duration, length } from '~/motion/tokens';
 import type { HomeContent } from '~/types/content';
 
 /**
@@ -15,6 +17,8 @@ import type { HomeContent } from '~/types/content';
  *   elle. Quand l'encre arrive au bout, le point frappe, d'un coup sec.
  * - À l'entrée de la trame, le second filet se trace à vitesse constante et chaque
  *   trait vertical tombe quand il passe : la règle gradue la largeur.
+ * - Overdrive O3 : deux échos rouges du mot, sous lui, que la vitesse du défilement
+ *   tire en arrière d'un et deux pas ; au repos, ils sont éteints et confondus.
  */
 defineProps<{ content: HomeContent['services'] }>();
 
@@ -23,6 +27,8 @@ const section = useTemplateRef<HTMLElement>('section');
 
 /** a6 §4.3 : le point arrive plus gros et se pose (échelle 1,35 → 1). */
 const STRIKE_SCALE = 1.35;
+/** Opacité des deux échos à pleine vitesse, comme ceux du titre du hero. */
+const ECHO_OPACITY = [0.6, 0.3] as const;
 
 function span(className: string, text = '') {
   const node = document.createElement('span');
@@ -31,7 +37,7 @@ function span(className: string, text = '') {
   return node;
 }
 
-useMotion(section, ({ gsap }, root) => {
+useMotion(section, ({ gsap, ScrollTrigger }, root) => {
   const display = root.querySelector<HTMLElement>('[data-motion="services-display"]');
   const grid = root.querySelector<HTMLElement>('[data-motion="services-panel"]');
   const panel = grid?.parentElement;
@@ -53,6 +59,50 @@ useMotion(section, ({ gsap }, root) => {
   sweep.append(letters);
   ink.append(sweep, dot);
   display.append(ink);
+
+  /*
+   * Échos (O3) : la vitesse du défilement, lissée, les décale vers l'arrière (vers
+   * la gauche en descendant), au plus d'un et deux pas (--move-l). Écrits à chaque
+   * image seulement pendant l'effet, et seulement quand le mot est à l'écran.
+   */
+  const echoes = ECHO_OPACITY.map(() => {
+    const copy = span('services__echo', word + stop);
+    copy.setAttribute('aria-hidden', 'true');
+    return copy;
+  });
+  display.prepend(...echoes);
+  const step = length('--move-l');
+  let pull = 0;
+  const drawEchoes = () => {
+    echoes.forEach((copy, rank) => {
+      if (pull === 0) {
+        copy.style.removeProperty('transform');
+        copy.style.removeProperty('opacity');
+        return;
+      }
+      copy.style.transform = `translate3d(${(pull * step * (rank + 1)).toFixed(2)}px, 0, 0)`;
+      copy.style.opacity = (Math.abs(pull) * (ECHO_OPACITY[rank] ?? 0)).toFixed(3);
+    });
+  };
+  const trail = () => {
+    const target = -intensity(scroll.velocity);
+    if (target === 0 && pull === 0) return false;
+    pull = approach(pull, target, gsap.ticker.deltaRatio(60));
+    drawEchoes();
+    return pull !== 0;
+  };
+  let untrail: (() => void) | undefined;
+  ScrollTrigger.create({
+    trigger: display,
+    start: 'top bottom',
+    end: 'bottom top',
+    onToggle: ({ isActive }) => {
+      untrail?.();
+      pull = 0;
+      drawEchoes();
+      untrail = isActive ? followScroll(trail) : undefined;
+    },
+  });
 
   // Le point frappe en temps réel, pas au défilement : un coup sec, toujours le même.
   const strike = gsap.fromTo(
@@ -158,6 +208,8 @@ useMotion(section, ({ gsap }, root) => {
   }
 
   return () => {
+    untrail?.();
+    echoes.forEach((copy) => copy.remove());
     ink.remove();
     display.removeAttribute('data-filling');
     measured();
@@ -240,6 +292,19 @@ useMotion(section, ({ gsap }, root) => {
  */
 .services__display {
   position: relative;
+  isolation: isolate;
+}
+
+/* Échos (O3) : sous le mot, éteints au repos ; le script les décale avec la vitesse. */
+.services__display :deep(.services__echo) {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  color: var(--accent);
+  -webkit-text-stroke: 0;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
 }
 
 .services__display[data-filling] {
