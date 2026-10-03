@@ -5,8 +5,9 @@ métadonnées de provenance.
     python3 art/grade.py <dossier-des-masters> [--only id1,id2]
 
 - Les masters bruts (PNG Higgsfield) ne sont pas versionnés : ils se
-  retrouvent par leur job_id (art/manifest.json). Ce script produit les JPEG
-  livrés dans public/images/, aux tailles attendues par app/data/home.ts.
+  retrouvent par leur job_id (art/manifest.json). Ce script produit les masters
+  étalonnés (JPEG) dans art/masters/, aux tailles attendues par app/data/home.ts ;
+  scripts/build-images.mjs en tire ensuite les variantes web (AVIF, WebP, JPEG).
 - Une famille d'étalonnage = une même courbe, une même teinte d'ombre et un
   même grain pour toutes ses images (cohérence que le prompt seul ne garantit
   pas). Familles : crimson (hero, footer), teal (équipe, programme, About),
@@ -46,24 +47,24 @@ class Plate:
 
 TEAM = ["alex-vance", "sarah-jenkins", "marcus-roy", "elena-rostova", "drake-torres"]
 PLATES = [
-    Plate("hero-athlete--take-1", "public/images/hero/hero-athlete.jpg", (2880, 2204), "crimson", (0.57, 0.33)),
-    Plate("footer-pushup", "public/images/footer/footer-pushup.jpg", (2880, 1700), "crimson", (0.45, 0.4)),
-    Plate("about-coach-alex-vance", "public/images/about/coach-alex-vance.jpg", (1280, 736), "teal", (0.5, 0.35)),
+    Plate("hero-athlete--take-1", "art/masters/hero/hero-athlete.jpg", (2880, 2204), "crimson", (0.57, 0.33)),
+    Plate("footer-pushup", "art/masters/footer/footer-pushup.jpg", (2880, 1700), "crimson", (0.45, 0.4)),
+    Plate("about-coach-alex-vance", "art/masters/about/coach-alex-vance.jpg", (1280, 736), "teal", (0.5, 0.35)),
     *[
-        Plate(f"about-reviewer-0{i}", f"public/images/about/reviewer-0{i}.jpg", (160, 160), "warm")
+        Plate(f"about-reviewer-0{i}", f"art/masters/about/reviewer-0{i}.jpg", (160, 160), "warm")
         for i in range(1, 6)
     ],
     *[
-        Plate(f"service-0{i}-{slug}", f"public/images/services/service-0{i}-{slug}.jpg", (880, 496), "mono")
+        Plate(f"service-0{i}-{slug}", f"art/masters/services/service-0{i}-{slug}.jpg", (880, 496), "mono")
         for i, slug in enumerate(["coaching", "force", "fonctionnel", "conditioning"], start=1)
     ],
-    Plate("program-marcus-roy", "public/images/programs/program-marcus-roy.jpg", (1040, 1064), "teal", (0.5, 0.45)),
+    Plate("program-marcus-roy", "art/masters/programs/program-marcus-roy.jpg", (1040, 1064), "teal", (0.5, 0.45)),
     *[
-        Plate(f"team-0{i}-{slug}", f"public/images/team/team-0{i}-{slug}.jpg", (720, 904), "teal", fade_bottom=True)
+        Plate(f"team-0{i}-{slug}", f"art/masters/team/team-0{i}-{slug}.jpg", (720, 904), "teal", fade_bottom=True)
         for i, slug in enumerate(TEAM, start=1)
     ],
     *[
-        Plate(f"testimonial-0{i}-{slug}", f"public/images/testimonials/testimonial-0{i}-{slug}.jpg", (1600, 748), "warm")
+        Plate(f"testimonial-0{i}-{slug}", f"art/masters/testimonials/testimonial-0{i}-{slug}.jpg", (1600, 748), "warm")
         for i, slug in enumerate(["jordan-tucker", "nadia-benali", "paul-mercier"], start=1)
     ],
 ]

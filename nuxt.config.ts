@@ -32,8 +32,13 @@ export default defineNuxtConfig({
   },
 
   image: {
+    // Variantes pré-générées (scripts/build-images.mjs) : pas d'IPX, dont les URL
+    // à « & » coûtent une redirection 307 par image sur Cloudflare.
+    provider: 'variants',
+    providers: {
+      variants: { provider: '~/providers/variants' },
+    },
     format: ['avif', 'webp'],
-    quality: 72,
   },
 
   hooks: {

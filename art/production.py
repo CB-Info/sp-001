@@ -52,7 +52,7 @@ PLATES = [
     *[
         dict(
             id=f"hero-athlete--take-{n}",
-            target="public/images/hero/hero-athlete.jpg",
+            target="art/masters/hero/hero-athlete.jpg",
             model="cinematic_studio_2_5", ratio="4:3", resolution="4k", family="crimson",
             prompt=(
                 "Photorealistic editorial sports photograph for the full-bleed hero of a gym website, "
@@ -82,7 +82,7 @@ PLATES = [
     # ── Footer ────────────────────────────────────────────────────────────────
     dict(
         id="footer-pushup",
-        target="public/images/footer/footer-pushup.jpg",
+        target="art/masters/footer/footer-pushup.jpg",
         model="cinematic_studio_2_5", ratio="16:9", resolution="4k", family="crimson",
         prompt=(
             "Photorealistic cinematic sports photograph used as a full-bleed website footer background, "
@@ -104,7 +104,7 @@ PLATES = [
     # ── À propos ──────────────────────────────────────────────────────────────
     dict(
         id="about-coach-alex-vance",
-        target="public/images/about/coach-alex-vance.jpg",
+        target="art/masters/about/coach-alex-vance.jpg",
         model="nano_banana_pro", ratio="16:9", resolution="2k", family="teal",
         prompt=(
             "Photorealistic environmental portrait of a fitness coach for a website card, 16:9 landscape. "
@@ -122,7 +122,7 @@ PLATES = [
     *[
         dict(
             id=f"about-reviewer-0{i}",
-            target=f"public/images/about/reviewer-0{i}.jpg",
+            target=f"art/masters/about/reviewer-0{i}.jpg",
             model="nano_banana_pro", ratio="1:1", resolution="1k", family="warm",
             prompt=(
                 "Photorealistic close headshot of a gym member for a tiny square avatar, 1:1. FRAMING: face "
@@ -145,7 +145,7 @@ PLATES = [
     ],
     # ── Services (N&B ; l'état actif rouge est fait en CSS) ───────────────────
     dict(
-        id="service-01-coaching", target="public/images/services/service-01-coaching.jpg",
+        id="service-01-coaching", target="art/masters/services/service-01-coaching.jpg",
         model="nano_banana_pro", ratio="16:9", resolution="2k", family="mono",
         prompt=(
             SERVICE_COMMON + " SUBJECT: a personal trainer spotting a client during a dumbbell bench press: "
@@ -155,7 +155,7 @@ PLATES = [
         ),
     ),
     dict(
-        id="service-02-force", target="public/images/services/service-02-force.jpg",
+        id="service-02-force", target="art/masters/services/service-02-force.jpg",
         model="nano_banana_pro", ratio="16:9", resolution="2k", family="mono",
         prompt=(
             SERVICE_COMMON + " SUBJECT: a very muscular male torso and arms, the face cropped out of frame "
@@ -165,7 +165,7 @@ PLATES = [
         ),
     ),
     dict(
-        id="service-03-fonctionnel", target="public/images/services/service-03-fonctionnel.jpg",
+        id="service-03-fonctionnel", target="art/masters/services/service-03-fonctionnel.jpg",
         model="nano_banana_pro", ratio="16:9", resolution="2k", family="mono",
         prompt=(
             SERVICE_COMMON + " SUBJECT: an athletic woman in profile swinging a plain black kettlebell at "
@@ -175,7 +175,7 @@ PLATES = [
         ),
     ),
     dict(
-        id="service-04-conditioning", target="public/images/services/service-04-conditioning.jpg",
+        id="service-04-conditioning", target="art/masters/services/service-04-conditioning.jpg",
         model="nano_banana_pro", ratio="16:9", resolution="2k", family="mono",
         prompt=(
             SERVICE_COMMON + " SUBJECT: an athlete leaning forward and driving a weighted sled across "
@@ -186,7 +186,7 @@ PLATES = [
     ),
     # ── Programmes ────────────────────────────────────────────────────────────
     dict(
-        id="program-marcus-roy", target="public/images/programs/program-marcus-roy.jpg",
+        id="program-marcus-roy", target="art/masters/programs/program-marcus-roy.jpg",
         model="nano_banana_pro", ratio="1:1", resolution="2k", family="teal",
         prompt=(
             "Photorealistic sports portrait for the programmes section of a gym website, 1:1 square. "
@@ -204,7 +204,7 @@ PLATES = [
     # ── Équipe (4:5 pour toutes : n'importe quel coach peut passer en vedette) ─
     *[
         dict(
-            id=f"team-0{i}-{slug}", target=f"public/images/team/team-0{i}-{slug}.jpg",
+            id=f"team-0{i}-{slug}", target=f"art/masters/team/team-0{i}-{slug}.jpg",
             model="nano_banana_pro", ratio="4:5", resolution="2k", family="teal",
             prompt=(
                 f"{TEAM_COMMON} SUBJECT: {el('clusem-' + slug)}, {mood}, looking straight into the lens, "
@@ -223,7 +223,7 @@ PLATES = [
     # ── Témoignages (21:9, recadrés en 2,14:1 et en 16:9) ─────────────────────
     *[
         dict(
-            id=f"testimonial-0{i}-{slug}", target=f"public/images/testimonials/testimonial-0{i}-{slug}.jpg",
+            id=f"testimonial-0{i}-{slug}", target=f"art/masters/testimonials/testimonial-0{i}-{slug}.jpg",
             model="cinematic_studio_2_5", ratio="21:9", resolution="4k", family="warm",
             prompt=(
                 "Photorealistic candid sports photograph for a client testimonial card on a gym website, "

@@ -8,9 +8,10 @@
     "node": ">=22.19.0"
   },
   "scripts": {
-    "dev": "nuxt dev",
+    "images": "node scripts/build-images.mjs",
+    "dev": "node scripts/build-images.mjs && nuxt dev",
     "build": "nuxt build",
-    "generate": "nuxt generate",
+    "generate": "node scripts/build-images.mjs && nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "typecheck": "nuxt typecheck",
@@ -41,6 +42,7 @@
     "eslint-plugin-vuejs-accessibility": "2.6.0",
     "globals": "^17.13.0",
     "prettier": "3.9.9",
+    "sharp": "0.35.5",
     "typescript": "6.0.3",
     "vue-tsc": "3.3.12"
   },

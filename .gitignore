@@ -28,3 +28,6 @@ blob-report
 
 # Python (outillage art/)
 __pycache__/
+
+# Variantes d’images générées au build (scripts/build-images.mjs)
+public/img/

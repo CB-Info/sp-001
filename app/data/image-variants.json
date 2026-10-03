@@ -1,0 +1,242 @@
+{
+  "/images/about/coach-alex-vance.jpg": {
+    "width": 1280,
+    "height": 736,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1280
+    ]
+  },
+  "/images/about/reviewer-01.jpg": {
+    "width": 160,
+    "height": 160,
+    "widths": [
+      160
+    ]
+  },
+  "/images/about/reviewer-02.jpg": {
+    "width": 160,
+    "height": 160,
+    "widths": [
+      160
+    ]
+  },
+  "/images/about/reviewer-03.jpg": {
+    "width": 160,
+    "height": 160,
+    "widths": [
+      160
+    ]
+  },
+  "/images/about/reviewer-04.jpg": {
+    "width": 160,
+    "height": 160,
+    "widths": [
+      160
+    ]
+  },
+  "/images/about/reviewer-05.jpg": {
+    "width": 160,
+    "height": 160,
+    "widths": [
+      160
+    ]
+  },
+  "/images/footer/footer-pushup.jpg": {
+    "width": 2880,
+    "height": 1700,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1280,
+      1600,
+      1920,
+      2400,
+      2880
+    ]
+  },
+  "/images/hero/hero-athlete.jpg": {
+    "width": 2880,
+    "height": 2204,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1280,
+      1600,
+      1920,
+      2400,
+      2880
+    ]
+  },
+  "/images/programs/program-marcus-roy.jpg": {
+    "width": 1040,
+    "height": 1064,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1040
+    ]
+  },
+  "/images/services/service-01-coaching.jpg": {
+    "width": 880,
+    "height": 496,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      880
+    ]
+  },
+  "/images/services/service-02-force.jpg": {
+    "width": 880,
+    "height": 496,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      880
+    ]
+  },
+  "/images/services/service-03-fonctionnel.jpg": {
+    "width": 880,
+    "height": 496,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      880
+    ]
+  },
+  "/images/services/service-04-conditioning.jpg": {
+    "width": 880,
+    "height": 496,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      880
+    ]
+  },
+  "/images/team/team-01-alex-vance.jpg": {
+    "width": 720,
+    "height": 904,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      720
+    ]
+  },
+  "/images/team/team-02-sarah-jenkins.jpg": {
+    "width": 720,
+    "height": 904,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      720
+    ]
+  },
+  "/images/team/team-03-marcus-roy.jpg": {
+    "width": 720,
+    "height": 904,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      720
+    ]
+  },
+  "/images/team/team-04-elena-rostova.jpg": {
+    "width": 720,
+    "height": 904,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      720
+    ]
+  },
+  "/images/team/team-05-drake-torres.jpg": {
+    "width": 720,
+    "height": 904,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      720
+    ]
+  },
+  "/images/testimonials/testimonial-01-jordan-tucker.jpg": {
+    "width": 1600,
+    "height": 748,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1280,
+      1600
+    ]
+  },
+  "/images/testimonials/testimonial-02-nadia-benali.jpg": {
+    "width": 1600,
+    "height": 748,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1280,
+      1600
+    ]
+  },
+  "/images/testimonials/testimonial-03-paul-mercier.jpg": {
+    "width": 1600,
+    "height": 748,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1280,
+      1600
+    ]
+  }
+}

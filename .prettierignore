@@ -8,3 +8,7 @@ app/assets/css/fonts.css
 
 # Fichiers écrits par l’outil Impeccable, dans son propre format
 .impeccable
+
+# Fichiers JSON écrits par les scripts (art/*.py, scripts/build-images.mjs)
+app/data/image-variants.json
+art/*.json

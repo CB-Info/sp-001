@@ -113,6 +113,26 @@ const photoSizes = {
   object-fit: cover;
 }
 
+/*
+ * Sous 64em, les slogans (14 px, donc 4,5:1 exigé) passent sur le front de
+ * l'athlète, où la peau claire tombe à 2,6:1. Voile haut local, mesuré sur la
+ * photo définitive : il ramène le pire cas (p95) au-dessus de 4,5:1.
+ */
+@media (width < 64em) {
+  .hero__media::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    block-size: 42%;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--black) 55%, transparent) 55%,
+      transparent
+    );
+    pointer-events: none;
+  }
+}
+
 /* Filets du cadre : blanc ≈ 18 % (--rule de la surface « hot »), 1 px. */
 .hero__rule {
   position: absolute;

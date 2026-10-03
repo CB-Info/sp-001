@@ -14,7 +14,10 @@
         "prompt": "art/prompts/cast-a-athlete.prompt.txt",
         "status": "completed",
         "credits": 2,
-        "size": [1856, 2304]
+        "size": [
+          1856,
+          2304
+        ]
       },
       {
         "index": 1,
@@ -26,7 +29,10 @@
         "prompt": "art/prompts/cast-c1-alex-vance.prompt.txt",
         "status": "completed",
         "credits": 2,
-        "size": [1856, 2304]
+        "size": [
+          1856,
+          2304
+        ]
       },
       {
         "index": 2,
@@ -38,7 +44,10 @@
         "prompt": "art/prompts/cast-c2-sarah-jenkins.prompt.txt",
         "status": "completed",
         "credits": 2,
-        "size": [1856, 2304]
+        "size": [
+          1856,
+          2304
+        ]
       },
       {
         "index": 3,
@@ -50,7 +59,10 @@
         "prompt": "art/prompts/cast-c3-marcus-roy.prompt.txt",
         "status": "completed",
         "credits": 2,
-        "size": [1856, 2304],
+        "size": [
+          1856,
+          2304
+        ],
         "note": "carrure moins massive que demandé (« very muscular ») : à renforcer si on regénère"
       },
       {
@@ -63,7 +75,10 @@
         "prompt": "art/prompts/cast-c4-elena-rostova.prompt.txt",
         "status": "completed",
         "credits": 2,
-        "size": [1856, 2304]
+        "size": [
+          1856,
+          2304
+        ]
       },
       {
         "index": 5,
@@ -75,7 +90,10 @@
         "prompt": "art/prompts/cast-c5-drake-torres.prompt.txt",
         "status": "completed",
         "credits": 2,
-        "size": [1856, 2304]
+        "size": [
+          1856,
+          2304
+        ]
       },
       {
         "index": 6,
@@ -87,7 +105,10 @@
         "prompt": "art/prompts/hero-athlete--test-3x2.prompt.txt",
         "status": "completed",
         "credits": 4,
-        "size": [5056, 3392],
+        "size": [
+          5056,
+          3392
+        ],
         "note": "cadrage proche du gabarit (bas à 28 % sombre : luminance moyenne 19/255) ; visage à ~57 % de la largeur au lieu de 72 % ; flou de vitesse faible ; étalonnage brut mauve, corrigé en post (carte de dégradé rouge, 85 %)",
         "seed": 87442
       }
@@ -131,7 +152,7 @@
         "aspect_ratio": "4:3",
         "resolution": "4k",
         "prompt": "art/prompts/hero-athlete--take-1.prompt.txt",
-        "target": "public/images/hero/hero-athlete.jpg",
+        "target": "art/masters/hero/hero-athlete.jpg",
         "family": "crimson",
         "status": "retenue"
       },
@@ -142,7 +163,7 @@
         "aspect_ratio": "4:3",
         "resolution": "4k",
         "prompt": "art/prompts/hero-athlete--take-2.prompt.txt",
-        "target": "public/images/hero/hero-athlete.jpg",
+        "target": "art/masters/hero/hero-athlete.jpg",
         "family": "crimson",
         "status": "alternative non retenue"
       },
@@ -153,7 +174,7 @@
         "aspect_ratio": "16:9",
         "resolution": "4k",
         "prompt": "art/prompts/footer-pushup.prompt.txt",
-        "target": "public/images/footer/footer-pushup.jpg",
+        "target": "art/masters/footer/footer-pushup.jpg",
         "family": "crimson"
       },
       {
@@ -163,7 +184,7 @@
         "aspect_ratio": "16:9",
         "resolution": "2k",
         "prompt": "art/prompts/about-coach-alex-vance.prompt.txt",
-        "target": "public/images/about/coach-alex-vance.jpg",
+        "target": "art/masters/about/coach-alex-vance.jpg",
         "family": "teal"
       },
       {
@@ -173,7 +194,7 @@
         "aspect_ratio": "1:1",
         "resolution": "1k",
         "prompt": "art/prompts/about-reviewer-01.prompt.txt",
-        "target": "public/images/about/reviewer-01.jpg",
+        "target": "art/masters/about/reviewer-01.jpg",
         "family": "warm"
       },
       {
@@ -183,7 +204,7 @@
         "aspect_ratio": "1:1",
         "resolution": "1k",
         "prompt": "art/prompts/about-reviewer-02.prompt.txt",
-        "target": "public/images/about/reviewer-02.jpg",
+        "target": "art/masters/about/reviewer-02.jpg",
         "family": "warm"
       },
       {
@@ -193,7 +214,7 @@
         "aspect_ratio": "1:1",
         "resolution": "1k",
         "prompt": "art/prompts/about-reviewer-03.prompt.txt",
-        "target": "public/images/about/reviewer-03.jpg",
+        "target": "art/masters/about/reviewer-03.jpg",
         "family": "warm"
       },
       {
@@ -203,7 +224,7 @@
         "aspect_ratio": "1:1",
         "resolution": "1k",
         "prompt": "art/prompts/about-reviewer-04.prompt.txt",
-        "target": "public/images/about/reviewer-04.jpg",
+        "target": "art/masters/about/reviewer-04.jpg",
         "family": "warm"
       },
       {
@@ -213,7 +234,7 @@
         "aspect_ratio": "1:1",
         "resolution": "1k",
         "prompt": "art/prompts/about-reviewer-05.prompt.txt",
-        "target": "public/images/about/reviewer-05.jpg",
+        "target": "art/masters/about/reviewer-05.jpg",
         "family": "warm"
       },
       {
@@ -223,7 +244,7 @@
         "aspect_ratio": "16:9",
         "resolution": "2k",
         "prompt": "art/prompts/service-01-coaching.prompt.txt",
-        "target": "public/images/services/service-01-coaching.jpg",
+        "target": "art/masters/services/service-01-coaching.jpg",
         "family": "mono"
       },
       {
@@ -233,7 +254,7 @@
         "aspect_ratio": "16:9",
         "resolution": "2k",
         "prompt": "art/prompts/service-02-force.prompt.txt",
-        "target": "public/images/services/service-02-force.jpg",
+        "target": "art/masters/services/service-02-force.jpg",
         "family": "mono"
       },
       {
@@ -243,7 +264,7 @@
         "aspect_ratio": "16:9",
         "resolution": "2k",
         "prompt": "art/prompts/service-03-fonctionnel.prompt.txt",
-        "target": "public/images/services/service-03-fonctionnel.jpg",
+        "target": "art/masters/services/service-03-fonctionnel.jpg",
         "family": "mono"
       },
       {
@@ -253,7 +274,7 @@
         "aspect_ratio": "16:9",
         "resolution": "2k",
         "prompt": "art/prompts/service-04-conditioning.prompt.txt",
-        "target": "public/images/services/service-04-conditioning.jpg",
+        "target": "art/masters/services/service-04-conditioning.jpg",
         "family": "mono"
       },
       {
@@ -263,7 +284,7 @@
         "aspect_ratio": "1:1",
         "resolution": "2k",
         "prompt": "art/prompts/program-marcus-roy.prompt.txt",
-        "target": "public/images/programs/program-marcus-roy.jpg",
+        "target": "art/masters/programs/program-marcus-roy.jpg",
         "family": "teal"
       },
       {
@@ -273,7 +294,7 @@
         "aspect_ratio": "4:5",
         "resolution": "2k",
         "prompt": "art/prompts/team-01-alex-vance.prompt.txt",
-        "target": "public/images/team/team-01-alex-vance.jpg",
+        "target": "art/masters/team/team-01-alex-vance.jpg",
         "family": "teal"
       },
       {
@@ -283,7 +304,7 @@
         "aspect_ratio": "4:5",
         "resolution": "2k",
         "prompt": "art/prompts/team-02-sarah-jenkins.prompt.txt",
-        "target": "public/images/team/team-02-sarah-jenkins.jpg",
+        "target": "art/masters/team/team-02-sarah-jenkins.jpg",
         "family": "teal"
       },
       {
@@ -293,7 +314,7 @@
         "aspect_ratio": "4:5",
         "resolution": "2k",
         "prompt": "art/prompts/team-03-marcus-roy.prompt.txt",
-        "target": "public/images/team/team-03-marcus-roy.jpg",
+        "target": "art/masters/team/team-03-marcus-roy.jpg",
         "family": "teal"
       },
       {
@@ -303,7 +324,7 @@
         "aspect_ratio": "4:5",
         "resolution": "2k",
         "prompt": "art/prompts/team-04-elena-rostova.prompt.txt",
-        "target": "public/images/team/team-04-elena-rostova.jpg",
+        "target": "art/masters/team/team-04-elena-rostova.jpg",
         "family": "teal"
       },
       {
@@ -313,7 +334,7 @@
         "aspect_ratio": "4:5",
         "resolution": "2k",
         "prompt": "art/prompts/team-05-drake-torres.prompt.txt",
-        "target": "public/images/team/team-05-drake-torres.jpg",
+        "target": "art/masters/team/team-05-drake-torres.jpg",
         "family": "teal"
       },
       {
@@ -323,7 +344,7 @@
         "aspect_ratio": "21:9",
         "resolution": "4k",
         "prompt": "art/prompts/testimonial-01-jordan-tucker.prompt.txt",
-        "target": "public/images/testimonials/testimonial-01-jordan-tucker.jpg",
+        "target": "art/masters/testimonials/testimonial-01-jordan-tucker.jpg",
         "family": "warm"
       },
       {
@@ -333,7 +354,7 @@
         "aspect_ratio": "21:9",
         "resolution": "4k",
         "prompt": "art/prompts/testimonial-02-nadia-benali.prompt.txt",
-        "target": "public/images/testimonials/testimonial-02-nadia-benali.jpg",
+        "target": "art/masters/testimonials/testimonial-02-nadia-benali.jpg",
         "family": "warm"
       },
       {
@@ -343,7 +364,7 @@
         "aspect_ratio": "21:9",
         "resolution": "4k",
         "prompt": "art/prompts/testimonial-03-paul-mercier.prompt.txt",
-        "target": "public/images/testimonials/testimonial-03-paul-mercier.jpg",
+        "target": "art/masters/testimonials/testimonial-03-paul-mercier.jpg",
         "family": "warm",
         "status": "rejetée (âge et cadrage hors brief) ; prompt v1"
       },
@@ -354,7 +375,7 @@
         "aspect_ratio": "21:9",
         "resolution": "4k",
         "prompt": "art/prompts/testimonial-03-paul-mercier.prompt.txt",
-        "target": "public/images/testimonials/testimonial-03-paul-mercier.jpg",
+        "target": "art/masters/testimonials/testimonial-03-paul-mercier.jpg",
         "family": "warm",
         "status": "retenue (prompt v2)"
       }
