@@ -2,8 +2,11 @@
 // Les décisions de stack sont documentées dans docs/adr/0001-stack-nuxt-gsap.md.
 import { readFileSync } from 'node:fs';
 
-// Amorce du mouvement (classes de <html>), exécutée avant le premier rendu.
-const motionBoot = readFileSync(new URL('./app/motion/boot.inline.js', import.meta.url), 'utf8');
+// Amorce du mouvement (classes de <html>), exécutée avant le premier rendu. Le
+// fichier source garde ses commentaires ; la version en ligne en est délestée.
+const motionBoot = readFileSync(new URL('./app/motion/boot.inline.js', import.meta.url), 'utf8')
+  .replace(/^\s*\/\/.*\n/gm, '')
+  .trim();
 
 export default defineNuxtConfig({
   compatibilityDate: '2026-10-01',
@@ -32,7 +35,18 @@ export default defineNuxtConfig({
         { name: 'robots', content: 'noindex' },
       ],
       // Icône déclarée : sans elle, le navigateur demande /favicon.ico (404 en console).
-      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        // Le H1 du hero est l'élément LCP : sa police (Tektur, sous-ensemble latin) part
+        // dès le HTML au lieu d'attendre la découverte de la feuille de style.
+        {
+          rel: 'preload',
+          as: 'font',
+          type: 'font/woff2',
+          href: '/fonts/tektur-latin-wght-normal.woff2',
+          crossorigin: '',
+        },
+      ],
       script: [{ innerHTML: motionBoot, tagPriority: 'critical' }],
     },
   },

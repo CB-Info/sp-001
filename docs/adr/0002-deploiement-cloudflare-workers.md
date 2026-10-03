@@ -43,7 +43,8 @@ Cause, vérifiée en reproduisant l'environnement de build (`WORKERS_CI=1`) :
 - **Limites** :
   - pas de CSP : Nuxt génère des scripts et des styles en ligne, et le nonce exige un serveur ;
   - la page 404 est le shell Nuxt rendu côté client ;
-  - les URL de Preview sont publiques (contenu identique, `noindex`).
+  - les URL de Preview sont publiques (contenu identique, `noindex`) ;
+  - les règles de `_headers` s'appliquent aussi aux réponses 404 : une URL hachée absente (`/_nuxt/…`, `/img/…`) recevrait le cache `immutable`. Risque faible, puisque les noms hachés ne reviennent pas.
 - **Vérifications** :
   - build sous `WORKERS_CI=1 CI=1` : « Nitro preset: static », `.output/public` seul ;
   - `wrangler deploy --dry-run` ;
