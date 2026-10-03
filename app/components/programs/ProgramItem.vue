@@ -58,7 +58,7 @@ const panelId = `programme-${props.program.id}-panneau`;
       >
         <div class="program-item__content">
           <p class="program-item__description">{{ program.description }}</p>
-          <ul class="program-item__tags">
+          <ul role="list" class="program-item__tags">
             <li
               v-for="(tag, index) in program.tags"
               :key="tag.label"
@@ -220,8 +220,6 @@ const panelId = `programme-${props.program.id}-panneau`;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-12);
-  padding: 0;
-  list-style: none;
 }
 
 /* Fermeture : le contenu s'efface vite, avant que la hauteur ne se replie. */

@@ -65,8 +65,7 @@ defineProps<{ service: Service; active: boolean }>();
 .service-card--active {
   --card-bg: var(--surface-inverse);
   --card-ink: var(--paper-0);
-  /* Mesuré : gris #999 (blanc à 60 % sur noir), soit 7,4:1. */
-  --card-text: color-mix(in srgb, var(--paper-0) 60%, var(--black));
+  --card-text: var(--grey-400);
   --card-figure: var(--paper-0);
   --card-rule: var(--carbon-850);
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { HomeContent } from '~/types/content';
+import { ui } from '~/data/ui';
 
 /**
  * Section Transformation : en-tête scindé (titre, note calée sur sa dernière ligne),
@@ -19,7 +20,7 @@ const titleId = 'transformations-titre';
     data-surface="paper"
     :aria-labelledby="titleId"
   >
-    <RuledGrid class="transformation__strip" variant="strip" />
+    <RuledGrid variant="strip" fade />
 
     <div class="transformation__inner container">
       <SectionHeader
@@ -29,7 +30,7 @@ const titleId = 'transformations-titre';
         :note="content.note"
       />
 
-      <TestimonialDeck class="section__body" :items="content.items" label="Témoignages de membres">
+      <TestimonialDeck class="section__body" :items="content.items" :label="ui.testimonials.region">
         <template #aside>
           <!-- Mesuré : ≈ 106 px à 1440, ≈ 80 px à 1024 (a7 §3.7). -->
           <Asterisk
@@ -48,26 +49,7 @@ const titleId = 'transformations-titre';
   padding-block-end: var(--section-pad);
 }
 
-/*
- * Bande réglée de 51 px (hauteur de RuledGrid « strip ») prolongée d'un fondu de
- * 12 px, mesuré en tête d'About, de Programs et de Transformation.
- */
-.transformation > .transformation__strip {
-  block-size: calc(3.2rem + 0.75rem);
-  mask-image: linear-gradient(to bottom, black 3.2rem, transparent);
-}
-
-/* Mesuré : eyebrow à 124 px du haut de section, soit 61 px sous le fondu (même pas que Programs). */
 .transformation__inner {
-  container-type: inline-size;
-  margin-block-start: clamp(2rem, 1.327rem + 2.762vw, 3.8125rem);
-}
-
-/*
- * Le mot le plus long du titre (« TRANSFORMATIONS, », ≈ 9,5 em) doit tenir dans
- * 280 px à 320 de large : la taille est plafonnée à la largeur du conteneur.
- */
-.transformation__inner :deep(.section-header__title) {
-  font-size: min(var(--text-heading), 10.5cqi);
+  margin-block-start: var(--strip-gap);
 }
 </style>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Coach } from '~/types/content';
+import { ui } from '~/data/ui';
 
 /**
  * Coach d'un programme : avatar rond (seul cercle du monde, gardé par fidélité),
@@ -27,7 +28,7 @@ defineProps<{ coach: Coach; meta: string }>();
       }"
     />
     <p class="coach-chip__text">
-      <span class="visually-hidden">Coach : </span>
+      <span class="visually-hidden">{{ ui.programs.coach }}</span>
       <span class="coach-chip__name">{{ coach.name }}</span>
       <span class="coach-chip__meta">{{ meta }}</span>
     </p>

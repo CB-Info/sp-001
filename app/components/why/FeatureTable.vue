@@ -23,7 +23,7 @@ defineProps<{ statement: string; text: string; pillars: Pillar[] }>();
       <p class="feature-table__statement">{{ statement }}</p>
       <p class="feature-table__text">{{ text }}</p>
     </div>
-    <ul class="feature-table__pillars">
+    <ul role="list" class="feature-table__pillars">
       <li v-for="pillar in pillars" :key="pillar.title" class="pillar" data-motion="why-cell">
         <span class="pillar__edge" data-motion="why-rule" aria-hidden="true" />
         <h3 class="pillar__title">{{ pillar.title }}</h3>
@@ -74,8 +74,6 @@ defineProps<{ statement: string; text: string; pillars: Pillar[] }>();
 .feature-table__pillars {
   grid-row: 3;
   display: grid;
-  padding: 0;
-  list-style: none;
 }
 
 .feature-table__rule--bottom {

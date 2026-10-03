@@ -29,7 +29,7 @@ withDefaults(defineProps<{ size?: string }>(), { size: '4.5rem' });
   aspect-ratio: 1;
   fill: var(--accent);
   rotate: calc(var(--ratchet, 0) * 45deg);
-  transition: rotate 220ms var(--ease-strike);
+  transition: rotate var(--dur-strike) var(--ease-strike);
 }
 
 @media (prefers-reduced-motion: reduce) {

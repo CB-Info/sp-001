@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ui } from '~/data/ui';
+
 /**
  * Rangée de l'en-tête : wordmark à gauche ; déclencheur (slot) et tuile téléphone
  * à droite. Partagée par l'en-tête de page et par le menu, pour que le bouton
@@ -8,7 +10,7 @@
 
 <template>
   <div class="header-bar container">
-    <a class="header-bar__home" href="#haut" aria-label="CLUSEM, retour en haut">
+    <a class="header-bar__home" href="#haut" :aria-label="ui.header.home">
       <Wordmark />
     </a>
     <div class="header-bar__actions">
@@ -16,7 +18,7 @@
       <IconButton
         class="header-bar__contact"
         icon="phone"
-        label="Contacter CLUSEM"
+        :label="ui.header.contact"
         href="#contact"
         variant="white"
         size="sm"

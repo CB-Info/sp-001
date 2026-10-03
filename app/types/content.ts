@@ -74,6 +74,7 @@ export interface HomeContent {
     eyebrow: string;
     statement: string;
     cta: NavLink;
+    /** `scale` est la note maximale (« 5 ») ; la barre oblique relève de l'affichage. */
     rating: { value: string; scale: string; label: string; reviewers: ImageAsset[] };
     years: { value: string; label: string; points: string[] };
     image: ImageAsset;

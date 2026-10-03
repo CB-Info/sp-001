@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Testimonial } from '~/types/content';
+import { ui } from '~/data/ui';
 
 /**
  * Deck de témoignages (motif APG « carousel », sans rotation automatique).
@@ -43,7 +44,7 @@ function announce(index: number) {
   clearTimeout(announceTimer);
   // Des appuis rapprochés traversent plusieurs témoignages : on n'annonce que l'arrêt.
   announceTimer = setTimeout(() => {
-    announcement.value = `Témoignage ${index + 1} sur ${total}, ${item.author}\u00a0: «\u202f${item.quote}\u202f»`;
+    announcement.value = ui.testimonials.announce(index + 1, total, item.author, item.quote);
   }, 250);
 }
 onBeforeUnmount(() => clearTimeout(announceTimer));
@@ -103,7 +104,7 @@ function onPointerUp(event: PointerEvent) {
   <div
     class="deck"
     role="region"
-    aria-roledescription="carrousel"
+    :aria-roledescription="ui.carousel"
     :aria-label="label"
     data-motion="testimonial-deck"
     @keydown="onKeydown"
@@ -147,7 +148,7 @@ function onPointerUp(event: PointerEvent) {
         <IconButton
           class="deck__arrow deck__arrow--prev"
           icon="arrow-bend-back"
-          label="Témoignage précédent"
+          :label="ui.testimonials.previous"
           variant="grey"
           size="sm"
           :disabled="isFirst"
@@ -157,7 +158,7 @@ function onPointerUp(event: PointerEvent) {
         <IconButton
           class="deck__arrow deck__arrow--next"
           icon="arrow-bend"
-          label="Témoignage suivant"
+          :label="ui.testimonials.next"
           variant="red"
           size="sm"
           :disabled="isLast"
@@ -177,7 +178,7 @@ function onPointerUp(event: PointerEvent) {
   --deck-scale: 0.875;
   --deck-peek: var(--space-24);
   /* Sortie d'une carte : le grand pas de l'escalier (70 px, a6 §3.3). */
-  --deck-exit: -4.375rem;
+  --deck-exit: calc(var(--step-xl) * -1);
   /* Mobile et tablette : image en 16:9 pleine largeur (a7 §3.7). */
   --print-ratio: 16 / 9;
 

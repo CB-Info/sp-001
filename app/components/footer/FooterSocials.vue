@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { HomeContent } from '~/types/content';
+import { ui } from '~/data/ui';
 
 /**
  * Réseaux sociaux : tuiles carrées sombres (« dark-square » de la référence),
@@ -10,14 +11,14 @@ defineProps<{ socials: HomeContent['footer']['socials'] }>();
 </script>
 
 <template>
-  <ul class="footer-socials" aria-label="Réseaux sociaux">
+  <ul role="list" class="footer-socials" :aria-label="ui.socials">
     <li v-for="social in socials" :key="social.icon">
       <IconButton
         class="footer-socials__button"
         :icon="social.icon"
         :label="social.label"
         :href="social.href"
-        variant="black"
+        variant="surface"
         size="md"
       />
     </li>
@@ -29,14 +30,6 @@ defineProps<{ socials: HomeContent['footer']['socials'] }>();
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-16);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* mesuré : carbone #1e1e1e sur le noir (le --surface de la matière « hot »). */
-.footer-socials__button {
-  --step-fill: var(--surface);
 }
 
 .footer-socials__button,

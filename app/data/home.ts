@@ -1,4 +1,5 @@
 import type { HomeContent } from '~/types/content';
+import { typesetDeep } from '~/utils/typography';
 
 /**
  * Contenu de la page d'accueil CLUSEM, en français (tutoiement, ton direct de la
@@ -8,8 +9,11 @@ import type { HomeContent } from '~/types/content';
  * Les images sont pour l'instant des visuels provisoires générés localement
  * (scripts/placeholders.py) : elles seront remplacées par les images Higgsfield
  * aux mêmes chemins et aux mêmes formats.
+ *
+ * Le texte s'écrit au clavier : `typesetDeep` pose la typographie française
+ * (apostrophes, espaces insécables) en un seul endroit.
  */
-export const home: HomeContent = {
+export const home: HomeContent = typesetDeep<HomeContent>({
   meta: {
     title: 'CLUSEM — Forge ta force',
     description:
@@ -45,7 +49,7 @@ export const home: HomeContent = {
     cta: { label: 'En savoir plus sur nous', href: '#pourquoi' },
     rating: {
       value: '4,9',
-      scale: '/5',
+      scale: '5',
       label: 'Note moyenne sur plus de 480 avis',
       reviewers: [1, 2, 3, 4, 5].map((n) => ({
         src: `/images/about/reviewer-0${n}.jpg`,
@@ -129,10 +133,10 @@ export const home: HomeContent = {
 
   programs: {
     eyebrow: 'Programmes',
-    title: 'Trouve le programme qui te correspond.',
+    title: 'Trouve ton programme.',
     intro:
       'Que tu veuilles gagner en force, en endurance, perdre du poids ou mieux bouger, choisis un programme pensé pour tes objectifs.',
-    cta: { label: 'Voir tous les programmes', href: '#programmes' },
+    cta: { label: 'Rejoindre un programme', href: '#contact' },
     image: {
       src: '/images/programs/program-marcus-roy.jpg',
       alt: 'Marcus Roy, coach de force, entre deux cordes ondulatoires.',
@@ -270,7 +274,7 @@ export const home: HomeContent = {
       },
     ],
     featuredCoachId: 'marcus-roy',
-    cta: { label: "Rencontrer l'équipe", href: '#pourquoi' },
+    cta: { label: "Rencontrer l'équipe", href: '#contact' },
   },
 
   transformation: {
@@ -285,7 +289,7 @@ export const home: HomeContent = {
           "Je suis venu pour me remettre en forme, mais je suis resté parce que, pour la première fois, j'ai vraiment aimé chaque partie de mon entraînement.",
         image: {
           src: '/images/testimonials/testimonial-01-jordan-tucker.jpg',
-          alt: 'Jordan Tucker à l’entraînement de boxe.',
+          alt: "Jordan Tucker à l'entraînement de boxe.",
           width: 1600,
           height: 748,
         },
@@ -357,4 +361,4 @@ export const home: HomeContent = {
       focal: '20% 40%',
     },
   },
-};
+});

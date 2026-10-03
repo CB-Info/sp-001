@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Testimonial } from '~/types/content';
+import { ui } from '~/data/ui';
 
 /**
  * Un témoignage du deck (diapositive APG) : le tirage photo et la citation signée.
@@ -31,8 +32,8 @@ const state = computed(() => {
   <div
     class="testimonial"
     role="group"
-    aria-roledescription="témoignage"
-    :aria-label="`${position} sur ${total}`"
+    :aria-roledescription="ui.testimonials.slide"
+    :aria-label="ui.testimonials.position(position, total)"
     :data-state="state"
   >
     <TestimonialPrint

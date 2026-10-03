@@ -14,7 +14,7 @@ const titleId = 'a-propos-titre';
 
 <template>
   <section id="a-propos" class="about" data-surface="paper" :aria-labelledby="titleId">
-    <RuledGrid class="about__strip" variant="strip" />
+    <RuledGrid variant="strip" fade />
 
     <div class="about__inner container">
       <div class="about__intro">
@@ -23,6 +23,7 @@ const titleId = 'a-propos-titre';
           class="about__header"
           :eyebrow="content.eyebrow"
           :title="content.statement"
+          size="sub"
           data-motion="about-statement"
         />
         <StepButton
@@ -35,8 +36,6 @@ const titleId = 'a-propos-titre';
         </StepButton>
       </div>
 
-      <!-- Rôle explicite : Safari retire la sémantique d'une liste sans puces (le reset s'appuie dessus). -->
-      <!-- eslint-disable-next-line vuejs-accessibility/no-redundant-roles -->
       <ul class="about__cards" role="list">
         <li class="about__card" data-motion="about-card">
           <RatingCard :rating="content.rating" />
@@ -57,15 +56,6 @@ const titleId = 'a-propos-titre';
   padding-block-end: var(--section-pad);
 }
 
-/*
- * Bande réglée de 51 px (hauteur de RuledGrid « strip ») prolongée d'un fondu de
- * 12 px, mesuré en tête d'About, de Programs et de Transformation.
- */
-.about > .about__strip {
-  block-size: calc(3.2rem + 0.75rem);
-  mask-image: linear-gradient(to bottom, black 3.2rem, transparent);
-}
-
 .about__inner {
   /* Mesuré : capitales de la phrase à 125 px du haut de section, soit 57 px sous le fondu. */
   margin-block-start: clamp(2rem, 1.4196rem + 2.381vw, 3.5625rem);
@@ -75,13 +65,6 @@ const titleId = 'a-propos-titre';
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-/* La phrase de la référence est un H2 dessiné à la taille des H3 (capitale ≈ 25 px). */
-.about__header :deep(.section-header__title) {
-  max-inline-size: 20em;
-  font-size: var(--text-subheading);
-  line-height: var(--leading-tight);
 }
 
 /* Mesuré : 48 px des capitales de la dernière ligne au bouton, soit 40 px de boîte à boîte. */
@@ -144,10 +127,9 @@ const titleId = 'a-propos-titre';
     margin-block: calc(var(--text-subheading) * 0.175 - var(--text-label) * 0.177) 0;
   }
 
-  /* Sans note, la piste de note de SectionHeader ne doit pas garder sa gouttière. */
+  /* Le H2 démarre sur l'axe de la 2e carte. */
   .about__header :deep(.section-header__row) {
     grid-column: 2 / -1;
-    column-gap: 0;
   }
 
   .about__cta {

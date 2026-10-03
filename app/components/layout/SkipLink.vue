@@ -1,5 +1,9 @@
+<script setup lang="ts">
+import { ui } from '~/data/ui';
+</script>
+
 <template>
-  <a class="skip-link" href="#contenu">Aller au contenu</a>
+  <a class="skip-link" href="#contenu">{{ ui.skipLink }}</a>
 </template>
 
 <style scoped>

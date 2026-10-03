@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Service } from '~/types/content';
+import { ui } from '~/data/ui';
 
 /**
  * Carrousel des services (motif APG « carousel », sans rotation automatique).
@@ -34,8 +35,7 @@ watch(active, (index) => {
   clearTimeout(announceTimer);
   // Un défilement rapide traverse plusieurs cartes : on n'annonce que l'arrêt.
   announceTimer = setTimeout(() => {
-    // Espace insécable avant le deux-points (typographie française).
-    announcement.value = `Service ${index + 1} sur ${total}\u00a0: ${props.items[index]?.title}`;
+    announcement.value = ui.services.announce(index + 1, total, props.items[index]?.title ?? '');
   }, 250);
 });
 onBeforeUnmount(() => clearTimeout(announceTimer));
@@ -84,8 +84,8 @@ function onClick(event: MouseEvent) {
   <div
     class="service-carousel"
     role="region"
-    aria-roledescription="carrousel"
-    aria-label="Services"
+    :aria-roledescription="ui.carousel"
+    :aria-label="ui.services.region"
     :data-moving="moving || undefined"
     @keydown="onKeydown"
     @click="onClick"
@@ -93,7 +93,7 @@ function onClick(event: MouseEvent) {
     <IconButton
       class="service-carousel__tile"
       icon="arrow-bend"
-      label="Service suivant"
+      :label="ui.services.next"
       variant="red"
       size="lg"
       :aria-controls="trackId"
@@ -106,7 +106,7 @@ function onClick(event: MouseEvent) {
       ref="scroller"
       class="service-carousel__viewport"
       role="group"
-      aria-label="Liste des services"
+      :aria-label="ui.services.list"
       tabindex="0"
     >
       <div :id="trackId" class="service-carousel__track">
@@ -115,8 +115,8 @@ function onClick(event: MouseEvent) {
           :key="service.id"
           class="service-carousel__slide"
           role="group"
-          aria-roledescription="service"
-          :aria-label="`${index + 1} sur ${total}`"
+          :aria-roledescription="ui.services.slide"
+          :aria-label="ui.services.position(index + 1, total)"
           :aria-current="index === active || undefined"
           :data-slide="index"
           :data-initial="index === initial || undefined"
@@ -135,7 +135,7 @@ function onClick(event: MouseEvent) {
     <div class="service-carousel__pager">
       <IconButton
         icon="arrow-bend-back"
-        label="Service précédent"
+        :label="ui.services.previous"
         variant="grey"
         :aria-controls="trackId"
         @click="previous"
@@ -143,7 +143,7 @@ function onClick(event: MouseEvent) {
       <p class="service-carousel__counter" aria-hidden="true">{{ counter }}</p>
       <IconButton
         icon="arrow-bend"
-        label="Service suivant"
+        :label="ui.services.next"
         variant="red"
         :aria-controls="trackId"
         @click="next"
@@ -229,12 +229,6 @@ function onClick(event: MouseEvent) {
 
 .service-carousel__tile {
   display: none;
-}
-
-/* Mesuré : flèche de 39 × 30 px dans une plaque de 77. La tuile impose sa taille à l'icône. */
-.service-carousel__tile :deep(.icon) {
-  min-inline-size: 50%;
-  min-block-size: 50%;
 }
 
 .service-carousel__pager {

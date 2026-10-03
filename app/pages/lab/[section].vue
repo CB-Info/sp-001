@@ -12,7 +12,12 @@ const section = computed(() => String(route.params.section));
 
 <template>
   <div class="lab">
-    <SiteHeader v-if="section === 'header' || section === 'hero'" :nav="home.nav" />
+    <SiteHeader
+      v-if="section === 'header' || section === 'hero'"
+      :nav="home.nav"
+      :socials="home.footer.socials"
+      :note="home.footer.disclaimer"
+    />
     <HeroSection v-if="section === 'hero'" :content="home.hero" />
     <AboutSection v-else-if="section === 'about'" :content="home.about" />
     <ServicesSection v-else-if="section === 'services'" :content="home.services" />
@@ -28,6 +33,6 @@ const section = computed(() => String(route.params.section));
     />
     <SiteFooter v-else-if="section === 'footer'" :content="home.footer" :marquee="home.marquee" />
     <div v-else-if="section === 'header'" style="height: 150vh; background: #600305" />
-    <p v-else>Section inconnue : {{ section }}</p>
+    <p v-else>Section inconnue&nbsp;: {{ section }}</p>
   </div>
 </template>

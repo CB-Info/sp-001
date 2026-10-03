@@ -26,6 +26,7 @@
     --black: #000;
     --grey-600: #68696c; /* texte secondaire sur papier (5,49:1) */
     --grey-500: #7f8083;
+    --grey-400: #999; /* texte secondaire sur noir (7,4:1) */
     --grey-300: #dcdcdc; /* filets et trames */
     --grey-200: #ececec;
     --grey-150: #e3e5e5; /* tuile « précédent » */
@@ -47,7 +48,7 @@
     --font-mono: 'IBM Plex Mono', ui-monospace, 'Cascadia Mono', monospace;
 
     /* Échelle fluide 390 → 1440 px. Bornes en rem : le zoom texte reste respecté (WCAG 1.4.4). */
-    --text-hero: clamp(3.5rem, 0.6214rem + 11.8095vw, 11.25rem); /* 180 px à 1440 */
+    --text-hero: clamp(3.5rem, 1.65rem + 10.6667vw, 11.25rem); /* 180 px à 1440, 68 à 390 */
     --text-figure: clamp(6rem, 4.05rem + 8vw, 11.25rem); /* chiffres 01 / 02 */
     --text-heading: clamp(2rem, 1.4429rem + 2.2857vw, 3.5rem); /* H2 : 56 px */
     --text-stat: clamp(2.5rem, 2.1286rem + 1.5238vw, 3.5rem);
@@ -101,6 +102,7 @@
       0.3321rem + 1.7143vw,
       1.875rem
     ); /* cadre de filets du hero : 30 px */
+    --strip-gap: clamp(2rem, 1.327rem + 2.762vw, 3.8125rem); /* bande réglée → contenu : 61 px */
     --feature-ratio: 1.414; /* piste mise en avant ≈ √2 */
 
     /* Silhouette en escalier (deux plaques de même couleur). sx = pas horizontal,
@@ -114,6 +116,7 @@
     --step-lg-x: 13px;
     --step-lg-t: 6px;
     --step-lg-b: 14px;
+    --step-xl: 4.375rem; /* grand pas du mouvement (70 px) : sortie d'une carte */
 
     /* ── 2. Sémantiques : mouvement ───────────────────────────────────────── */
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* arrivées */
@@ -127,6 +130,9 @@
     --dur-layout: 420ms;
     --dur-overlay: 480ms;
     --dur-focal: 700ms;
+    --dur-strike: 220ms; /* un cran de l'astérisque */
+    --dur-underline-in: 200ms; /* souligné : tracé depuis la gauche… */
+    --dur-underline-out: 160ms; /* … rétraction vers la droite */
 
     /* ── 2. Sémantiques : couleurs (surface papier par défaut) ────────────── */
     --bg: var(--paper-0);

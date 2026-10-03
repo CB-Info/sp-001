@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ui } from '~/data/ui';
+
 /**
  * Déclencheur du menu : grille de 9 points (15 × 15, points de 3 au pas de 6,
  * mesurés) suivie du libellé.
@@ -38,8 +40,8 @@ defineExpose({ focus: () => root.value?.focus() });
       <span v-for="n in 9" :key="n" class="menu-trigger__dot" />
     </span>
     <span class="menu-trigger__labels">
-      <span class="menu-trigger__label menu-trigger__label--menu">Menu</span>
-      <span class="menu-trigger__label menu-trigger__label--close">Fermer</span>
+      <span class="menu-trigger__label menu-trigger__label--menu">{{ ui.menu.open }}</span>
+      <span class="menu-trigger__label menu-trigger__label--close">{{ ui.menu.close }}</span>
     </span>
   </component>
 </template>

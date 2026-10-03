@@ -8,7 +8,7 @@ defineProps<{ slogans: string[] }>();
 </script>
 
 <template>
-  <ul class="hero-slogans">
+  <ul role="list" class="hero-slogans">
     <li
       v-for="slogan in slogans"
       :key="slogan"
@@ -27,8 +27,6 @@ defineProps<{ slogans: string[] }>();
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   max-inline-size: 36rem;
-  padding: 0;
-  list-style: none;
   border-block-end: 1px solid var(--slogan-rule);
   font-family: var(--font-lead);
   font-size: var(--text-micro);

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { HomeContent, NavLink } from '~/types/content';
+import { ui } from '~/data/ui';
 
 /**
  * Menu plein écran : un <dialog> natif ouvert avec showModal(), qui fournit le
@@ -82,7 +83,7 @@ onBeforeUnmount(() => lockScroll(false));
     class="menu"
     data-surface="hot"
     data-motion="menu-panel"
-    aria-label="Menu principal"
+    :aria-label="ui.menu.dialog"
     :data-enhanced="enhanced || undefined"
     @close="onNativeClose"
     @click="onClick"
@@ -101,7 +102,7 @@ onBeforeUnmount(() => lockScroll(false));
         closes
         autofocus
         :href="enhanced ? undefined : '#haut'"
-        aria-label="Fermer le menu"
+        :aria-label="ui.menu.closeLabel"
         @click="open = false"
       />
       <!-- eslint-enable vuejs-accessibility/no-autofocus -->
@@ -110,8 +111,8 @@ onBeforeUnmount(() => lockScroll(false));
     <div class="menu__body container">
       <CrosshairRow class="menu__marks" />
 
-      <nav class="menu__nav" aria-label="Sections de la page">
-        <ol class="menu__list">
+      <nav class="menu__nav" :aria-label="ui.menu.sections">
+        <ol role="list" class="menu__list">
           <li v-for="item in items" :key="item.href" class="menu__item" data-motion="menu-link">
             <a class="menu__link" :href="item.href">
               <span class="menu__index" aria-hidden="true">{{ item.index }}</span>
@@ -125,7 +126,7 @@ onBeforeUnmount(() => lockScroll(false));
 
       <div class="menu__footer">
         <p class="menu__note">{{ note }}</p>
-        <ul class="menu__socials" aria-label="Réseaux sociaux">
+        <ul role="list" class="menu__socials" :aria-label="ui.socials">
           <li v-for="social in socials" :key="social.icon">
             <IconButton
               :icon="social.icon"
@@ -216,8 +217,6 @@ onBeforeUnmount(() => lockScroll(false));
 .menu__list {
   display: grid;
   gap: clamp(0.25rem, 1.2svh, 0.875rem);
-  padding: 0;
-  list-style: none;
 }
 
 .menu__link {
@@ -337,8 +336,6 @@ onBeforeUnmount(() => lockScroll(false));
 .menu__socials {
   display: flex;
   gap: var(--space-12);
-  padding: 0;
-  list-style: none;
 }
 
 .menu__strip {
@@ -388,7 +385,7 @@ onBeforeUnmount(() => lockScroll(false));
     inset-block-end: 0;
     /* Le cran de l'astérisque (Asterisk.vue) et le passage au rouge. */
     transition:
-      rotate 220ms var(--ease-strike),
+      rotate var(--dur-strike) var(--ease-strike),
       fill var(--dur-feedback) var(--ease-out-soft);
   }
 

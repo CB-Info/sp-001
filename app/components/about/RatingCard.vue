@@ -8,14 +8,14 @@ import type { HomeContent } from '~/types/content';
 const props = defineProps<{ rating: HomeContent['about']['rating'] }>();
 
 /* « 4,9 » et « /5 » se lisent « 4,9 sur 5 » plutôt que « 4,9 barre oblique 5 ». */
-const spoken = computed(() => `${props.rating.value} sur ${props.rating.scale.replace('/', '')}`);
+const spoken = computed(() => `${props.rating.value} sur ${props.rating.scale}`);
 </script>
 
 <template>
   <MaterialCard material="grain" class="rating-card">
     <StatFigure
       :value="rating.value"
-      :suffix="rating.scale"
+      :suffix="`/${rating.scale}`"
       :spoken="spoken"
       :label="rating.label"
       motion="about-rating-value"

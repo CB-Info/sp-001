@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { HomeContent } from '~/types/content';
+import { ui } from '~/data/ui';
 
 /**
  * Bandeau défilant « Fitness Hub ✱ » : la charnière rouge avant le footer.
@@ -50,7 +51,7 @@ onMounted(() => (hydrated.value = true));
       @click="paused = !paused"
     >
       <Icon :name="paused ? 'play' : 'pause'" size="1.25rem" />
-      <span class="visually-hidden">Mettre en pause le bandeau défilant</span>
+      <span class="visually-hidden">{{ ui.marquee.pause }}</span>
     </button>
   </div>
 </template>

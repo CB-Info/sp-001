@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Coach, NavLink } from '~/types/content';
+import { ui } from '~/data/ui';
 
 /**
  * Équipe : un portrait par coach, celui de `featuredId` en vedette (piste √2,
@@ -36,9 +37,9 @@ const memberSizes = { xs: '50vw', sm: '24vw', lg: '23vw', '2xl': '330px' };
 
 <template>
   <div class="team" :style="{ '--count': coaches.length, '--lead': featuredIndex }">
-    <h3 :id="headingId" class="visually-hidden">L’équipe</h3>
+    <h3 :id="headingId" class="visually-hidden">{{ ui.team.heading }}</h3>
     <div class="team__stage">
-      <ul class="team__list" :aria-labelledby="headingId">
+      <ul role="list" class="team__list" :aria-labelledby="headingId">
         <TeamMember
           v-for="(coach, i) in coaches"
           :key="coach.id"
@@ -110,8 +111,6 @@ const memberSizes = { xs: '50vw', sm: '24vw', lg: '23vw', '2xl': '330px' };
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-24) var(--gap);
-  padding: 0;
-  list-style: none;
 }
 
 .team__member--featured {

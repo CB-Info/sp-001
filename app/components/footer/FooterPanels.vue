@@ -26,7 +26,7 @@ const kindOf = (index: number) => bodies[index] ?? 'empty';
 </script>
 
 <template>
-  <ul class="footer-panels">
+  <ul role="list" class="footer-panels">
     <FooterPanel
       v-for="(panel, index) in props.panels"
       :key="panel.title"
@@ -51,9 +51,6 @@ const kindOf = (index: number) => bodies[index] ?? 'empty';
   --panel-rule: var(--footer-rule, var(--rule));
 
   display: grid;
-  margin: 0;
-  padding: 0;
-  list-style: none;
   border-block-start: 1px solid var(--panel-rule);
   border-inline-start: 1px solid var(--panel-rule);
 }

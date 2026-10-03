@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { ui } from '~/data/ui';
+
 /**
  * Points de pagination du deck : un vrai bouton par témoignage (cible de 24 px),
  * le courant porte `aria-current` et s'allonge en barre rouge (forme + couleur :
@@ -21,14 +23,14 @@ defineExpose({ focusCurrent });
 </script>
 
 <template>
-  <div class="dots" role="group" aria-label="Choisir un témoignage">
+  <div class="dots" role="group" :aria-label="ui.testimonials.choose">
     <button
       v-for="index in count"
       :key="index"
       ref="buttons"
       type="button"
       class="dots__button"
-      :aria-label="`Témoignage ${index} sur ${count}`"
+      :aria-label="ui.testimonials.dot(index, count)"
       :aria-current="index - 1 === current || undefined"
       :data-index="index - 1"
       data-dot

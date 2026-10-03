@@ -141,6 +141,12 @@
     --step-ink: var(--ink-900);
   }
 
+  /* Couleur de surface de la matière courante (carbone sur la matière « hot »). */
+  .step--surface {
+    --step-fill: var(--surface);
+    --step-ink: var(--ink);
+  }
+
   /* En mode contrastes forcés, les fonds disparaissent : on garde une bordure. */
   @media (forced-colors: active) {
     .step {

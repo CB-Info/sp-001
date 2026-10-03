@@ -24,7 +24,7 @@ const photoSizes = { 390: '100vw', sm: '100vw', md: '100vw', lg: '36vw', '2xl': 
 
 <template>
   <section id="programmes" class="programs" data-surface="paper" :aria-labelledby="titleId">
-    <RuledGrid class="programs__strip" variant="strip" />
+    <RuledGrid variant="strip" fade />
 
     <div class="programs__inner container">
       <div class="programs__aside">
@@ -66,38 +66,19 @@ const photoSizes = { 390: '100vw', sm: '100vw', md: '100vw', lg: '36vw', '2xl': 
   padding-block-end: var(--section-pad);
 }
 
-/*
- * Bande réglée de 51 px (hauteur de RuledGrid « strip ») prolongée d'un fondu de
- * 12 px, mesuré en tête d'About, de Programs et de Transformation.
- */
-.programs > .programs__strip {
-  block-size: calc(3.2rem + 0.75rem);
-  mask-image: linear-gradient(to bottom, black 3.2rem, transparent);
-}
-
 .programs__inner {
-  /* Mesuré : filet haut de l'accordéon à 124 px du haut de section, soit 61 px sous le fondu. */
-  --programs-offset: clamp(2rem, 1.327rem + 2.762vw, 3.8125rem);
   /* Mesuré : 86 px du bouton à la photo @1440. */
   --photo-gap: clamp(2.5rem, 1.432rem + 4.381vw, 5.375rem);
 
   display: grid;
   row-gap: var(--block-gap);
-  margin-block-start: var(--programs-offset);
+  margin-block-start: var(--strip-gap);
 }
 
 .programs__aside {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-/*
- * SectionHeader sans note garde, à ≥ 64em, la gouttière de 80 px de sa piste de
- * note vide : le titre perdrait une ligne entière (voir Demandes).
- */
-.programs__aside :deep(.section-header__row) {
-  column-gap: 0;
 }
 
 .programs__intro {

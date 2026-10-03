@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { HomeContent, NavLink } from '~/types/content';
-import { home } from '~/data/home';
 
 /**
  * En-tête posé sur le hero (absolu, pas encore collant) et menu plein écran.
@@ -9,20 +8,13 @@ import { home } from '~/data/home';
  * menu s'ouvre alors par :target, sans JS) ; une fois l'app montée, c'est un
  * bouton aria-expanded qui ouvre le <dialog> en modal.
  *
- * `socials` et `note` viennent par défaut du pied de page : les pages ne passent
- * encore que `nav` (voir le rapport, « Demandes »).
+ * Le menu reprend les réseaux et la mention « concept » du pied de page.
  */
-withDefaults(
-  defineProps<{
-    nav: NavLink[];
-    socials?: HomeContent['footer']['socials'];
-    note?: string;
-  }>(),
-  {
-    socials: () => home.footer.socials,
-    note: home.footer.disclaimer,
-  },
-);
+defineProps<{
+  nav: NavLink[];
+  socials: HomeContent['footer']['socials'];
+  note: string;
+}>();
 
 const menuId = 'menu';
 const open = ref(false);

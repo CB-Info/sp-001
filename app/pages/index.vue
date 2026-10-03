@@ -16,7 +16,7 @@ const coaches = home.why.coaches;
 <template>
   <div id="haut" class="page">
     <SkipLink />
-    <SiteHeader :nav="home.nav" />
+    <SiteHeader :nav="home.nav" :socials="home.footer.socials" :note="home.footer.disclaimer" />
     <main id="contenu" tabindex="-1">
       <HeroSection :content="home.hero" />
       <AboutSection :content="home.about" />
