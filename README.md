@@ -4,7 +4,13 @@ Reconstruction fidèle et animée d'une landing page de salle de sport, sous la 
 
 ## Statut
 
-**v0.1 livrée** : page complète, statique et responsive, images définitives (Higgsfield), vérifiée (e2e, axe, Lighthouse, Impeccable `detect`) : voir [`docs/verification/v0.1.md`](docs/verification/v0.1.md). Prochaine étape : la couche de mouvement (v0.3).
+**v0.3 livrée** : couche de mouvement complète, sur la page de la v0.1 (statique, responsive, images définitives).
+
+- Intro « Vitesse → Arrêt » du hero en CSS, puis une entrée tirée de sa propre matière pour chaque section (GSAP, ScrollTrigger, Lenis sur ordinateur).
+- Overdrive : flou de bougé en WebGL sur la photo du hero (OGL, appareils capables seulement), échos de vitesse sur « SERVICES. », serre-livre du footer.
+- Mouvement réduit en direct, sans JS, bfcache : toujours l'état final. Rien ne tourne au repos.
+
+Vérifications : [`docs/verification/v0.1.md`](docs/verification/v0.1.md) et [`docs/verification/v0.3.md`](docs/verification/v0.3.md). Prochaine étape : revue de fin, `DESIGN.md`, `audit` et `polish`.
 
 ## Commandes
 
