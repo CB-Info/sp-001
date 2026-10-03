@@ -39,9 +39,12 @@
    - **Aucune image du shot** ne sert d'entrée à Higgsfield.
    - Rien n'a été généré. Solde lu : 694,5 crédits.
 9. **Stack recommandée.**
-   - Astro 7 statique, TypeScript, GSAP 3.15 (ScrollTrigger, SplitText, Flip), Lenis 1.3 sous conditions, CSS natif à tokens, custom elements, hébergement Cloudflare.
-   - Une revue adverse l'a validée **avec amendements**.
-   - Alternative crédible : ta stack habituelle (Vite + React + Tailwind), avec GSAP à la place de Motion.
+   - Astro 7 statique, TypeScript, GSAP 3.15 (ScrollTrigger, SplitText, Flip), Lenis 1.3 sous conditions, CSS natif (ou Tailwind) à tokens, custom elements, sortie statique (Vercel ou Cloudflare).
+   - Deux revues adverses indépendantes l'ont validée **avec amendements**.
+   - Deux alternatives crédibles :
+     - ta stack habituelle (Vite + React + Tailwind), avec GSAP à la place de Motion ;
+     - Nuxt 4.5, s'il y a des sous-pages avec des transitions chorégraphiées.
+   - L'écart entre stacks est faible : ce sont tes réponses qui décident.
 10. **Quatre décisions bloquent la suite** (questions en fin de message). Les autres ont un défaut proposé (§15).
 
 ---
@@ -68,7 +71,7 @@
 - **Trois vérifications adverses** :
   - **v1** : ré-identification des polices, en partant du principe qu'il faut réfuter ([annexe](annexes/v1-fonts.md)) ;
   - **v2** : critique de complétude, qui a relevé 14 erreurs factuelles et des oublis ([annexe](annexes/v2-completeness.md)) ;
-  - **v3** : revue adverse de la stack, avec vérification de 46 affirmations ([annexe](annexes/v3-stack-adversary.md)).
+  - **v3 et v3b** : deux revues adverses **indépendantes** de la stack, avec vérification de 46 puis 55 affirmations ([v3](annexes/v3-stack-adversary.md), [v3b](annexes/v3b-stack-adversary.md)). Toutes deux concluent **AMEND**, pas REPLACE.
 - **Statut de chaque valeur** : **[M]** mesuré au pixel (PIL/numpy), **[E]** estimé, **[I]** inféré. Le texte illisible est signalé, jamais inventé.
 
 ### 1.2 Échelles
@@ -635,7 +638,7 @@ Cas par défaut : site **autonome**, **une page** comme le shot, objectif « mon
 | Styles | **CSS moderne** (layers, nesting, container queries, `oklch`) + styles scopés Astro, avec des tokens à **source unique** | — |
 | Interactif | **Custom elements** (`<vy-menu>`, `<vy-accordion>`, `<vy-carousel>`, `<vy-video>`), sans island de framework | — |
 | Polices et images | **Astro Fonts API** (stable, auto-hébergement, repli à métriques ajustées) et **`astro:assets`** (AVIF/WebP, `srcset`, `priority`) | — |
-| Hébergement | **Cloudflare Workers Static Assets**, Netlify en alternative | `wrangler@4.147` |
+| Hébergement | Sortie statique, **indépendante de l'hébergeur** : Vercel (ton habitude) ou Cloudflare Workers Static Assets | `wrangler@4.147` si Cloudflare |
 | Runtime | Node **24 LTS**, pnpm | `24.21.0` |
 
 **Pourquoi**, avec des valeurs mesurées sur des builds jetables :
@@ -666,18 +669,26 @@ Ce site est le cas d'école d'Astro : éditorial, 4 widgets, aucun état partag�
   - **Embla** (7,4 Ko), seulement si le scroll-snap natif ne suffit pas pour le carrousel.
 - **Animations CSS liées au scroll** : en amélioration progressive seulement. **Firefox stable ne les supporte toujours pas**, ScrollTrigger reste nécessaire pour la chorégraphie principale.
 
-### 12.3 Les amendements de la revue adverse (v3 : AMEND, pas REPLACE)
+### 12.3 Les amendements des deux revues adverses (v3 et v3b : AMEND, pas REPLACE)
 
-Sur 46 affirmations vérifiées, **aucune erreur de version**. Les failles relevées sont dans le raisonnement :
+**Les faits tiennent.** Les deux revues ont été menées indépendamment, sur 46 puis 55 affirmations. Elles ne trouvent **aucune erreur de version**, seulement deux inexactitudes mineures. Les failles relevées sont dans le raisonnement, et les deux revues convergent :
 
-1. **La comparaison côté React était biaisée.** Elle opposait Next.js (168 Ko) à Astro, alors que le React pertinent ici est Vite + React (66 Ko). L'écart réel avec Astro est **≈ 61 Ko**, pas 112.
-2. **Le périmètre était gonflé.** Le shot est **une seule page**. On retire de la v1 l'adaptateur MPA / ClientRouter, `@view-transition`, l'i18n et l'endpoint de contact. On garde le contrat d'effet `mount(scope, env) → dispose()` et le registre `data-motion`.
-3. **Intro du hero** : `document.fonts.ready` suivi d'un `requestAnimationFrame`, et non `pagereveal` depuis un module différé (événement raté, ou rejoué au retour bfcache).
-4. **Tokens à source unique.** Pas trois copies (CSS, TS, `DESIGN.md`) tenues alignées par des tests de parité : on **génère** les dérivés.
-5. **Lighthouse 13**, via `unlighthouse` ou `lighthouse@13.5`. `@lhci/cli@0.15.1` mesure encore avec Lighthouse 12.
-6. **Pas d'island React « pour le CV »** : ce serait ajouter une dépendance pour un effet que la stack exprime déjà.
+1. **Le périmètre était gonflé.** Le shot est **une seule page**. En une page, il n'y a ni routeur ni View Transition inter-pages, et le débat MPA / ClientRouter disparaît. On garde seulement le contrat d'effet `mount(scope, env) → dispose()`, rendu **idempotent** (pas de double montage au retour bfcache, vérifié par un test Playwright `goBack()` / `goForward()`), et le registre `data-motion`.
+2. **La comparaison côté React était biaisée.** Elle opposait Next.js (168 Ko) à Astro, alors que le React pertinent ici est Vite + React (66 Ko). L'écart réel avec Astro est **≈ 61 Ko**, pas 112.
+3. **La matrice ignorait l'utilisateur réel.** Avec un critère « adéquation à ton écosystème » et un apprentissage noté **pour toi**, l'écart entre stacks tombe sous 0,2 à 0,25 point. **Ce n'est plus le score qui décide, c'est tes réponses** (§12.4).
+4. **Intro du hero** : `document.fonts.ready` suivi d'un `requestAnimationFrame`, et non `pagereveal`, qui peut être raté au premier rendu ou rejoué au retour bfcache.
+5. **« Un seul moteur » vaut seulement dans la page.** GSAP ne peut pas cibler les pseudo-éléments `::view-transition-*`. En cas de sous-pages, les transitions inter-pages passent par du CSS (ou par WAAPI) avec les **mêmes courbes**, partagées par custom properties.
+6. **Tokens à source unique.** Pas trois copies (CSS, TS, `DESIGN.md`) tenues alignées par des tests de parité. `tokens.css` fait foi ; le TS le lit au montage (`getComputedStyle`, puis `CustomEase`) ; `DESIGN.md` est **généré**.
+7. **Un outillage en socle et en options**, pas 13 outils obligatoires pour une seule page (§12.5). **Lighthouse 13** (`unlighthouse` ou `lighthouse@13.5`), car `@lhci/cli@0.15.1` mesure encore avec Lighthouse 12.
+8. **Tailwind 4.3 présenté à égalité** avec le CSS natif : c'est ta norme, et `@theme` donne aussi une source unique de tokens. Choisir le CSS natif est une **démonstration volontaire** à assumer dans un ADR.
+9. **Hébergement neutre.** La sortie est statique. Par défaut, ton hébergeur habituel (Vercel), ou Cloudflare si tu veux l'apprendre.
+10. **Pas d'island React « pour le CV »** : ce serait ajouter une dépendance pour un effet que la stack exprime déjà.
+11. **Trois risques à ajouter** :
+    - le compilateur Rust d'Astro est encore en 0.x ;
+    - Astro a un rythme de versions majeures rapide (104 jours entre 6.0 et 7.0) ;
+    - un carrousel en `scroll-snap` horizontal sous Lenis demande un test E2E dédié (`gestureOrientation` vaut `vertical` par défaut).
 
-**Contexte (à te signaler).** Pour situer ta pratique, l'agent de revue a consulté tes **dépôts GitHub publics**. Il a relevé que ta stack habituelle pour ce type de site est **Vite + React 19 + Tailwind 4.3 + Motion + Lenis**, d'où l'alternative ci-dessous.
+**Contexte (à te signaler).** Pour situer ta pratique, les deux revues ont consulté tes **dépôts GitHub publics**. Ta stack habituelle pour ce type de site (une one-page vitrine animée) y apparaît comme **Vite + React 19 + Tailwind 4.3 + Motion + Lenis**. Tu as aussi un projet **Nuxt 4**, et Vercel revient dans deux dépôts. D'où les deux alternatives ci-dessous.
 
 ### 12.4 Arbre de décision
 
@@ -685,7 +696,7 @@ Sur 46 affirmations vérifiées, **aucune erreur de version**. Les failles relev
 
 | | Une page (cas du shot) | Avec sous-pages et transitions |
 |---|---|---|
-| **Site autonome**, élargir | **Astro 7.3 statique**, GSAP, Lenis, CSS natif, custom elements | Transitions en CSS seul (absentes sous Firefox) : Astro MPA + `@view-transition`. Transitions GSAP partout : Astro + `<ClientRouter />` avec adaptateur (`dispose()` puis nouveau Lenis à chaque page), ou swup |
+| **Site autonome**, élargir | **Astro 7.3 statique**, GSAP, Lenis, CSS natif, custom elements | Transitions en CSS seul (absentes sous Firefox) : Astro MPA + `@view-transition`. Transitions GSAP partout : Astro + `<ClientRouter />` avec adaptateur (`event.loader` pour la sortie, `swapFunctions` pour préserver les classes, `dispose()` puis nouveau Lenis à chaque page), ou swup. **Meilleure alternative selon v3b : Nuxt 4.5 en `nuxt generate`**, avec `<NuxtPage :transition="{ css: false, onLeave, onEnter }">` piloté par GSAP. C'est la chorégraphie inter-pages la plus simple dans tous les navigateurs, et tu connais déjà Nuxt (≈ +44 Ko) |
 | **Site autonome**, capitaliser | **B′ : Vite 8 + React 19.3 + TS 6 + GSAP (`useGSAP`) + `lenis/react` + Tailwind 4.3**, avec prérendu statique obligatoire (environ 117 Ko) | `<ViewTransition>` de React 19.3 ou timelines GSAP orchestrées par le routeur |
 | **Intégré à un portfolio React** | Une route ; `useGSAP` avec `scope` ; Lenis monté et détruit au niveau de la route ; ne jamais mélanger Motion et GSAP sur la même page | idem, avec `context.revert()` avant chaque changement de route |
 | **Intégré à un portfolio Nuxt / Vue** | Un layer Nuxt ; composable `useGsapContext` ; `lenis/vue` | `<Transition :css="false">` avec des hooks GSAP |
@@ -716,21 +727,22 @@ docs/{adr,analyse}/ + PRODUCT.md + DESIGN.md
 - chaque effet est un module `init(root) → cleanup` ;
 - aucune valeur magique hors des tokens.
 
-**Qualité** :
+**Qualité** : un socle obligatoire et des options, en CI sous Node 24.
 
-| Rôle | Outil |
-|---|---|
-| Format | Prettier + plugin Astro |
-| Lint TS, Astro, a11y | ESLint 10 + typescript-eslint (strictTypeChecked) + eslint-plugin-astro + jsx-a11y-x |
-| Lint CSS | Stylelint 17 (couleurs littérales interdites hors tokens) |
-| Types | `astro check` |
-| Code mort | knip |
-| Unitaires | Vitest |
-| E2E | Playwright : clavier, menu, accordéon, carrousel, **projet sans JS**, **projets reduced-motion et no-preference** |
-| Accessibilité | axe, WCAG 2.2 AA, 0 violation |
-| Visuel | captures à 375, 768 et 1440 |
-| Animation | test « rien ne reste caché » |
-| Performance | Lighthouse 13 avec budgets |
+| Rôle | Outil | Niveau |
+|---|---|---|
+| Format | Prettier + plugin Astro | **Socle** |
+| Lint TS, Astro, a11y | ESLint 10 + typescript-eslint (strictTypeChecked) + eslint-plugin-astro + jsx-a11y-x | **Socle** |
+| Types | `astro check` | **Socle** |
+| E2E | Playwright : clavier, menu, accordéon, carrousel, **projet sans JS**, **projets reduced-motion et no-preference**, retour bfcache | **Socle** |
+| Accessibilité | axe, WCAG 2.2 AA, 0 violation | **Socle** |
+| Animation | test « rien ne reste caché » | **Socle** |
+| Performance | Lighthouse 13 avec budgets | **Socle** |
+| Visuel | captures à 375, 768 et 1440 | Option (recommandée) |
+| Lint CSS | Stylelint 17 (couleurs littérales interdites hors tokens) | Option |
+| Code mort | knip | Option |
+| Unitaires | Vitest (seulement s'il y a de la logique TS pure) | Option |
+| Hooks Git | lefthook + commitlint | Option |
 
 **Git** :
 - Conventional Commits, avec des scopes par section (`feat(hero): …`) contrôlés par commitlint ; hooks lefthook ;
@@ -789,7 +801,7 @@ docs/{adr,analyse}/ + PRODUCT.md + DESIGN.md
 |---|---|
 | Intensité du motion | **Niveau 2** (MUST, SHOULD et O3) ; WebGL O1 en bonus de fin de projet |
 | Lenis | Oui, sous conditions |
-| Styles | CSS natif à tokens (Tailwind 4.3 si tu préfères ta norme habituelle) |
+| Styles | CSS natif à tokens, ou Tailwind 4.3 (ta norme, avec `@theme` comme source de tokens) : les deux sont valables, le choix t'appartient |
 | Rouges | Rampe à 4 rôles (§5.4) |
 | Encre des titres | Marine `#171A32` partout ; chiffres en `#000` |
 | Deux noirs (`#000` HOT, `#040F0E` NIGHT) | Les garder |
@@ -801,7 +813,7 @@ docs/{adr,analyse}/ + PRODUCT.md + DESIGN.md
 | Footer | Panneaux réaffectés (Contact et adresse · Réserver · Horaires), crédit et mention « concept » |
 | Images | 4 familles d'étalonnage ; « Stills essentiels » d'abord, avec un pilote de calibrage des crédits |
 | Mode de construction Impeccable | Défaut d'Impeccable quand la génération d'image est disponible : **comp-first** (3 comps avant de coder). Ici, je propose **code-first**, puisque la référence fait déjà office de comp. **Non enregistré** tant que tu ne l'as pas confirmé |
-| Hébergement | Cloudflare (ou Netlify) ; sous-domaine de ton portfolio |
+| Hébergement | Vercel (ton habitude) ou Cloudflare ; sous-domaine de ton portfolio |
 
 ### 15.3 Informations à me fournir quand tu peux
 
