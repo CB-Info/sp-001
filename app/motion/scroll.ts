@@ -1,5 +1,6 @@
 import type Lenis from 'lenis';
 import { FINE_POINTER, motionAllowed, REDUCED_MOTION } from './env';
+import { duration } from './tokens';
 import type { Motion } from './gsap';
 
 /**
@@ -29,8 +30,11 @@ const SETTLE = 0.2;
  * un premier passage aussitôt, avant que l'événement n'ait produit son effet.
  */
 const IDLE_FRAMES = 2;
-/** Plus long pas de temps donné à Lenis (ms) : pas de saut au réveil ni après un à-coup. */
-const LENIS_MAX_STEP = 1000 / 30;
+/**
+ * Plus long pas de temps donné à Lenis (ms) : au-delà, c'est une veille ou un gel,
+ * pas une image lente ; Lenis ne saute pas d'un coup à sa cible.
+ */
+const LENIS_MAX_STEP = 100;
 
 export const scroll = { velocity: 0, direction: 1 as 1 | -1 };
 
@@ -43,6 +47,8 @@ let ratchet = 0;
 const followers = new Set<() => boolean>();
 /** Relance le rappel par image ; sans effet avant startScroll(). */
 let wake = () => {};
+/** Courbe des défilements programmés à durée réglée (--ease-in-out), posée au démarrage. */
+let travelEase: ((progress: number) => number) | undefined;
 
 /**
  * Le cran est posé sur chaque astérisque, pas sur :root : une propriété héritée
@@ -117,7 +123,7 @@ export async function startScroll({ gsap, ScrollTrigger }: Motion) {
     LenisClass ??= (await import('lenis')).default;
     // Les conditions ont pu changer pendant le chargement.
     if (lenis || !wanted()) return;
-    lenis = new LenisClass({ lerp: 0.12, anchors: true, autoRaf: false, syncTouch: false });
+    lenis = new LenisClass({ lerp: 0.12, autoRaf: false, syncTouch: false });
     lenis.on('scroll', () => {
       moved = true;
       wake();
@@ -126,6 +132,8 @@ export async function startScroll({ gsap, ScrollTrigger }: Motion) {
     lenis.on('virtual-scroll', () => wake());
     if (paused) lenis.stop();
   }
+
+  travelEase = gsap.parseEase('in-out');
 
   // Arrivée plus bas dans la page (ancre, rechargement) : les astérisques prennent leur cran.
   updateRatchet(position, asterisks);
@@ -137,8 +145,7 @@ export async function startScroll({ gsap, ScrollTrigger }: Motion) {
     },
     { passive: true },
   );
-  // Un lien d'ancre lance un défilement lissé de Lenis : il lui faut le ticker.
-  addEventListener('click', () => wake(), { passive: true, capture: true });
+  document.addEventListener('click', onAnchorClick);
 
   let settle: gsap.core.Tween | undefined;
   let height: number | undefined;
@@ -169,6 +176,24 @@ export function followScroll(follower: () => boolean): () => void {
 }
 
 /**
+ * Liens d'ancre de la page, avec Lenis : comme son option `anchors` (la navigation
+ * native garde l'URL et le point de départ du focus, Lenis lisse le trajet), mais
+ * un clic déjà pris en charge (preventDefault, « Retour en haut ») ou modifié
+ * (nouvel onglet) est laissé tel quel.
+ */
+function onAnchorClick(event: MouseEvent) {
+  const modified =
+    event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+  if (!lenis || event.defaultPrevented || modified) return;
+  const link = (event.target as Element | null)?.closest('a');
+  if (!link?.hash || link.pathname !== location.pathname) return;
+  const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+  if (!target) return;
+  lenis.scrollTo(target);
+  wake();
+}
+
+/**
  * Relance le rappel par image pour une autre cause que le défilement (le pointeur
  * sur la photo du hero, par exemple) ; il s'arrête de lui-même au repos.
  */
@@ -185,11 +210,25 @@ export function resumeScroll() {
   lenis?.start();
 }
 
-/** Défilement programmatique, lissé si Lenis tourne (ancres, « Retour en haut »). */
-export function scrollToTarget(target: string | HTMLElement | number) {
+/**
+ * Défilement programmatique (« Retour en haut ») : par Lenis s'il tourne, sinon
+ * lissé par le navigateur quand le mouvement est permis, immédiat en mouvement
+ * réduit. `travel` : une course de --dur-travel en --ease-in-out plutôt que le
+ * lissage libre de Lenis.
+ */
+export function scrollToTarget(target: string | HTMLElement | number, { travel = false } = {}) {
   if (lenis) {
-    lenis.scrollTo(target);
+    lenis.scrollTo(
+      target,
+      travel ? { duration: duration('--dur-travel'), easing: travelEase } : {},
+    );
     wake();
-  } else if (typeof target === 'number') scrollTo({ top: target });
-  else (typeof target === 'string' ? document.querySelector(target) : target)?.scrollIntoView();
+    return;
+  }
+  const behavior = motionAllowed() ? 'smooth' : 'auto';
+  if (typeof target === 'number') scrollTo({ top: target, behavior });
+  else
+    (typeof target === 'string' ? document.querySelector(target) : target)?.scrollIntoView({
+      behavior,
+    });
 }

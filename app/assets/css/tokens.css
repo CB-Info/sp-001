@@ -132,6 +132,7 @@
     --dur-focal: 700ms;
     --dur-strike: 220ms; /* un cran de l'astérisque */
     --seq-max: 1300ms; /* plafond de toute séquence (intro du hero comprise) */
+    --dur-travel: 1200ms; /* défilement programmé (« Retour en haut ») */
 
     /* Distances d'entrée : les pas mesurés de l'escalier, jamais d'autres valeurs. */
     --move-xs: 5px;
