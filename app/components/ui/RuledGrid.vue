@@ -6,6 +6,9 @@
  *   référence ; `fade` la prolonge d'un fondu de 12 px (About, Programs,
  *   Transformation) ;
  * - panel : aplat décoratif de 107 px de haut (16 rangées) dans le conteneur.
+ *
+ * `--verticals` colore les seules verticales : `transparent` les masque et garde
+ * les filets horizontaux (la mesure de la trame, ServicesSection).
  */
 withDefaults(defineProps<{ variant?: 'strip' | 'panel'; fade?: boolean }>(), {
   variant: 'panel',
@@ -26,15 +29,16 @@ withDefaults(defineProps<{ variant?: 'strip' | 'panel'; fade?: boolean }>(), {
   --columns: 11;
   --row: 6.7px;
   --line: var(--pattern-line);
+  --verticals: var(--line);
 
   background-image:
     repeating-linear-gradient(
       to right,
-      var(--line) 0 1px,
+      var(--verticals) 0 1px,
       transparent 1px calc(100% / var(--columns))
     ),
     repeating-linear-gradient(to bottom, var(--line) 0 1px, transparent 1px var(--row));
-  border-inline-end: 1px solid var(--line);
+  border-inline-end: 1px solid var(--verticals);
   border-block-end: 1px solid var(--line);
 }
 

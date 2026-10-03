@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { duration, length } from '~/motion/tokens';
+import { capped, ENTRY, reached } from '~/motion/sequence';
+import { duration, length, stagger } from '~/motion/tokens';
 import type { HomeContent } from '~/types/content';
 
 /**
@@ -35,24 +36,11 @@ const FLAT = { '--fx': '0%', '--ft': '0%', '--fb': '0%' };
 /** Les deux statistiques à rouleau : « 4,9 » et « 20 ». */
 const FIGURES = '[data-motion="about-rating-value"], [data-motion="about-years-value"]';
 
-/** Décalage entre éléments d'une liste (--stagger-*), en secondes : une durée comme une autre. */
-const stagger = (token: `--stagger-${string}`) => duration(token as `--dur-${string}`);
-
-/** Au-delà de 6 éléments, les suivants partagent le dernier délai (a6 §3.4). */
-const capped = (each: number) => (index: number) => Math.min(index, 5) * each;
-
-/**
- * Déjà à l'écran, ou dépassé, quand GSAP arrive (ancre, rechargement, défilement
- * très vif) : on laisse l'état final plutôt que de le retirer pour le rejouer.
- */
-const reached = (element: Element) => element.getBoundingClientRect().top < innerHeight;
-
 useMotion(section, ({ gsap, ScrollTrigger }, root) => {
   const focal = duration('--dur-focal');
   const layout = duration('--dur-layout');
   const strike = duration('--dur-strike');
   const settlers: (() => void)[] = [];
-  const entry = { start: 'top 85%', once: true };
 
   const cta = root.querySelector<HTMLElement>('[data-motion="about-cta"]');
   if (cta && !reached(cta)) {
@@ -63,7 +51,7 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
         '--sink': 0,
         duration: layout,
         clearProps: '--sink',
-        scrollTrigger: { trigger: cta, ...entry },
+        scrollTrigger: { trigger: cta, ...ENTRY },
       },
     );
   }
@@ -184,7 +172,7 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
   // Les cartes d'une même rangée entrent ensemble, en cascade ; empilées, chacune à son tour.
   const cascade = capped(stagger('--stagger-list'));
   ScrollTrigger.batch(cards, {
-    ...entry,
+    ...ENTRY,
     onEnter: (batch) =>
       batch.forEach((card, index) => lifts.get(card)?.delay(cascade(index)).restart(true)),
   });

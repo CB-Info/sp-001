@@ -6,6 +6,8 @@ export default withNuxt(...vueA11y.configs['flat/recommended'], {
   rules: {
     'vue/multi-word-component-names': 'off',
     'vue/no-v-html': 'error',
+    // Prettier écrit les éléments vides `<img />` : la règle suit Prettier.
+    'vue/html-self-closing': ['warn', { html: { void: 'always' } }],
     // Les libellés de formulaire sont imbriqués ou reliés par id selon le cas.
     'vuejs-accessibility/label-has-for': ['error', { required: { some: ['nesting', 'id'] } }],
     // role="list" n'est pas redondant sur une liste sans puces : WebKit (VoiceOver) en

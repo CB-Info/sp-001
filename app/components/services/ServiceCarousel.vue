@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Service } from '~/types/content';
 import { ui } from '~/data/ui';
-import { duration, length } from '~/motion/tokens';
+import { capped, ENTRY, reached } from '~/motion/sequence';
+import { duration, length, stagger } from '~/motion/tokens';
 
 /**
  * Carrousel des services (motif APG « carousel », sans rotation automatique).
@@ -95,12 +96,7 @@ const SLACK = 2;
 const FLAT = { '--fx': '0%', '--ft': '0%', '--fb': '0%' };
 const NOTCH = ['--fx', '--ft', '--fb'] as const;
 
-/** Retire des styles posés à la main (le nettoyage ne doit rien créer dans GSAP). */
-const unset = (elements: Iterable<HTMLElement>, names: readonly string[]) => {
-  for (const element of elements) for (const name of names) element.style.removeProperty(name);
-};
-
-useMotion(carousel, ({ gsap }, root) => {
+useMotion(carousel, ({ gsap }, root, contextSafe) => {
   const rail = scroller.value;
   const tile = root.querySelector<HTMLElement>('[data-motion="services-arrow"]');
   const slides = [...root.querySelectorAll<HTMLElement>('[data-motion="services-card"]')];
@@ -109,8 +105,7 @@ useMotion(carousel, ({ gsap }, root) => {
   const focal = duration('--dur-focal');
   const layout = duration('--dur-layout');
   const press = duration('--dur-press');
-  // Un décalage de liste est une durée comme une autre ; duration() ne type que --dur-*.
-  const list = duration('--stagger-list' as `--dur-${string}`);
+  const cascade = capped(stagger('--stagger-list'));
   const leash = length('--move-l');
 
   // Encoches de repos des photos, lues sur la carte active (le survol ne la touche pas).
@@ -175,10 +170,15 @@ useMotion(carousel, ({ gsap }, root) => {
     }
   }
 
-  const stopWatching = watch(active, (index) => {
-    follow();
-    activate(index);
-  });
+  // Les animations nées d'un changement de carte rejoignent le contexte : un passage
+  // en mouvement réduit ou un démontage les défait comme les autres.
+  const stopWatching = watch(
+    active,
+    contextSafe((index: number) => {
+      follow();
+      activate(index);
+    }),
+  );
 
   rail?.addEventListener('scroll', place, { passive: true });
   window.addEventListener('resize', place, { passive: true });
@@ -186,14 +186,13 @@ useMotion(carousel, ({ gsap }, root) => {
 
   /* ── Première entrée : les plaques montent, en cascade ───────────────────── */
   // Déjà à l'écran quand GSAP arrive (ancre, rechargement) : l'état final reste.
-  if (root.getBoundingClientRect().top > innerHeight) {
+  if (!reached(root)) {
     const rise = `${length('--move-l')}px`;
     const entry = gsap.timeline({
-      scrollTrigger: { trigger: root, start: 'top 85%', once: true },
+      scrollTrigger: { trigger: root, ...ENTRY },
     });
     slides.forEach((slide, index) => {
-      // Au-delà de 6 éléments, les suivants partagent le dernier délai (a6 §3.4).
-      const at = Math.min(index, 5) * list;
+      const at = cascade(index);
       const media = medias[index];
       entry.from(slide, { y: rise, duration: focal, clearProps: 'transform' }, at);
       // La tuile monte avec la carte active : elles forment une unité.
@@ -217,19 +216,12 @@ useMotion(carousel, ({ gsap }, root) => {
     });
   }
 
-  /*
-   * Les tweens nés après la mise en place (changement de carte) échappent au
-   * contexte GSAP : on les arrête et on efface leurs styles ici, pour qu'un passage
-   * en mouvement réduit ou un démontage rende l'état final exact.
-   */
   return () => {
     stopWatching();
     rail?.removeEventListener('scroll', place);
     window.removeEventListener('resize', place);
-    gsap.killTweensOf([glide, ...medias, ...asterisks]);
-    unset(medias, release);
-    unset(asterisks, ['--number-turn']);
-    if (tile) unset([tile], ['--follow']);
+    // Posée sans tween (quickSetter) : GSAP ne la défait pas.
+    tile?.style.removeProperty('--follow');
   };
 });
 </script>

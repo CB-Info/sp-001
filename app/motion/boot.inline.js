@@ -8,8 +8,8 @@
 //               (mouvement réduit, JS en panne), tout est visible, état final.
 //   hero-intro  l'intro du hero va jouer (arrivée en haut de page, sans ancre) :
 //               ses états initiaux s'appliquent.
-//   hero-ready  l'intro démarre (keyframes CSS) : dès que la photo du hero est
-//               décodée, au plus tard 1,2 s après le parsing.
+//   hero-ready  l'intro démarre (keyframes CSS) : dès que la photo du hero et sa
+//               plaque de stries sont décodées, au plus tard 1,2 s après le parsing.
 (() => {
   const root = document.documentElement;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
@@ -29,16 +29,12 @@
   const start = () => root.classList.add('hero-ready');
   const fallback = setTimeout(start, 1200);
   const whenParsed = () => {
-    const photo = document.querySelector('.hero__photo');
-    if (!photo) return start();
+    const images = [...document.querySelectorAll('.hero__photo, .hero__streaks')];
     // decode() résout aussi si l'image est déjà là ; une erreur ne bloque pas l'intro.
-    photo
-      .decode()
-      .catch(() => {})
-      .then(() => {
-        clearTimeout(fallback);
-        start();
-      });
+    Promise.all(images.map((image) => image.decode().catch(() => {}))).then(() => {
+      clearTimeout(fallback);
+      start();
+    });
   };
   // « interactive » : le HTML est analysé, avant l'exécution du bundle (différé).
   if (document.readyState === 'loading') {

@@ -5,12 +5,18 @@
  */
 const rootStyle = () => getComputedStyle(document.documentElement);
 
-/** Durée d'un token (« 240ms » ou « 0.24s ») en secondes, l'unité de GSAP. */
-export function duration(token: `--dur-${string}`): number {
+/** Temps d'un token (« 240ms » ou « 0.24s ») en secondes, l'unité de GSAP. */
+function seconds(token: `--${string}`): number {
   const value = rootStyle().getPropertyValue(token).trim();
   const amount = Number.parseFloat(value);
   return value.endsWith('ms') ? amount / 1000 : amount;
 }
+
+/** Durée d'un token (--dur-*, ou --seq-max, le plafond d'une séquence), en secondes. */
+export const duration = (token: `--dur-${string}` | '--seq-max'): number => seconds(token);
+
+/** Décalage entre les éléments d'une cascade (--stagger-*), en secondes. */
+export const stagger = (token: `--stagger-${string}`): number => seconds(token);
 
 /** Points de contrôle d'un token « cubic-bezier(x1, y1, x2, y2) ». */
 export function bezier(token: `--ease-${string}`): string {

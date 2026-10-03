@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { duration, length } from '~/motion/tokens';
+import { capped, ENTRY, reached } from '~/motion/sequence';
+import { duration, length, stagger } from '~/motion/tokens';
 import type { Coach, HomeContent } from '~/types/content';
 
 /**
@@ -47,12 +48,6 @@ const IMAGE_SETTLE = 1.06;
 const FLAT = { '--fx': '0%', '--ft': '0%', '--fb': '0%' };
 const NOTCH = '--fx,--ft,--fb';
 
-/** Décalage entre éléments d'une liste (--stagger-*), en secondes : une durée comme une autre. */
-const stagger = (token: `--stagger-${string}`) => duration(token as `--dur-${string}`);
-
-/** Au-delà de 6 éléments, les suivants partagent le dernier délai (a6 §3.4). */
-const capped = (each: number) => (index: number) => Math.min(index, 5) * each;
-
 const hooks = (scope: ParentNode, name: string) => [
   ...scope.querySelectorAll<HTMLElement>(`[data-motion="programs-${name}"]`),
 ];
@@ -78,9 +73,7 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
    * son bord bas. Un filet déjà à l'écran (ancre, rechargement) reste entier.
    */
   const edge = (owner: Element) => (owner === accordion ? 'top' : 'bottom');
-  const rules = [accordion, ...items].filter(
-    (owner) => owner.getBoundingClientRect()[edge(owner)] >= innerHeight,
-  );
+  const rules = [accordion, ...items].filter((owner) => !reached(owner, edge(owner)));
   const traces = new Map<Element, gsap.core.Timeline>(
     rules.map((owner) => [
       owner,
@@ -112,10 +105,10 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
   };
   /** Mouvement en cours du cadre (entrée, puis ré-encoches) : une commande remplace la précédente. */
   let notching: gsap.core.Animation | undefined;
-  if (photo.getBoundingClientRect().top >= innerHeight) {
+  if (!reached(photo)) {
     notching = gsap.fromTo(photo, FLAT, { ...notch, duration: focal, clearProps: NOTCH });
     gsap
-      .timeline({ scrollTrigger: { trigger: photo, start: 'top 85%', once: true } })
+      .timeline({ scrollTrigger: { trigger: photo, ...ENTRY } })
       .add(notching, 0)
       .fromTo(
         photo.querySelector('img'),
@@ -130,7 +123,6 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
 
   /** Mouvement en cours des détails de chaque élément. */
   const settling = new Map<HTMLElement, gsap.core.Tween>();
-  let refresh: gsap.core.Tween | undefined;
 
   /*
    * Chaque commande repart de l'état courant et remplace la précédente (jamais de
@@ -175,15 +167,10 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
       .timeline()
       .to(photo, { ...FLAT, duration: beat, ease: 'in' })
       .to(photo, { ...notch, duration: layout, ease: 'in-out', clearProps: NOTCH });
-
-    // La page a changé de hauteur : les déclencheurs plus bas se recalent, une fois la grille posée.
-    refresh?.kill();
-    refresh = gsap.delayedCall(layout, () => ScrollTrigger.refresh());
   };
 
   return () => {
     onSwitch = undefined;
-    refresh?.kill();
     notching?.kill();
     settling.forEach((tween) => tween.kill());
     gsap.set([photo, ...items.flatMap(details)], { clearProps: `opacity,transform,${NOTCH}` });

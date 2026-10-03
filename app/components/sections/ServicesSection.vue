@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ENTRY, reached } from '~/motion/sequence';
 import { duration } from '~/motion/tokens';
 import type { HomeContent } from '~/types/content';
 
@@ -110,7 +111,7 @@ useMotion(section, ({ gsap }, root) => {
     panel.removeAttribute('data-measuring');
     ticks.remove();
   };
-  if (panel.getBoundingClientRect().top > innerHeight) {
+  if (!reached(panel)) {
     const style = getComputedStyle(grid);
     const columns = Number.parseInt(style.getPropertyValue('--columns'), 10);
     const trace = duration('--dur-focal');
@@ -128,7 +129,7 @@ useMotion(section, ({ gsap }, root) => {
     gsap
       .timeline({
         defaults: { force3D: false },
-        scrollTrigger: { trigger: panel, start: 'top 85%', once: true },
+        scrollTrigger: { trigger: panel, ...ENTRY },
         onComplete: measured,
       })
       .fromTo(
@@ -284,12 +285,9 @@ useMotion(section, ({ gsap }, root) => {
   margin-block-start: var(--gap);
 }
 
-/* Pendant la mesure, la trame d'origine ne garde que ses filets horizontaux (premier fond masqué). */
+/* Pendant la mesure, la trame d'origine ne garde que ses filets horizontaux. */
 .services__panel[data-measuring] > [data-motion='services-panel'] {
-  background-size:
-    0 0,
-    auto;
-  border-inline-end-color: transparent;
+  --verticals: transparent;
 }
 
 .services__panel :deep(.services__ticks) {

@@ -3,7 +3,8 @@ import type { HomeContent, NavLink } from '~/types/content';
 import { ui } from '~/data/ui';
 import type { Motion } from '~/motion/gsap';
 import { pauseScroll, resumeScroll } from '~/motion/scroll';
-import { duration, length } from '~/motion/tokens';
+import { capped } from '~/motion/sequence';
+import { duration, length, stagger } from '~/motion/tokens';
 
 /**
  * Menu plein écran : un <dialog> natif ouvert avec showModal(), qui fournit le
@@ -103,15 +104,6 @@ function onClick(event: MouseEvent) {
 }
 
 onBeforeUnmount(() => lockScroll(false));
-
-/** Décalage entre éléments d'une liste (--stagger-*), en secondes : une durée comme une autre. */
-const stagger = (token: `--stagger-${string}`) => duration(token as `--dur-${string}`);
-
-/** Au-delà de 6 éléments, les suivants partagent le dernier délai (a6 §3.4). */
-const capped =
-  (each: number, fromEnd = false) =>
-  (index: number, _target: unknown, list: unknown[]) =>
-    Math.min(fromEnd ? list.length - 1 - index : index, 5) * each;
 
 /** Masques de ligne : on entre par la gauche, on sort par la droite (le vecteur de la marque). */
 const BEFORE = 'inset(0% 100% 0% 0%)';
