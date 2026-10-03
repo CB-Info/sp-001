@@ -7,8 +7,8 @@ import { ui } from '~/data/ui';
  * - `cross` : les 4 points des milieux glissent d'un demi-pas sur les diagonales,
  *   les 9 points forment un « × » dont chaque branche est un petit escalier
  *   (écho de la silhouette à gradin).
- * - `closes` : le libellé devient « Fermer ». Le déclencheur de l'en-tête garde
- *   toujours « Menu » : son nom accessible ne change pas quand le focus y revient.
+ * - `closes` : le libellé défile jusqu'à « Fermer ». Le déclencheur de l'en-tête
+ *   garde toujours « Menu » : son nom accessible ne change pas quand le focus y revient.
  *
  * Les deux libellés partagent la même cellule de grille : la largeur ne change
  * pas entre « Menu » et « Fermer », donc la grille de points ne bouge pas d'un
@@ -180,22 +180,47 @@ defineExpose({ focus: () => root.value?.focus() });
   }
 }
 
+/* Le libellé qui sort défile hors de sa cellule, celui qui entre y défile (a6 §5). */
 .menu-trigger__labels {
   display: grid;
+  overflow: clip;
 }
 
 .menu-trigger__label {
   grid-area: 1 / 1;
+  transition:
+    translate var(--dur-state) var(--ease-out),
+    visibility var(--dur-state);
 }
 
-.menu-trigger--closes .menu-trigger__label--menu,
+/* Le libellé masqué attend hors de la cellule : « Menu » au-dessus, « Fermer » en dessous. */
+.menu-trigger--closes .menu-trigger__label--menu {
+  visibility: hidden;
+  translate: 0 -100%;
+}
+
 .menu-trigger:not(.menu-trigger--closes) .menu-trigger__label--close {
   visibility: hidden;
+  translate: 0 100%;
+}
+
+/* Le bouton de fermeture du dialog naît « Menu » et défile jusqu'à « Fermer ». */
+@starting-style {
+  .menu-trigger--closes .menu-trigger__label--menu {
+    visibility: visible;
+    translate: 0 0;
+  }
+
+  .menu-trigger--closes .menu-trigger__label--close {
+    visibility: hidden;
+    translate: 0 100%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .menu-trigger__grid,
-  .menu-trigger__dot {
+  .menu-trigger__dot,
+  .menu-trigger__label {
     transition: none;
   }
 }

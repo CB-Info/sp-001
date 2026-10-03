@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { HomeContent, NavLink } from '~/types/content';
+import type { Motion } from '~/motion/gsap';
 
 /**
  * En-tête posé sur le hero (absolu, pas encore collant) et menu plein écran.
@@ -20,6 +21,12 @@ const menuId = 'menu';
 const open = ref(false);
 const enhanced = ref(false);
 const trigger = useTemplateRef<{ focus: () => void }>('trigger');
+const header = useTemplateRef<HTMLElement>('header');
+const menu = useTemplateRef<{ withMotion: (motion: Motion) => (() => void) | undefined }>('menu');
+
+// Fermé, le menu n'occupe pas l'écran : son mouvement se prépare quand l'en-tête,
+// qui porte le déclencheur, approche de l'écran.
+useMotion(header, (motion) => menu.value?.withMotion(motion));
 
 onMounted(() => {
   enhanced.value = true;
@@ -37,7 +44,7 @@ function onClosed(reason: 'link' | 'dismiss') {
 </script>
 
 <template>
-  <header class="site-header" data-surface="hot">
+  <header ref="header" class="site-header" data-surface="hot">
     <HeaderBar>
       <MenuTrigger
         ref="trigger"
@@ -51,6 +58,7 @@ function onClosed(reason: 'link' | 'dismiss') {
   </header>
   <MenuDialog
     :id="menuId"
+    ref="menu"
     v-model:open="open"
     :nav="nav"
     :socials="socials"

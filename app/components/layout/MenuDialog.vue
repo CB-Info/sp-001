@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { HomeContent, NavLink } from '~/types/content';
 import { ui } from '~/data/ui';
+import type { Motion } from '~/motion/gsap';
+import { pauseScroll, resumeScroll } from '~/motion/scroll';
+import { duration, length } from '~/motion/tokens';
 
 /**
  * Menu plein écran : un <dialog> natif ouvert avec showModal(), qui fournit le
@@ -12,6 +15,7 @@ import { ui } from '~/data/ui';
  *   native vers l'ancre a lieu.
  * - Sans JS (`enhanced` faux), le dialog s'affiche par :target (#menu) et se
  *   referme dès qu'un lien change la cible.
+ * - Mouvement : voir withMotion(). Sans lui, le menu apparaît et disparaît d'un coup.
  */
 const props = defineProps<{
   id: string;
@@ -29,19 +33,37 @@ const emit = defineEmits<{
 }>();
 
 const dialog = useTemplateRef<HTMLDialogElement>('dialog');
+const trace = useTemplateRef<HTMLElement>('trace');
 
 const items = computed(() =>
   props.nav.map((link, index) => ({ ...link, index: String(index + 1).padStart(2, '0') })),
 );
 
+/**
+ * Le bouton du dialog suit l'état : pendant que le rideau remonte, il redevient
+ * « Menu », comme le déclencheur qu'il recouvre. Sans JS, le dialog n'est
+ * visible qu'ouvert (:target) : toujours « Fermer ».
+ */
+const showsClose = computed(() => open.value || !props.enhanced);
+
+/** Le défilement de la page s'arrête sous le menu, Lenis compris. */
 function lockScroll(locked: boolean) {
   document.documentElement.style.overflow = locked ? 'hidden' : '';
+  if (locked) pauseScroll();
+  else resumeScroll();
 }
+
+/** Rideau du menu : présent seulement quand le mouvement est actif (voir withMotion). */
+let curtain: { halt: () => void; lower: () => void; raise: () => void } | undefined;
 
 function show() {
   const el = dialog.value;
   if (!el || el.open) return;
+  // Avant showModal() : un dialog encore inerte ne recevrait pas le focus.
+  curtain?.halt();
   el.showModal();
+  // Le rideau mesure tant que la mise en page est propre, avant que la page ne se fige.
+  curtain?.lower();
   lockScroll(true);
 }
 
@@ -49,7 +71,13 @@ function hide(reason: 'link' | 'dismiss') {
   const el = dialog.value;
   if (!el?.open) return;
   el.close();
+  release(reason);
+}
+
+/** Le dialog est fermé : la page est rendue tout de suite, seul le rideau finit de remonter. */
+function release(reason: 'link' | 'dismiss') {
   lockScroll(false);
+  curtain?.raise();
   open.value = false;
   emit('closed', reason);
 }
@@ -57,12 +85,15 @@ function hide(reason: 'link' | 'dismiss') {
 // Après le rendu : à l'hydratation, le bouton « Fermer » doit exister avant showModal() (autofocus).
 watch(open, (value) => (value ? show() : hide('dismiss')), { flush: 'post' });
 
-/** Échap : le dialog est déjà fermé par le navigateur, on resynchronise l'état. */
+/** Échap : on ferme nous-mêmes, dans l'événement, pour que le rideau remonte sans image vide avant. */
+function onCancel(event: Event) {
+  event.preventDefault();
+  hide('dismiss');
+}
+
+/** Fermeture par le navigateur seul (Échap répété, geste retour) : on resynchronise l'état. */
 function onNativeClose() {
-  if (!open.value) return;
-  lockScroll(false);
-  open.value = false;
-  emit('closed', 'dismiss');
+  if (open.value) release('dismiss');
 }
 
 /** Tout lien interne du menu (sections, logo, téléphone) ferme avant de naviguer. */
@@ -72,10 +103,201 @@ function onClick(event: MouseEvent) {
 }
 
 onBeforeUnmount(() => lockScroll(false));
+
+/** Décalage entre éléments d'une liste (--stagger-*), en secondes : une durée comme une autre. */
+const stagger = (token: `--stagger-${string}`) => duration(token as `--dur-${string}`);
+
+/** Au-delà de 6 éléments, les suivants partagent le dernier délai (a6 §3.4). */
+const capped =
+  (each: number, fromEnd = false) =>
+  (index: number, _target: unknown, list: unknown[]) =>
+    Math.min(fromEnd ? list.length - 1 - index : index, 5) * each;
+
+/** Masques de ligne : on entre par la gauche, on sort par la droite (le vecteur de la marque). */
+const BEFORE = 'inset(0% 100% 0% 0%)';
+const SHOWN = 'inset(0% 0% 0% 0%)';
+const AFTER = 'inset(0% 0% 0% 100%)';
+
+/**
+ * Mouvement du menu, branché par SiteHeader via useMotion() : fermé, le dialog
+ * n'occupe pas l'écran, c'est l'en-tête qui annonce son approche.
+ *
+ * - Rideau : le dialog est découpé par un polygone dont le bord bas porte une
+ *   marche de --move-xl au droit de la colonne des libellés, la silhouette en
+ *   escalier à l'échelle de l'écran (la partie droite mène, comme la plaque
+ *   arrière). Une trace rouge borde ce bord, d'autant plus longue que le rideau
+ *   est loin de son arrêt : elle se résorbe quand il se pose (« Vitesse → Arrêt »).
+ * - Une seule valeur, `cover` (0 fermé, 1 couvert), dessine les deux : chaque
+ *   commande repart de la valeur courante, sans file d'attente ni état bâtard.
+ * - Fermer rend la page tout de suite (focus, inertie, aria-expanded) : le
+ *   dialog fermé reste seulement affiché, inerte, le temps que le rideau remonte.
+ */
+function withMotion({ gsap }: Motion) {
+  const el = dialog.value;
+  const band = trace.value;
+  if (!el || !band) return undefined;
+
+  const hook = (name: string) => el.querySelectorAll(`[data-motion="menu-${name}"]`);
+  const movers = el.querySelectorAll('[data-motion^="menu-"]');
+
+  // Tokens lus une fois : une commande (ouvrir, fermer) ne force aucun recalcul de plus.
+  const step = length('--move-xl');
+  const shift = length('--move-l');
+  const nudge = length('--move-s');
+  const enter = duration('--dur-overlay');
+  const exit = enter * 0.65; // a6 §3.2 : la sortie va plus vite que l'entrée
+  const layout = duration('--dur-layout');
+  const brief = duration('--dur-state');
+  const quick = duration('--dur-feedback');
+  const strike = duration('--dur-strike');
+  const lines = stagger('--stagger-lines');
+  const tight = stagger('--stagger-tight');
+
+  /** Abscisse de la marche : le début des libellés, mesuré sur un contenu au repos. */
+  const labelColumn = () => el.querySelector('.menu__label')?.getBoundingClientRect().left ?? 0;
+  const state = { cover: el.open ? 1 : 0 };
+  let edge = el.open ? labelColumn() : 0;
+  // Hauteur du dialog (plein écran) gardée à jour : le dessin ne lit jamais la mise en page.
+  let height = innerHeight;
+  const measure = () => (height = innerHeight);
+  addEventListener('resize', measure, { passive: true });
+  let curtainTween: gsap.core.Tween | undefined;
+  let content: gsap.core.Animation | undefined;
+  let departing = false;
+
+  const draw = () => {
+    const front = state.cover * (height + step); // bord, à droite de la marche
+    const back = front - step; // bord, à gauche de la marche
+    const tail = step * (1 - state.cover); // longueur de la trace
+    el.style.clipPath = `polygon(0 0, 100% 0, 100% ${front}px, ${edge}px ${front}px, ${edge}px ${back}px, 0 ${back}px)`;
+    band.style.clipPath = `polygon(0 ${back - tail}px, ${edge}px ${back - tail}px, ${edge}px ${front - tail}px, 100% ${front - tail}px, 100% ${front}px, ${edge}px ${front}px, ${edge}px ${back}px, 0 ${back}px)`;
+  };
+
+  const move = (cover: 0 | 1, seconds: number, ease: 'out' | 'in', onComplete: () => void) => {
+    curtainTween?.kill();
+    band.hidden = false;
+    draw();
+    curtainTween = gsap.to(state, { cover, duration: seconds, ease, onUpdate: draw, onComplete });
+  };
+
+  /** Rideau posé ou reparti : plus de découpe ni de trace. */
+  const unclip = () => {
+    el.style.removeProperty('clip-path');
+    band.style.removeProperty('clip-path');
+    band.hidden = true;
+  };
+
+  /** Rideau remonté : le dialog fermé disparaît, son contenu retrouve son état final. */
+  const vanish = () => {
+    el.inert = false;
+    el.classList.remove('menu--leaving');
+    unclip();
+    content?.kill();
+    content = undefined;
+    gsap.set(movers, { clearProps: 'transform,clipPath' });
+  };
+
+  /** Derrière le rideau : les repères se verrouillent, les liens arrivent ligne à ligne, puis les réseaux. */
+  const arrive = () =>
+    gsap
+      .timeline({ defaults: { duration: layout } })
+      .fromTo(
+        hook('mark'),
+        { rotation: 45, scale: 0.6 },
+        {
+          rotation: 0,
+          scale: 1,
+          stagger: capped(tight),
+          clearProps: 'transform',
+        },
+        0,
+      )
+      // Au quart de sa course (--ease-out), le rideau a couvert l'essentiel de l'écran.
+      .fromTo(
+        hook('link'),
+        { x: -shift, clipPath: BEFORE },
+        {
+          x: 0,
+          clipPath: SHOWN,
+          stagger: capped(lines),
+          clearProps: 'transform,clipPath',
+        },
+        enter / 4,
+      )
+      .fromTo(
+        hook('social'),
+        { x: -nudge, clipPath: BEFORE },
+        {
+          x: 0,
+          clipPath: SHOWN,
+          duration: brief,
+          stagger: capped(tight),
+          clearProps: 'transform,clipPath',
+        },
+        `>-${brief}`,
+      )
+      // L'astérisque avance d'un cran : le point d'arrêt de la séquence.
+      .fromTo(
+        hook('asterisk'),
+        { rotation: -45 },
+        { rotation: 0, duration: strike, ease: 'strike', clearProps: 'transform' },
+        '<',
+      );
+
+  /**
+   * Les liens repartent vers la droite, du bas vers le haut comme le rideau qui
+   * les rattrape : la fermeture répond tout de suite, pendant que --ease-in prend son élan.
+   */
+  const depart = () =>
+    gsap.to(hook('link'), {
+      x: nudge,
+      clipPath: AFTER,
+      duration: quick,
+      ease: 'in',
+      stagger: capped(tight, true),
+    });
+
+  curtain = {
+    halt() {
+      el.inert = false;
+      el.classList.remove('menu--leaving');
+    },
+    lower() {
+      // Rideau parti, contenu au repos : avant le décalage d'entrée des liens.
+      if (state.cover === 0) edge = labelColumn();
+      if (state.cover === 0 || departing) {
+        content?.kill();
+        content = arrive();
+      }
+      departing = false;
+      move(1, enter * (1 - state.cover), 'out', unclip);
+    },
+    raise() {
+      el.inert = true;
+      el.classList.add('menu--leaving');
+      content?.kill();
+      content = depart();
+      departing = true;
+      move(0, exit * state.cover, 'in', vanish);
+    },
+  };
+
+  return () => {
+    curtain = undefined;
+    removeEventListener('resize', measure);
+    curtainTween?.kill();
+    vanish();
+  };
+}
+
+defineExpose({ withMotion });
 </script>
 
 <template>
-  <!-- Le clic est délégué aux liens qu'il contient : le dialog lui-même n'est pas interactif. -->
+  <!--
+    Le clic est délégué aux liens qu'il contient : le dialog lui-même n'est pas interactif.
+    data-lenis-prevent : Lenis, arrêté sous le menu, laisse la molette au dialog (s'il défile).
+  -->
   <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -->
   <dialog
     :id="id"
@@ -85,6 +307,8 @@ onBeforeUnmount(() => lockScroll(false));
     data-motion="menu-panel"
     :aria-label="ui.menu.dialog"
     :data-enhanced="enhanced || undefined"
+    data-lenis-prevent
+    @cancel="onCancel"
     @close="onNativeClose"
     @click="onClick"
   >
@@ -98,8 +322,8 @@ onBeforeUnmount(() => lockScroll(false));
       -->
       <!-- eslint-disable vuejs-accessibility/no-autofocus -->
       <MenuTrigger
-        cross
-        closes
+        :cross="showsClose"
+        :closes="showsClose"
         autofocus
         :href="enhanced ? undefined : '#haut'"
         :aria-label="ui.menu.closeLabel"
@@ -109,25 +333,28 @@ onBeforeUnmount(() => lockScroll(false));
     </HeaderBar>
 
     <div class="menu__body container">
-      <CrosshairRow class="menu__marks" />
+      <CrosshairRow class="menu__marks" motion="menu-mark" />
 
       <nav class="menu__nav" :aria-label="ui.menu.sections">
         <ol role="list" class="menu__list">
-          <li v-for="item in items" :key="item.href" class="menu__item" data-motion="menu-link">
-            <a class="menu__link" :href="item.href">
+          <li v-for="item in items" :key="item.href" class="menu__item">
+            <a class="menu__link" :href="item.href" data-motion="menu-link">
               <span class="menu__index" aria-hidden="true">{{ item.index }}</span>
               <span class="menu__label">{{ item.label }}</span>
               <span class="menu__figure" aria-hidden="true">{{ item.index }}</span>
             </a>
           </li>
         </ol>
-        <Asterisk class="menu__mark" size="var(--menu-mark)" />
+        <!-- Le support tourne à l'ouverture, l'astérisque garde son cran (Asterisk.vue). -->
+        <span class="menu__mark" data-motion="menu-asterisk">
+          <Asterisk class="menu__asterisk" size="var(--menu-mark)" />
+        </span>
       </nav>
 
       <div class="menu__footer">
         <p class="menu__note">{{ note }}</p>
         <ul role="list" class="menu__socials" :aria-label="ui.socials">
-          <li v-for="social in socials" :key="social.icon">
+          <li v-for="social in socials" :key="social.icon" data-motion="menu-social">
             <IconButton
               :icon="social.icon"
               :label="social.label"
@@ -141,6 +368,9 @@ onBeforeUnmount(() => lockScroll(false));
     </div>
 
     <RuledGrid class="menu__strip" variant="strip" />
+
+    <!-- Trace rouge du rideau en mouvement (withMotion) : absente au repos. -->
+    <span ref="trace" class="menu__trace" aria-hidden="true" hidden />
   </dialog>
 </template>
 
@@ -184,6 +414,21 @@ onBeforeUnmount(() => lockScroll(false));
 
 .menu::backdrop {
   background: transparent;
+}
+
+/* Fermé, le dialog reste affiché le temps que le rideau remonte (withMotion), sans capter le pointeur. */
+.menu--leaving {
+  display: grid;
+  pointer-events: none;
+}
+
+/* Au-dessus du contenu : là où passe la trace, le rideau n'a pas encore tout couvert. */
+.menu__trace {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: var(--red-500);
+  pointer-events: none;
 }
 
 /* Cadre de filets à --frame-inset des bords, comme dans le hero. */
@@ -383,7 +628,10 @@ onBeforeUnmount(() => lockScroll(false));
     position: absolute;
     inset-inline-end: 0;
     inset-block-end: 0;
-    /* Le cran de l'astérisque (Asterisk.vue) et le passage au rouge. */
+  }
+
+  /* Le cran de l'astérisque (Asterisk.vue) et le passage au rouge. */
+  .menu__asterisk {
     transition:
       rotate var(--dur-strike) var(--ease-strike),
       fill var(--dur-feedback) var(--ease-out-soft);
@@ -408,6 +656,17 @@ onBeforeUnmount(() => lockScroll(false));
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Sans rideau : un fondu bref à l'ouverture, la fermeture est immédiate. */
+  .menu[open] {
+    transition: opacity var(--dur-feedback) linear;
+  }
+
+  @starting-style {
+    .menu[open] {
+      opacity: 0;
+    }
+  }
+
   .menu__figure {
     translate: none;
     transition: none;
