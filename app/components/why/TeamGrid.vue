@@ -256,7 +256,23 @@ const memberSizes = { xs: '50vw', sm: '24vw', lg: '23vw', '2xl': '330px' };
   .team__member {
     --member-delay: var(--return-delay);
 
+    position: relative;
+    isolation: isolate;
     transition: --member-open var(--close-duration) var(--ease-in-out) var(--member-delay);
+  }
+
+  /*
+   * La moitié de chaque gouttière appartient au membre voisin : d'un portrait à
+   * l'autre, le pointeur ne traverse jamais l'état « personne ». Sans cela, le
+   * membre quitté attendrait le retour différé (150 ms) avant de se refermer, alors
+   * que le suivant s'ouvre déjà : toute la rangée se tasserait puis respirerait.
+   */
+  .team__member::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset-block: 0;
+    inset-inline: calc(var(--gap) / -2);
   }
 
   .team__list:has(.team__member:hover) .team__member {
@@ -297,6 +313,20 @@ const memberSizes = { xs: '50vw', sm: '24vw', lg: '23vw', '2xl': '330px' };
     opacity: 0;
     transition-delay: 0s;
   }
+}
+
+/*
+ * Entrée du bouton (WhySection) : --sink vaut 1 quand la plaque avant est posée
+ * sur sa plaque arrière, 0 au repos ; la plaque arrière compense et ne bouge pas.
+ * Sans --sink (repos, mouvement réduit, sans JS), ces déclarations sont invalides
+ * et transform reste à none : le survol et l'appui (translate) restent intacts.
+ */
+.team__cta {
+  transform: translate(calc(var(--sx) * var(--sink)), calc(var(--st) * var(--sink)));
+}
+
+.team__cta::before {
+  transform: translate(calc(var(--sx) * var(--sink) * -1), calc(var(--st) * var(--sink) * -1));
 }
 
 /* Mouvement réduit : les états changent sans transition (le délai anti-scintillement reste). */

@@ -6,8 +6,8 @@ import type { Pillar } from '~/types/content';
  * pilier, libellé en haut et texte en bas. Le vide central des cellules est voulu :
  * il « charge » la ligne comme une fiche technique (référence, a1 §2.5).
  *
- * Les filets sont des éléments à part (data-motion="why-rule") : la chorégraphie
- * pourra les tracer sans toucher au texte, qui reste lisible dès le départ.
+ * Les filets sont des éléments à part (data-motion="why-rule") : la chorégraphie de
+ * WhySection les trace, puis remplit les cellules (why-statement, why-text).
  */
 defineProps<{ statement: string; text: string; pillars: Pillar[] }>();
 </script>
@@ -20,14 +20,14 @@ defineProps<{ statement: string; text: string; pillars: Pillar[] }>();
       aria-hidden="true"
     />
     <div class="feature-table__intro" data-motion="why-cell">
-      <p class="feature-table__statement">{{ statement }}</p>
-      <p class="feature-table__text">{{ text }}</p>
+      <p class="feature-table__statement" data-motion="why-statement">{{ statement }}</p>
+      <p class="feature-table__text" data-motion="why-text">{{ text }}</p>
     </div>
     <ul role="list" class="feature-table__pillars">
       <li v-for="pillar in pillars" :key="pillar.title" class="pillar" data-motion="why-cell">
         <span class="pillar__edge" data-motion="why-rule" aria-hidden="true" />
-        <h3 class="pillar__title">{{ pillar.title }}</h3>
-        <p class="pillar__text">{{ pillar.text }}</p>
+        <h3 class="pillar__title" data-motion="why-text">{{ pillar.title }}</h3>
+        <p class="pillar__text" data-motion="why-text">{{ pillar.text }}</p>
       </li>
     </ul>
     <span
@@ -80,6 +80,25 @@ defineProps<{ statement: string; text: string; pillars: Pillar[] }>();
   grid-row: 4;
 }
 
+/*
+ * Tracé d'entrée (WhySection) : un filet part de son origine, en haut à gauche. Le
+ * temps du trait, GSAP pose --rule-tip (sens du tracé) et --rule-heat (1 → 0) : la
+ * pointe file en rouge et refroidit au gris du filet. Hors tracé, ces variables
+ * n'existent pas, les déclarations du dégradé sont invalides : le filet reste uni.
+ */
+.feature-table__rule,
+.pillar__edge {
+  transform-origin: 0 0;
+}
+
+.feature-table__rule {
+  background-image: linear-gradient(
+    var(--rule-tip),
+    transparent 55%,
+    color-mix(in srgb, var(--accent) calc(var(--rule-heat) * 100%), transparent)
+  );
+}
+
 .feature-table__statement {
   max-inline-size: 17rem;
   font-family: var(--font-display);
@@ -111,6 +130,12 @@ defineProps<{ statement: string; text: string; pillars: Pillar[] }>();
   border-block-start-width: var(--edge-top, 0);
   border-inline-start-width: var(--edge-start, 0);
   border-inline-end-width: var(--edge-end, 0);
+  border-image: linear-gradient(
+      var(--rule-tip),
+      var(--rule) 55%,
+      color-mix(in srgb, var(--accent) calc(var(--rule-heat) * 100%), var(--rule))
+    )
+    1;
   pointer-events: none;
 }
 

@@ -24,7 +24,7 @@ defineProps<{
 <template>
   <li class="member" :class="{ 'member--featured': featured }" data-motion="why-member">
     <figure class="member__figure">
-      <div class="member__photo">
+      <div class="member__photo" data-motion="why-portrait">
         <NuxtPicture
           :src="coach.portrait.src"
           :width="coach.portrait.width"
@@ -69,7 +69,7 @@ defineProps<{
 /*
  * Le portrait s'allonge avec --member-open : carré au repos, 25,85 % plus haut en
  * vedette (mesuré : 325 × 409). L'image recadre en continu (object-fit), sans
- * clip-path : celui-ci reste libre pour la révélation de la chorégraphie.
+ * clip-path : celui-ci reste libre pour l'entrée du portrait (WhySection).
  */
 .member__photo {
   aspect-ratio: 1 / calc(1 + var(--member-stretch, 0.2585) * var(--member-open));
