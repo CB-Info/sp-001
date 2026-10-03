@@ -9,7 +9,7 @@ Reconstruction fidèle et animée d'une landing page de salle de sport, sous la 
 - Analyse de la référence et recommandations : [`docs/analyse/00-synthese.md`](docs/analyse/00-synthese.md) (rapports détaillés dans [`docs/analyse/annexes/`](docs/analyse/annexes/))
 - Produit (Impeccable `init`) : [`PRODUCT.md`](PRODUCT.md)
 - Décision de stack, Nuxt 4.5 + GSAP : [`docs/adr/0001-stack-nuxt-gsap.md`](docs/adr/0001-stack-nuxt-gsap.md)
-- Brief de la page (Impeccable `shape`), en attente de validation : [`docs/brief/accueil.md`](docs/brief/accueil.md)
+- Brief de la page (Impeccable `shape`), validé : [`docs/brief/accueil.md`](docs/brief/accueil.md) ; contrat de direction dans [`.impeccable/surfaces/`](.impeccable/surfaces/)
 
 ## Méthode
 

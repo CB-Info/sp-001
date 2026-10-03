@@ -10,7 +10,7 @@ web
 
 Nuxt 4.5 en génération statique (`nuxt generate`), Vue 3.5, TypeScript ~6.0, GSAP 3.15 comme moteur d'animation unique dans la page (ScrollTrigger, SplitText, Flip, CustomEase), Lenis 1.3 sous conditions. C'est le choix de l'auteur, consigné dans [ADR 0001](docs/adr/0001-stack-nuxt-gsap.md).
 
-À décider : l'approche des styles (CSS scopé et tokens, ou Tailwind 4) et l'hébergeur (Vercel ou Cloudflare).
+Styles : CSS scopé dans les composants Vue, avec des tokens CSS à source unique (`tokens.css`) ; pas de Tailwind. Mode de construction Impeccable : code-first (`.impeccable/config.json`). Hébergeur à décider (Vercel ou Cloudflare).
 
 ## Users
 
@@ -76,13 +76,25 @@ Toutes sont générées avec Higgsfield :
 - personnes fictives étiquetées comme telles ;
 - étalonnage cohérent par famille.
 
+### Langue et ton
+
+Contenu en **français**, au tutoiement, au ton direct de la référence. La traduction suit la fidélité : mêmes contenus, mêmes longueurs autant que possible (par exemple « BUILD / STRENGTH » devient « FORGE / TA FORCE »). Typographie française : guillemets « », espaces insécables, interligne du display ajusté aux capitales accentuées.
+
+### Overdrive
+
+Niveau **complet** :
+- moment signature ;
+- échos liés à la vitesse sur les mots géants ;
+- flou directionnel WebGL (OGL) sur la photo du hero ;
+- écho de fin dans le footer.
+
+Le WebGL est chargé après le LCP, seulement sur un appareil capable, avec un repli CSS.
+
 ### Encore indécis
 
-- la langue du contenu ;
-- l'approche des styles ;
-- le niveau d'overdrive (WebGL) ;
 - l'hébergeur ;
-- le nom et le lien du designer d'origine à créditer.
+- le nom et le lien du designer d'origine à créditer ;
+- les témoignages en vidéo ou en images fixes.
 
 ## Brand Commitments
 

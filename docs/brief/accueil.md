@@ -1,6 +1,7 @@
 # Brief de surface : page d'accueil CLUSEM (Impeccable `shape`)
 
-> **Statut** : **brouillon, à valider**. Aucune ligne de code avant validation.
+> **Statut** : **validé le 2026-10-03**. Langue : français. Styles : CSS scopé et tokens. Overdrive : complet. Construction : code-first.
+> Le contrat de direction est dans `.impeccable/surfaces/app-pages-index-vue.md`.
 > **Cible** : la route unique `/` (Nuxt 4.5, génération statique).
 > **Sources** : [`PRODUCT.md`](../../PRODUCT.md), [ADR 0001](../adr/0001-stack-nuxt-gsap.md), [analyse](../analyse/00-synthese.md).
 
@@ -91,7 +92,7 @@
 | Équipe | 5 coachs, le 03 en vedette par défaut. Sur desktop, la vedette suit le survol et le focus ; sur mobile, disposition en bento « 1 + 4 » |
 | Témoignages | Pile de **3 cartes**, compteur « 01 / 03 » et points synchronisés, pas d'autoplay |
 | Menu | Plein écran : ancres des 6 sections, téléphone fictif, réseaux sociaux, mention « concept » et crédit |
-| Langue | **À décider** : elle conditionne les longueurs, les accents du display et l'interligne |
+| Langue | **Français**, au tutoiement. Le display passe à un interligne ≥ 0,9 si une capitale accentuée tombe en 2ᵉ ligne. Les masques de révélation ont un débord vertical. Les composants sont testés avec des textes 15 à 40 % plus longs |
 | États globaux | Polices et images en chargement (pas de décalage de mise en page), sans JS, mouvement réduit, pause globale des animations. Pas de formulaire, donc pas d'état d'erreur |
 
 ## 6. Interaction et mise en page
@@ -117,10 +118,6 @@
   - WCAG 2.2 AA ;
   - images Higgsfield sans aucune image du shot en entrée.
 - **Ouvert** :
-  - la langue ;
-  - l'approche des styles ;
-  - le niveau d'overdrive (WebGL) ;
-  - le mode de construction Impeccable (comp-first ou code-first) ;
   - l'hébergeur ;
   - le crédit (nom et lien du designer) ;
   - les témoignages en vidéo ou en images fixes, ce qui pèse sur les crédits Higgsfield.
