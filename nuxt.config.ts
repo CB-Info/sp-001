@@ -26,6 +26,8 @@ export default defineNuxtConfig({
         { name: 'theme-color', content: '#600305' },
         { name: 'robots', content: 'noindex' },
       ],
+      // Icône déclarée : sans elle, le navigateur demande /favicon.ico (404 en console).
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     },
   },
 

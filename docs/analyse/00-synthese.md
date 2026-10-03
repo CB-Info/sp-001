@@ -7,6 +7,7 @@
 > **Annexes** : les 11 rapports d'analyse complets sont dans [`annexes/`](annexes/). Ce document en est la synthèse arbitrée.
 
 > **Décisions de l'auteur, le 2026-10-03.** Elles priment sur les recommandations de ce document :
+>
 > - stack **Nuxt 4.5 + GSAP** ([ADR 0001](../adr/0001-stack-nuxt-gsap.md)), qui remplace la recommandation Astro du §12 ;
 > - adaptation **« fidèle + correctifs »** : les tensions du §8 sont tranchées en faveur de la référence, et seuls les correctifs d'accessibilité, de responsive, d'états et de cohérence sont appliqués ;
 > - marque **CLUSEM** ;
@@ -27,6 +28,7 @@
    - les trames réglées à 11 colonnes et les repères de calage d'imprimerie.
 
    Tout cela est à préserver.
+
 2. **Le squelette, lui, est générique et la page ne convertit pas.**
    - Le hero n'a aucune action principale. La page n'affiche ni prix, ni horaires, ni adresse, ni offre d'essai.
    - Le seul « Join Now » est un lien de 13 px dans le footer.
@@ -64,17 +66,17 @@
 - **Impeccable n'était pas installé dans la session.** Je l'ai cloné depuis GitHub (v4.5.0) et j'ai lancé son chargeur `impeccable context`. Verdict : `NO_PRODUCT_MD`. Un nouveau site doit d'abord passer par `init` (entretien produit, puis `PRODUCT.md`), puis par `shape` et `new-work`, avant toute ligne de design.
 - **Neuf lentilles indépendantes**, chacune suivant la référence Impeccable correspondante. Chaque analyste travaillait isolé, sans voir les autres.
 
-| Lentille | Références Impeccable | Annexe |
-|---|---|---|
-| Structure, grille, espacement | `layout`, `shape`, `mode-persuade` | [a1](annexes/a1-structure.md) |
-| Typographie (identification par rendu) | `typeset`, `new-work` §4 | [a2](annexes/a2-typography.md) |
-| Couleur, matière, contraste | `colorize`, `craft-floor` | [a3](annexes/a3-color.md) |
-| Inventaire des composants et motifs | `extract`, `polish`, `craft-floor` | [a4](annexes/a4-components.md) |
-| Critique (Assessment A) | `critique` | [a5](annexes/a5-critique.md) |
-| Motion design | `animate`, `delight`, `overdrive` | [a6](annexes/a6-motion.md) |
-| Responsive, audit, durcissement, performance | `adapt`, `audit`, `harden`, `optimize` | [a7](annexes/a7-adapt-audit.md) |
-| Images (plan Higgsfield, lecture seule) | `visualize` (plates et provenance) | [a8](annexes/a8-imagery.md) |
-| Stack, vérifiée sur npm, MDN BCD et CHANGELOG | — | [s1](annexes/s1-stack.md) |
+| Lentille                                      | Références Impeccable                  | Annexe                          |
+| --------------------------------------------- | -------------------------------------- | ------------------------------- |
+| Structure, grille, espacement                 | `layout`, `shape`, `mode-persuade`     | [a1](annexes/a1-structure.md)   |
+| Typographie (identification par rendu)        | `typeset`, `new-work` §4               | [a2](annexes/a2-typography.md)  |
+| Couleur, matière, contraste                   | `colorize`, `craft-floor`              | [a3](annexes/a3-color.md)       |
+| Inventaire des composants et motifs           | `extract`, `polish`, `craft-floor`     | [a4](annexes/a4-components.md)  |
+| Critique (Assessment A)                       | `critique`                             | [a5](annexes/a5-critique.md)    |
+| Motion design                                 | `animate`, `delight`, `overdrive`      | [a6](annexes/a6-motion.md)      |
+| Responsive, audit, durcissement, performance  | `adapt`, `audit`, `harden`, `optimize` | [a7](annexes/a7-adapt-audit.md) |
+| Images (plan Higgsfield, lecture seule)       | `visualize` (plates et provenance)     | [a8](annexes/a8-imagery.md)     |
+| Stack, vérifiée sur npm, MDN BCD et CHANGELOG | —                                      | [s1](annexes/s1-stack.md)       |
 
 - **Trois vérifications adverses** :
   - **v1b** : ré-identification des polices, en partant du principe qu'il faut réfuter, avec 76 concurrents rendus ([annexe](annexes/v1b-fonts.md)) ;
@@ -84,10 +86,10 @@
 
 ### 1.2 Échelles
 
-| Source | Cadre du site | Facteur vers une maquette 1440 |
-|---|---|---|
-| `2.png`, `3.png`, `4.png` | x 100 → 1499, soit 1 400 px | × 1,0286 |
-| `1.png` (page entière) | x 20 → 386, soit 366 px | × 3,93 (± 4 à 8 px) |
+| Source                    | Cadre du site               | Facteur vers une maquette 1440 |
+| ------------------------- | --------------------------- | ------------------------------ |
+| `2.png`, `3.png`, `4.png` | x 100 → 1499, soit 1 400 px | × 1,0286                       |
+| `1.png` (page entière)    | x 20 → 386, soit 366 px     | × 3,93 (± 4 à 8 px)            |
 
 - La maquette est très probablement dessinée en **1440**. Deux sources indépendantes donnent le même hero, à 1 px près.
 - Les zooms 1600 × 1200 sont eux-mêmes des agrandissements × 2 d'une capture en 800 × 600.
@@ -101,28 +103,30 @@
 
 ## 2. Carte de la page
 
-| # | Section | Rôle dans le récit (comprendre, croire, agir) | Hauteur @1440 | Fond | Densité |
-|---|---|---|---|---|---|
-| 0 | Header | S'orienter : logo, MENU, téléphone | ~86 | posé sur la photo | faible |
-| 1 | **Hero** | Accroche, intensité. **Aucune action** | **1 102** [M] | photo en monochrome rouge, fondu au noir | très peu d'éléments, intensité maximale |
-| 2 | **About** | Crédibilité : une promesse, des preuves chiffrées, un coach | ~755 | `#FFFFFF` | moyenne |
-| 3 | **Services** | L'offre : mot géant « SERVICES. », carrousel de cartes | ~1 294 | `#F5F5F5` | calme, puis dense |
-| 4 | **Programs** | Le choix : accordéon de 4 programmes et photo | ~1 176 | `#FFFFFF` | dense |
-| 5 | **Why VYRON** | Différenciation : 4 piliers, équipe de 5 coachs | ~1 219 | `#040F0E` | **la plus dense** |
-| 6 | **Transformation** | Preuve sociale : vidéo et témoignage | ~1 233 | `#FFFFFF` | calme |
-| 7 | **Marquee** | Respiration cinétique avant la fin | ~47–55 | `#F02B42` | — |
-| 8 | **Footer** | Clôture : signature, navigation, 3 panneaux, wordmark géant | ~849 | photo rouge vers noir | dense |
-| | **Total** | | **≈ 7 680 px**, soit 8,5 écrans | | |
+| #   | Section            | Rôle dans le récit (comprendre, croire, agir)               | Hauteur @1440                   | Fond                                     | Densité                                 |
+| --- | ------------------ | ----------------------------------------------------------- | ------------------------------- | ---------------------------------------- | --------------------------------------- |
+| 0   | Header             | S'orienter : logo, MENU, téléphone                          | ~86                             | posé sur la photo                        | faible                                  |
+| 1   | **Hero**           | Accroche, intensité. **Aucune action**                      | **1 102** [M]                   | photo en monochrome rouge, fondu au noir | très peu d'éléments, intensité maximale |
+| 2   | **About**          | Crédibilité : une promesse, des preuves chiffrées, un coach | ~755                            | `#FFFFFF`                                | moyenne                                 |
+| 3   | **Services**       | L'offre : mot géant « SERVICES. », carrousel de cartes      | ~1 294                          | `#F5F5F5`                                | calme, puis dense                       |
+| 4   | **Programs**       | Le choix : accordéon de 4 programmes et photo               | ~1 176                          | `#FFFFFF`                                | dense                                   |
+| 5   | **Why VYRON**      | Différenciation : 4 piliers, équipe de 5 coachs             | ~1 219                          | `#040F0E`                                | **la plus dense**                       |
+| 6   | **Transformation** | Preuve sociale : vidéo et témoignage                        | ~1 233                          | `#FFFFFF`                                | calme                                   |
+| 7   | **Marquee**        | Respiration cinétique avant la fin                          | ~47–55                          | `#F02B42`                                | —                                       |
+| 8   | **Footer**         | Clôture : signature, navigation, 3 panneaux, wordmark géant | ~849                            | photo rouge vers noir                    | dense                                   |
+|     | **Total**          |                                                             | **≈ 7 680 px**, soit 8,5 écrans |                                          |                                         |
 
 **Arc narratif** : accroche → crédibilité → offre → choix → différenciation → preuve → relance. Le hero et le footer se répondent : même photo rouge, même display géant, même astérisque. La page se referme sur elle-même.
 
 **Ce qui manque en mode Persuade** :
+
 - une action principale dans le hero ;
 - une offre concrète (essai, abonnements) ;
 - les infos pratiques (adresse, horaires, planning) ;
 - un appel final avant le footer.
 
 **Rythme** :
+
 - **Ce qui marche.** La section sombre arrive à environ 56 % du défilement : c'est le point culminant du milieu de page. La densité alterne bien. Les espacements contrastent vraiment (12, 20, 48, 80, 120).
 - **La faiblesse.** About, Services et Programs forment **3 225 px de clair d'affilée** (42 % de la page). Seuls le `#F5F5F5`, le mot rouge et la carte noire les séparent.
 
@@ -132,16 +136,16 @@
 
 ### 3.1 Invariants mesurés
 
-| Rôle | Valeur @1440 | Statut |
-|---|---|---|
-| Marges latérales, contenu | **60 px**, contenu de **1 320 px** | [M] |
-| Gouttière entre tuiles | **20 px** | [M] |
-| Padding vertical des sections | **≈ 120 px** (de 114 à 124 selon la section) | [E] |
-| Cadre de filets du hero | à **30 px** des bords (la moitié de la marge) | [M] |
-| Repères « + » du hero | 4 repères à y 656, au pas de **432,7**. Les pointes des deux repères extrêmes tombent sur 60 et 1 380 | [M] |
-| Piste mise en avant | **≈ √2 (1,4)** fois la piste standard : intro de Why 342/244,5 ; portrait central 325/228 ; colonnes de Programs 727/519 | [M] |
-| Axe central | L'élément actif du carrousel Services et le portrait vedette de Why sont **centrés à x = 720** (au pixel près) | [M] |
-| Rayons | **0 partout**, sauf les pastilles (tags), l'avatar rond et les points de pagination | [M] |
+| Rôle                          | Valeur @1440                                                                                                             | Statut |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------ |
+| Marges latérales, contenu     | **60 px**, contenu de **1 320 px**                                                                                       | [M]    |
+| Gouttière entre tuiles        | **20 px**                                                                                                                | [M]    |
+| Padding vertical des sections | **≈ 120 px** (de 114 à 124 selon la section)                                                                             | [E]    |
+| Cadre de filets du hero       | à **30 px** des bords (la moitié de la marge)                                                                            | [M]    |
+| Repères « + » du hero         | 4 repères à y 656, au pas de **432,7**. Les pointes des deux repères extrêmes tombent sur 60 et 1 380                    | [M]    |
+| Piste mise en avant           | **≈ √2 (1,4)** fois la piste standard : intro de Why 342/244,5 ; portrait central 325/228 ; colonnes de Programs 727/519 | [M]    |
+| Axe central                   | L'élément actif du carrousel Services et le portrait vedette de Why sont **centrés à x = 720** (au pixel près)           | [M]    |
+| Rayons                        | **0 partout**, sauf les pastilles (tags), l'avatar rond et les points de pagination                                      | [M]    |
 
 ### 3.2 Grille
 
@@ -157,16 +161,16 @@
 
 Elle repose sur une **base de 4**, organisée en trois séries qui doublent : **12 → 24 → 48**, **20 → 40 → 80** et **60 → 120**. Ces valeurs portent des rôles nommés :
 
-| Rôle | Valeur |
-|---|---|
-| `tight` | 12 |
-| `gutter` | 20 |
-| `stack` | 24 |
-| `stack-loose` | 40 |
-| `header-gap` | 48 |
-| `margin-inline` | 60 |
-| `block-gap` | 80 |
-| `section-pad` | 120 |
+| Rôle            | Valeur |
+| --------------- | ------ |
+| `tight`         | 12     |
+| `gutter`        | 20     |
+| `stack`         | 24     |
+| `stack-loose`   | 40     |
+| `header-gap`    | 48     |
+| `margin-inline` | 60     |
+| `block-gap`     | 80     |
+| `section-pad`   | 120    |
 
 En mobile, ces valeurs deviennent fluides : marges de 60 à 20, padding de section de 120 à 64–72, gouttière de 20 à 16.
 
@@ -176,12 +180,12 @@ En mobile, ces valeurs deviennent fluides : marges de 60 à 20, padding de secti
 
 ### 4.1 Familles (identification par rendu, puis vérification)
 
-| Rôle | Police | Graisses | Preuve |
-|---|---|---|---|
+| Rôle                                           | Police                                                                   | Graisses                                                                                                   | Preuve                                                                                                                                                                                                                                                                                                                                                         |
+| ---------------------------------------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Display, titres, logo, boutons, tags, chiffres | **Tektur** (Google Fonts, OFL, variable `wght` 400–900 et `wdth` 75–100) | 500 display et chiffres-affiche · 600 H2 et H3 · **700 logo (header et footer), tracking 0** · 400 boutons | IoU **0,96 à 0,97** sur BUILD, STRENGTH et SERVICES., **0,91 à 0,92** sur les H2, **0,94** sur le logo. Meilleur concurrent : 0,77. Signatures : **Y dessiné comme un « y » minuscule**, I à empattements, P ouvert, S à un seul chanfrein en bas à droite, G à barre en marche, R à jambe diagonale, « 1 » à drapeau et pied **dans les chiffres par défaut** |
-| Lead | **Inter Tight** | 400, −0,01em | IoU 0,77 à 0,81. Inter seul, même resserré, reste en dessous |
-| Corps, UI | **Inter** | 300 ou 400 dans le shot (graisse incertaine) | IoU 0,68 à 0,88 selon la zone |
-| Labels, notes | **IBM Plex Mono** | 400, tracking 0 | IoU 0,72 à 0,78 ; le r à empattement de pied élimine Fira, Inconsolata, JetBrains et Red Hat |
+| Lead                                           | **Inter Tight**                                                          | 400, −0,01em                                                                                               | IoU 0,77 à 0,81. Inter seul, même resserré, reste en dessous                                                                                                                                                                                                                                                                                                   |
+| Corps, UI                                      | **Inter**                                                                | 300 ou 400 dans le shot (graisse incertaine)                                                               | IoU 0,68 à 0,88 selon la zone                                                                                                                                                                                                                                                                                                                                  |
+| Labels, notes                                  | **IBM Plex Mono**                                                        | 400, tracking 0                                                                                            | IoU 0,72 à 0,78 ; le r à empattement de pied élimine Fira, Inconsolata, JetBrains et Red Hat                                                                                                                                                                                                                                                                   |
 
 - **Les H2 et le display sont-ils de la même famille ?** Oui : c'est Tektur partout, seules la graisse et la taille changent.
 - **La vérification adverse (v1b) confirme les trois familles** : aucun des 76 concurrents rendus ne s'en approche. Elle corrige trois détails de a2 :
@@ -192,23 +196,24 @@ En mobile, ces valeurs deviennent fluides : marges de 60 à 20, padding de secti
 
 ### 4.2 Échelle mesurée (@1440)
 
-| Rôle | Exemple | Taille | Interligne | Tracking |
-|---|---|---|---|---|
-| Affiche | SERVICES. (ajusté à 97 % du conteneur) | **≈ 273 px** | 1 ligne | −0,02em |
-| Wordmark footer | VYRON™ | ≈ 224 px | — | +0,02em |
-| Display hero | BUILD / STRENGTH (retrait de 215 px) | **≈ 180 px** | **0,81** | −0,02em |
-| Chiffres-affiche | 01✱ / 02✱ (chiffres par défaut) | ≈ 180 px | — | ≈ −0,02 à −0,04em |
-| H2 | « HIGH-INTENSITY TRAINING… » | **56 px** | 1,0 | −0,01 à −0,02em |
-| Logo header | VYRON™ | 48 px (Tektur 700) | — | 0 |
-| Lead | « Redefine Your Physical Potential » | 40 px | 0,98 | ≈ −0,045em |
-| H3 | cartes, accordéon, phrase About | **32 / 34 / 39 px** (trois valeurs pour un même rôle) | ≈ 1,03 | −0,01em |
-| Accent | « Results are built, not given. » | 24 px | 1,15 | — |
-| UI | slogans du hero, boutons, MENU | 15–19 px | — | — |
-| Corps | cartes et colonnes | **16 px** | 1,25–1,3 | −0,02 à −0,04em |
-| Labels mono et tags | — | 15–16 px | 1,3 | 0 |
-| Index | 01–05 de l'équipe | **12 px** | — | — |
+| Rôle                | Exemple                                | Taille                                                | Interligne | Tracking          |
+| ------------------- | -------------------------------------- | ----------------------------------------------------- | ---------- | ----------------- |
+| Affiche             | SERVICES. (ajusté à 97 % du conteneur) | **≈ 273 px**                                          | 1 ligne    | −0,02em           |
+| Wordmark footer     | VYRON™                                 | ≈ 224 px                                              | —          | +0,02em           |
+| Display hero        | BUILD / STRENGTH (retrait de 215 px)   | **≈ 180 px**                                          | **0,81**   | −0,02em           |
+| Chiffres-affiche    | 01✱ / 02✱ (chiffres par défaut)        | ≈ 180 px                                              | —          | ≈ −0,02 à −0,04em |
+| H2                  | « HIGH-INTENSITY TRAINING… »           | **56 px**                                             | 1,0        | −0,01 à −0,02em   |
+| Logo header         | VYRON™                                 | 48 px (Tektur 700)                                    | —          | 0                 |
+| Lead                | « Redefine Your Physical Potential »   | 40 px                                                 | 0,98       | ≈ −0,045em        |
+| H3                  | cartes, accordéon, phrase About        | **32 / 34 / 39 px** (trois valeurs pour un même rôle) | ≈ 1,03     | −0,01em           |
+| Accent              | « Results are built, not given. »      | 24 px                                                 | 1,15       | —                 |
+| UI                  | slogans du hero, boutons, MENU         | 15–19 px                                              | —          | —                 |
+| Corps               | cartes et colonnes                     | **16 px**                                             | 1,25–1,3   | −0,02 à −0,04em   |
+| Labels mono et tags | —                                      | 15–16 px                                              | 1,3        | 0                 |
+| Index               | 01–05 de l'équipe                      | **12 px**                                             | —          | —                 |
 
 **Lecture.** L'échelle a **deux étages**, un étage « affiche » (273 / 224 / 180) et un étage « lecture » (56 et moins), séparés par un saut de **× 3,2**. Ce saut fait l'énergie de la page : **à garder**. Les défauts sont tous en bas de l'échelle :
+
 - trois tailles de H3 pour un même rôle ;
 - quatre traitements différents du rôle « label » (mono en casse de phrase, mono en capitales, Tektur en capitales, Inter en capitales) ;
 - un corps en Light, avec un tracking serré, sur fond sombre ;
@@ -241,22 +246,23 @@ En mobile, ces valeurs deviennent fluides : marges de 60 à 20, padding de secti
 
 ### 5.1 Palette mesurée
 
-| Rôle | Valeur | OKLCH | Où |
-|---|---|---|---|
-| **Rouge de marque**, un seul rouge pour tous les aplats | **`#F02B42`** | 61,9 % 0,227 21,9 | SERVICES., boutons, astérisques, marquee, onglet du footer |
-| Rouges photo (étalonnage) | `#600405` → `#8D0C0F` → `#C9141B` | teinte 27–31° (plus chaude que l'interface) | hero, footer, carte 02 |
-| **Encre des titres** (marine, pas noir) | **`#171A32`** (valeur dominante, environ 28 000 px). Selon la méthode d'échantillonnage, les mesures vont de `#0B1024` à `#141A2C` | ≈ 22 % 0,037 269 | H2 et H3 sur clair |
-| Noir « hot » | `#000000` | — | bas du hero, carte active, bouton noir, chiffres, footer |
-| **Nuit sarcelle** | **`#040F0E`** | 15,6 % 0,018 189 | toute la section Why |
-| Papier / papier alternatif | `#FFFFFF` / `#F5F5F5` | — | About, Programs, Transformation / Services |
-| Filets | `#DCDCDC`–`#ECECEC` sur clair ; `#1F2A29` sur nuit ; blanc 15–20 % sur photo | — | — |
-| Gris de texte | `#77787B` sur blanc ; `#949F9E` et `#C4CECD` sur nuit | — | — |
+| Rôle                                                    | Valeur                                                                                                                             | OKLCH                                       | Où                                                         |
+| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | ---------------------------------------------------------- |
+| **Rouge de marque**, un seul rouge pour tous les aplats | **`#F02B42`**                                                                                                                      | 61,9 % 0,227 21,9                           | SERVICES., boutons, astérisques, marquee, onglet du footer |
+| Rouges photo (étalonnage)                               | `#600405` → `#8D0C0F` → `#C9141B`                                                                                                  | teinte 27–31° (plus chaude que l'interface) | hero, footer, carte 02                                     |
+| **Encre des titres** (marine, pas noir)                 | **`#171A32`** (valeur dominante, environ 28 000 px). Selon la méthode d'échantillonnage, les mesures vont de `#0B1024` à `#141A2C` | ≈ 22 % 0,037 269                            | H2 et H3 sur clair                                         |
+| Noir « hot »                                            | `#000000`                                                                                                                          | —                                           | bas du hero, carte active, bouton noir, chiffres, footer   |
+| **Nuit sarcelle**                                       | **`#040F0E`**                                                                                                                      | 15,6 % 0,018 189                            | toute la section Why                                       |
+| Papier / papier alternatif                              | `#FFFFFF` / `#F5F5F5`                                                                                                              | —                                           | About, Programs, Transformation / Services                 |
+| Filets                                                  | `#DCDCDC`–`#ECECEC` sur clair ; `#1F2A29` sur nuit ; blanc 15–20 % sur photo                                                       | —                                           | —                                                          |
+| Gris de texte                                           | `#77787B` sur blanc ; `#949F9E` et `#C4CECD` sur nuit                                                                              | —                                           | —                                                          |
 
 **Deux noirs de titre coexistent.** Le H2 de Transformation est en `#000` neutre, les autres H2 en marine `#171A32` [M, v2]. Il faut choisir (§15).
 
 ### 5.2 Stratégie couleur, en termes Impeccable
 
 **Corps « Restrained », serre-livres « Drenched », une bande « Committed ».**
+
 - **Hero et footer** sont des champs rouges : 54 % du hero est rouge, le reste est son ombre noire.
 - **D'About à Transformation**, ce sont des neutres par matière, avec un seul accent rationné entre 0,4 et 7,6 % de surface par section.
 - **Le marquee** fait 47 à 55 px de rouge plein (97 %) : c'est la charnière qui relance le rouge avant le footer.
@@ -282,19 +288,20 @@ hero    about    services     programs  why      transfo  marquee   footer
 
 Ratios recalculés indépendamment.
 
-| Paire | Ratio | Verdict | Correction proposée |
-|---|---|---|---|
-| Blanc sur `#F02B42` (boutons, marquee, onglet footer, carte 4.9) | **4,09** | ❌ | Remplissage **`#E41E3A`**, soit **4,62**. Écart de clarté de 2,9 points, quasi invisible |
-| Petit texte rouge `#F02B42` sur blanc / `#F5F5F5` | 4,09 / 3,76 | ❌ (sous 24 px) | **`#C2152C`**, soit 6,11 / 5,60 |
-| Rouge sur nuit `#040F0E` | 4,75 | ✅ (3,20 en protanopie) | **`#F64D57`**, soit 5,67 (4,11 en protanopie) |
-| Labels « EXPERT COACHES » `#687372` sur nuit | 3,97 | ❌ | **`#788382`**, soit 4,97 |
-| Index de l'équipe `#606B6A` sur nuit, à environ 10–12 px | 3,53 | ❌ | `#788382` et 14 px minimum, ou décoratif (`aria-hidden`) |
-| Corps gris `#77787B` sur blanc | 4,41 | ❌ (de peu) | **`#68696C`**, soit 5,49 |
-| Mono « Trusted by… » `#797A7B` sur `#F5F5F5` | 3,94 | ❌ | `#68696C`, soit 5,03 |
-| **Sous-titre du hero** sur la peau éclairée | **2,0 à 2,9** | ❌ (grand texte, 3:1 requis) | Image générée avec une **zone sombre prévue** sous le texte (recommandé) ou voile local de 20 à 35 % |
-| Encre marine sur blanc | 17,1 | ✅ | — |
+| Paire                                                            | Ratio         | Verdict                      | Correction proposée                                                                                  |
+| ---------------------------------------------------------------- | ------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Blanc sur `#F02B42` (boutons, marquee, onglet footer, carte 4.9) | **4,09**      | ❌                           | Remplissage **`#E41E3A`**, soit **4,62**. Écart de clarté de 2,9 points, quasi invisible             |
+| Petit texte rouge `#F02B42` sur blanc / `#F5F5F5`                | 4,09 / 3,76   | ❌ (sous 24 px)              | **`#C2152C`**, soit 6,11 / 5,60                                                                      |
+| Rouge sur nuit `#040F0E`                                         | 4,75          | ✅ (3,20 en protanopie)      | **`#F64D57`**, soit 5,67 (4,11 en protanopie)                                                        |
+| Labels « EXPERT COACHES » `#687372` sur nuit                     | 3,97          | ❌                           | **`#788382`**, soit 4,97                                                                             |
+| Index de l'équipe `#606B6A` sur nuit, à environ 10–12 px         | 3,53          | ❌                           | `#788382` et 14 px minimum, ou décoratif (`aria-hidden`)                                             |
+| Corps gris `#77787B` sur blanc                                   | 4,41          | ❌ (de peu)                  | **`#68696C`**, soit 5,49                                                                             |
+| Mono « Trusted by… » `#797A7B` sur `#F5F5F5`                     | 3,94          | ❌                           | `#68696C`, soit 5,03                                                                                 |
+| **Sous-titre du hero** sur la peau éclairée                      | **2,0 à 2,9** | ❌ (grand texte, 3:1 requis) | Image générée avec une **zone sombre prévue** sous le texte (recommandé) ou voile local de 20 à 35 % |
+| Encre marine sur blanc                                           | 17,1          | ✅                           | —                                                                                                    |
 
 **Le nœud du rouge.** Un seul rouge ne peut pas porter à la fois du **blanc en texte courant** (il faut une luminance L ≤ 0,183) et du **texte rouge sur la nuit** (il faut L ≥ 0,193). Les deux plages ne se recouvrent pas. Il faut donc des **rôles de rouge** :
+
 - `red-500 #F02B42` pour le display, les glyphes et les grandes surfaces sans texte ;
 - `red-600 #E41E3A` pour les remplissages qui portent du texte blanc ;
 - `red-700 #C2152C` pour le petit texte rouge sur papier ;
@@ -303,6 +310,7 @@ Ratios recalculés indépendamment.
 ### 5.5 Tokens
 
 Le jeu complet (primitives OKLCH et hex, sémantiques par matière, surfaces navigateur) est en [annexe a3 §5](annexes/a3-color.md). Il couvre :
+
 - **les opacités converties en couleurs explicites**, sauf sur photo (règle `colorize`) ;
 - **les surfaces navigateur thématisées** (`::selection`, anneau de focus par surface, `caret-color`, `scrollbar-color`, `theme-color`), une exigence du craft-floor ;
 - **le focus** : un token `--focus` par surface (encre sur clair, blanc sur rouge et sur sombre), toujours en `outline`, jamais en `box-shadow`, qui disparaît en mode contrastes forcés.
@@ -336,40 +344,40 @@ Le jeu complet (primitives OKLCH et hex, sémantiques par matière, surfaces nav
 
 Le détail complet (anatomie, cotes, variantes, états proposés) est en [annexe a4](annexes/a4-components.md).
 
-| Niveau | Composants |
-|---|---|
-| **Tokens** | couleurs, matières, espacements, grille, mouvement (durées, courbes, pas) |
-| **Primitives** | `StepShape`, `Asterisk` (SVG), `Hairline` / `FrameRules`, `RuledGrid` (`strip` et `panel`, `light` et `dark`), `TickRuler`, `Crosshair`, `Icon` (un seul jeu au trait) |
-| **Composants partagés** | `StepButton` (noir, rouge), `IconButton` (blanc, rouge, rouge-lg, gris, carré sombre), `StepFrame` (média), `SectionHeader` (`split`, `offset`, `stacked`), `Wordmark` (sm, xl), `Eyebrow` (selon la décision du §8) |
-| **Organismes** | `SiteHeader` + `MenuTrigger` + menu plein écran ; `HeroHeadline`, `HeroTaglineList`, `HeroLede` + `ArrowTrail` ; `RatingCard`, `StatCard`, `AvatarStack` ; `DisplayWord`, `ServiceCarousel`, `ServiceCard`, `NumeralMark` ; `ProgramAccordion`, `TagPill`, `CoachChip` ; `FeatureTable`, `TeamGrid` ; `TestimonialDeck` (cartes empilées, `SlideCounter`, `QuoteBlock`, contrôles) ; `MarqueeBand` ; `SiteFooter`, `FooterPanel`, `SocialLinks` |
+| Niveau                  | Composants                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tokens**              | couleurs, matières, espacements, grille, mouvement (durées, courbes, pas)                                                                                                                                                                                                                                                                                                                                                                       |
+| **Primitives**          | `StepShape`, `Asterisk` (SVG), `Hairline` / `FrameRules`, `RuledGrid` (`strip` et `panel`, `light` et `dark`), `TickRuler`, `Crosshair`, `Icon` (un seul jeu au trait)                                                                                                                                                                                                                                                                          |
+| **Composants partagés** | `StepButton` (noir, rouge), `IconButton` (blanc, rouge, rouge-lg, gris, carré sombre), `StepFrame` (média), `SectionHeader` (`split`, `offset`, `stacked`), `Wordmark` (sm, xl), `Eyebrow` (selon la décision du §8)                                                                                                                                                                                                                            |
+| **Organismes**          | `SiteHeader` + `MenuTrigger` + menu plein écran ; `HeroHeadline`, `HeroTaglineList`, `HeroLede` + `ArrowTrail` ; `RatingCard`, `StatCard`, `AvatarStack` ; `DisplayWord`, `ServiceCarousel`, `ServiceCard`, `NumeralMark` ; `ProgramAccordion`, `TagPill`, `CoachChip` ; `FeatureTable`, `TeamGrid` ; `TestimonialDeck` (cartes empilées, `SlideCounter`, `QuoteBlock`, contrôles) ; `MarqueeBand` ; `SiteFooter`, `FooterPanel`, `SocialLinks` |
 
 ### 6.3 États figés lisibles dans la maquette
 
 La maquette est statique, mais elle montre déjà **cinq états actifs**. Le motion consistera d'abord à animer la transition **entre** ces états.
 
-| Où | Ce que montre la maquette | Lecture |
-|---|---|---|
-| Services | Carte 02 inversée (noire) au centre ; cartes 01 et 03 à moitié hors cadre | Carrousel centré [M géométrie, I comportement] |
-| Programs | Item 01 ouvert (−), les autres fermés (+) | Accordéon exclusif |
-| Why | Portrait 03 élargi (≈ 1,42 ×) et plus lumineux | Mise en avant au survol, ou fixe |
+| Où             | Ce que montre la maquette                                                                  | Lecture                                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Services       | Carte 02 inversée (noire) au centre ; cartes 01 et 03 à moitié hors cadre                  | Carrousel centré [M géométrie, I comportement]                                                                    |
+| Programs       | Item 01 ouvert (−), les autres fermés (+)                                                  | Accordéon exclusif                                                                                                |
+| Why            | Portrait 03 élargi (≈ 1,42 ×) et plus lumineux                                             | Mise en avant au survol, ou fixe                                                                                  |
 | Transformation | « 01 » et bouton précédent grisé, **mais** c'est le 2ᵉ des 3 points du pager qui est actif | **Contradiction** à trancher. La plaque sous la vidéo est **une 2ᵉ carte empilée** (v2), pas une barre de lecture |
-| Footer | La rangée d'en-tête du panneau 2 est remplie de rouge (« Back To Home ») | État survol ou actif d'un en-tête de panneau, qui est un lien |
+| Footer         | La rangée d'en-tête du panneau 2 est remplie de rouge (« Back To Home »)                   | État survol ou actif d'un en-tête de panneau, qui est un lien                                                     |
 
 ### 6.4 Incohérences de la référence (classement « polish »)
 
-| Incohérence | Classe | Correction |
-|---|---|---|
-| Pas du gradin variable selon l'occurrence | missing token | Deux échelles : `--step-control` (≈ 12/4/12) et `--step-media` (≈ 12 % / 7 % / 20 %) |
-| Deux encres de titre (marine, et `#000` pour le H2 de Transformation) | missing token | Unifier en marine ; les gros chiffres restent en `#000` (§15) |
-| Pastilles, avatar et points de pagination arrondis dans un monde sans rayon | conceptual mismatch | Les passer en carré (rayon 0 à 2) |
-| Flèche coudée à bouts ronds | conceptual mismatch | `stroke-linecap: square` |
-| Boutons sociaux sans gradin | one-off | Les intégrer au système `IconButton` |
-| Casse des eyebrows et des CTA (« About Us » contre « WHY VYRON », « Meet the Team » contre « Learn More About Us ») | local defect | Une seule règle |
-| Ponctuation finale des titres (avec et sans point) | local defect | Une seule règle |
-| Note à droite du H2 : centrée dans Services, alignée en bas ailleurs | local defect | Toujours sur la **dernière ligne de base** du H2 |
-| Apostrophe et guillemets droits (DON'T, "I came…") | local defect | ’ et « » (ou “ ”) |
-| « Marcus Roy » a **deux visages** (avatar dans Programs, portrait n°03 dans Why) | conceptual mismatch | Une seule source par coach (données et image) |
-| Le marquee dit « Fitness Hub », pas le nom de la marque | local defect | Contenu de marque (§15) |
+| Incohérence                                                                                                         | Classe              | Correction                                                                           |
+| ------------------------------------------------------------------------------------------------------------------- | ------------------- | ------------------------------------------------------------------------------------ |
+| Pas du gradin variable selon l'occurrence                                                                           | missing token       | Deux échelles : `--step-control` (≈ 12/4/12) et `--step-media` (≈ 12 % / 7 % / 20 %) |
+| Deux encres de titre (marine, et `#000` pour le H2 de Transformation)                                               | missing token       | Unifier en marine ; les gros chiffres restent en `#000` (§15)                        |
+| Pastilles, avatar et points de pagination arrondis dans un monde sans rayon                                         | conceptual mismatch | Les passer en carré (rayon 0 à 2)                                                    |
+| Flèche coudée à bouts ronds                                                                                         | conceptual mismatch | `stroke-linecap: square`                                                             |
+| Boutons sociaux sans gradin                                                                                         | one-off             | Les intégrer au système `IconButton`                                                 |
+| Casse des eyebrows et des CTA (« About Us » contre « WHY VYRON », « Meet the Team » contre « Learn More About Us ») | local defect        | Une seule règle                                                                      |
+| Ponctuation finale des titres (avec et sans point)                                                                  | local defect        | Une seule règle                                                                      |
+| Note à droite du H2 : centrée dans Services, alignée en bas ailleurs                                                | local defect        | Toujours sur la **dernière ligne de base** du H2                                     |
+| Apostrophe et guillemets droits (DON'T, "I came…")                                                                  | local defect        | ’ et « » (ou “ ”)                                                                    |
+| « Marcus Roy » a **deux visages** (avatar dans Programs, portrait n°03 dans Why)                                    | conceptual mismatch | Une seule source par coach (données et image)                                        |
+| Le marquee dit « Fitness Hub », pas le nom de la marque                                                             | local defect        | Contenu de marque (§15)                                                              |
 
 ---
 
@@ -385,21 +393,22 @@ La maquette est statique, mais elle montre déjà **cinq états actifs**. Le mot
 
 ### 7.2 Heuristiques de Nielsen
 
-| # | Heuristique | Score | Point clé |
-|---|---|---|---|
-| 1 | Visibilité de l'état | 2 | Pas de position dans le carrousel ; compteur « 01 » qui contredit le pager |
-| 2 | Correspondance avec le monde réel | 2 | « Services », « Programs » et « Classes » pour une même offre ; ↪ (qui veut dire « refaire ») utilisé pour « suivant » ; rien ne dit « salle de sport » |
-| 3 | Contrôle et liberté | 2 | Carrousel sans « précédent » ; « Back To Home » sur la page d'accueil ; marquee sans pause |
-| 4 | Cohérence et standards | 3 | Système visuel solide, mais trois vocabulaires de flèches et deux visages pour un même coach |
-| 5 | Prévention des erreurs | 2 | Fausses affordances : slogans en liste à filets, flèches → → → qui ne mènent nulle part |
-| 6 | Reconnaissance plutôt que rappel | 2 | Navigation desktop cachée derrière MENU ; icônes sans libellé |
-| 7 | Flexibilité et efficacité | n/a | Surface Persuade |
-| 8 | Esthétique et minimalisme | 3 | Hiérarchie forte ; du décor (6 trames, eyebrows, index) qui coûte de la hauteur |
-| 9 | Récupération des erreurs | n/a | Aucun formulaire (et c'est en soi le problème P0) |
-| 10 | Aide | n/a | Surface Persuade |
-| | **Total** | **16/28 (57 %)** | « Acceptable » : de vrais problèmes d'usage sous une très bonne surface |
+| #   | Heuristique                       | Score            | Point clé                                                                                                                                               |
+| --- | --------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Visibilité de l'état              | 2                | Pas de position dans le carrousel ; compteur « 01 » qui contredit le pager                                                                              |
+| 2   | Correspondance avec le monde réel | 2                | « Services », « Programs » et « Classes » pour une même offre ; ↪ (qui veut dire « refaire ») utilisé pour « suivant » ; rien ne dit « salle de sport » |
+| 3   | Contrôle et liberté               | 2                | Carrousel sans « précédent » ; « Back To Home » sur la page d'accueil ; marquee sans pause                                                              |
+| 4   | Cohérence et standards            | 3                | Système visuel solide, mais trois vocabulaires de flèches et deux visages pour un même coach                                                            |
+| 5   | Prévention des erreurs            | 2                | Fausses affordances : slogans en liste à filets, flèches → → → qui ne mènent nulle part                                                                 |
+| 6   | Reconnaissance plutôt que rappel  | 2                | Navigation desktop cachée derrière MENU ; icônes sans libellé                                                                                           |
+| 7   | Flexibilité et efficacité         | n/a              | Surface Persuade                                                                                                                                        |
+| 8   | Esthétique et minimalisme         | 3                | Hiérarchie forte ; du décor (6 trames, eyebrows, index) qui coûte de la hauteur                                                                         |
+| 9   | Récupération des erreurs          | n/a              | Aucun formulaire (et c'est en soi le problème P0)                                                                                                       |
+| 10  | Aide                              | n/a              | Surface Persuade                                                                                                                                        |
+|     | **Total**                         | **16/28 (57 %)** | « Acceptable » : de vrais problèmes d'usage sous une très bonne surface                                                                                 |
 
 **Charge cognitive** : 3 critères en échec sur 8 (charge modérée).
+
 - **Focus unique** : le hero n'a pas de tâche principale.
 - **Hiérarchie de l'action** : l'élément le plus saturé du footer est « Back To Home ».
 - **Choix minimaux** : le footer présente **11 cibles** sans hiérarchie.
@@ -414,17 +423,18 @@ La maquette est statique, mais elle montre déjà **cinq états actifs**. Le mot
 
 ### 7.4 Problèmes prioritaires
 
-| Sévérité | Problème | Correctif | Commande Impeccable |
-|---|---|---|---|
-| **P0** | Aucune action primaire opérante. L'offre n'est pas lisible au premier écran (ni prix, ni horaires, ni adresse, ni essai) | Une action de réservation dans le hero, posée **sur** les flèches → → →, sans changer la composition ; un CTA persistant ; footer qui se termine sur « Réserver » avec les infos pratiques | `shape`, puis `layout` |
-| **P0** | Pas de version mobile ni tablette | Plan de recomposition section par section (§10) | `adapt` |
-| **P1** | Texte interchangeable et preuves inventées (« 4.9/5 · 480+ verified reviews », « 20 Years ») | Donner un point de vue à la marque ; étiqueter toute la fiction | `clarify` |
-| **P1** | Accessibilité de la marque : contraste du rouge, gris trop clairs, cibles sous 44 px, marquee sans pause | §5.4 et §10 | `audit`, puis `harden` |
-| **P1** | H1 hors écran au chargement à 1440 × 900 | Hero en `100svh` avec le H1 calé en bas | `layout` |
-| **P2** | Navigation et contrôles ambigus (MENU seul sur desktop, ↪ entre deux cartes, compteur contradictoire) | Un seul jeu d'icônes ; prev / next attachés au carrousel avec compteur « 02 / 05 » | `clarify` |
-| **P2** | Du décor structurel sans information (eyebrows, 6 trames, index, cellules Why vides à 68 %) | Trancher le §8 | `distill` |
+| Sévérité | Problème                                                                                                                 | Correctif                                                                                                                                                                                  | Commande Impeccable    |
+| -------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------- |
+| **P0**   | Aucune action primaire opérante. L'offre n'est pas lisible au premier écran (ni prix, ni horaires, ni adresse, ni essai) | Une action de réservation dans le hero, posée **sur** les flèches → → →, sans changer la composition ; un CTA persistant ; footer qui se termine sur « Réserver » avec les infos pratiques | `shape`, puis `layout` |
+| **P0**   | Pas de version mobile ni tablette                                                                                        | Plan de recomposition section par section (§10)                                                                                                                                            | `adapt`                |
+| **P1**   | Texte interchangeable et preuves inventées (« 4.9/5 · 480+ verified reviews », « 20 Years »)                             | Donner un point de vue à la marque ; étiqueter toute la fiction                                                                                                                            | `clarify`              |
+| **P1**   | Accessibilité de la marque : contraste du rouge, gris trop clairs, cibles sous 44 px, marquee sans pause                 | §5.4 et §10                                                                                                                                                                                | `audit`, puis `harden` |
+| **P1**   | H1 hors écran au chargement à 1440 × 900                                                                                 | Hero en `100svh` avec le H1 calé en bas                                                                                                                                                    | `layout`               |
+| **P2**   | Navigation et contrôles ambigus (MENU seul sur desktop, ↪ entre deux cartes, compteur contradictoire)                    | Un seul jeu d'icônes ; prev / next attachés au carrousel avec compteur « 02 / 05 »                                                                                                         | `clarify`              |
+| **P2**   | Du décor structurel sans information (eyebrows, 6 trames, index, cellules Why vides à 68 %)                              | Trancher le §8                                                                                                                                                                             | `distill`              |
 
 **Personas** : le détail est en [annexe a5 §8](annexes/a5-critique.md). En résumé :
+
 - **Jordan** (première fois) abandonne au hero ;
 - **Casey** (mobile) n'a aucune maquette ;
 - **Camille** (directrice de création qui parcourt ton portfolio en 60 s) cherche le crédit au designer d'origine, un mobile soigné, le respect de `reduced-motion` et aucun lien mort ;
@@ -434,19 +444,19 @@ La maquette est statique, mais elle montre déjà **cinq états actifs**. Le mot
 
 ## 8. Tensions avec le craft-floor d'Impeccable : à toi de trancher
 
-Impeccable dit à la fois « *the brief wins* » (tu as épinglé ce monde) et, pour les eyebrows, « *no brief earns it back* ». Voici chaque tension, avec ce que je recommande dans l'option **« adaptation ciblée »** :
+Impeccable dit à la fois « _the brief wins_ » (tu as épinglé ce monde) et, pour les eyebrows, « _no brief earns it back_ ». Voici chaque tension, avec ce que je recommande dans l'option **« adaptation ciblée »** :
 
-| # | Habitude de la référence | Règle Impeccable | Porteuse pour ce monde ? | Recommandation |
-|---|---|---|---|---|
-| 1 | **Eyebrows** (règle graduée et label mono) sur 4 sections | **Interdit, sans exception** | Le **label** n'apporte rien. La **règle graduée** est un vrai motif | **Garder la règle, supprimer le label, et la rendre fonctionnelle** : elle devient l'indicateur de progression de la section, et ses graduations se remplissent au scroll |
-| 2 | **Numéros** 01/02 (services), 01–04 (accordéon), 01–05 (équipe), 01 (témoignage) | Seulement si la séquence apporte une information | Forte pour « 01✱ 02✱ » (masse graphique), faible ailleurs | Garder 01✱/02✱ (composition, `aria-hidden`) et le compteur **« 01 / 03 »**. Retirer les index de l'accordéon et de l'équipe, ou les remplacer par une donnée (durée, spécialité) |
-| 3 | **Cartes « hero-metric »** (4.9/5, 20 Years) | Template par défaut | Surtout pour **la masse rouge** de la section | Garder la masse rouge, mais avec un contenu qualitatif : un extrait d'avis signé, assumé comme fictif. « 20 ans » se fond dans une phrase |
-| 4 | **Plaques décalées** | Les ombres dures décalées sont refusées hors néobrutalisme | **Très forte (signature n°1)** | **Garder.** Les construire comme une **forme** (`clip-path` à 8 points, ou pseudo-élément de même couleur), jamais en `box-shadow`. Les réserver aux contrôles et aux médias |
-| 5 | **Mono** pour les eyebrows, les notes, la navigation du footer | Le mono ne doit pas servir de costume « tech » | Moyenne (texture de fiche technique) | **Mono réservé aux données** : durées, horaires, compteurs, tags. Phrases et navigation passent en Inter |
-| 6 | **Cartes de même taille** (piliers Why, cartes About) | Template par défaut | Moyenne : les piliers ressemblent à un tableau de specs | Faire de chaque pilier une vraie ligne de specs, avec une donnée par colonne (fictive et assumée) |
-| 7 | **Display au-delà de 6rem** (180–273 px) | Maximum 6rem | **Très forte : l'échelle est l'identité** | **Garder** (le brief l'emporte), avec `clamp()`, `cqi` et des tests de débordement à chaque palier |
-| 8 | **Glyphes ✱ → ↪ en Unicode** | Interdits comme icônes | Forte (l'astérisque est une signature) | Tout passe en **SVG dessiné** : un seul jeu d'icônes, un seul trait |
-| 9 | **Bandes « verre cannelé »** à droite du hero | Verre et flou décoratifs refusés | Faible | Les intégrer à l'image générée, ou les supprimer. Pas de `backdrop-filter` |
+| #   | Habitude de la référence                                                         | Règle Impeccable                                           | Porteuse pour ce monde ?                                            | Recommandation                                                                                                                                                                   |
+| --- | -------------------------------------------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Eyebrows** (règle graduée et label mono) sur 4 sections                        | **Interdit, sans exception**                               | Le **label** n'apporte rien. La **règle graduée** est un vrai motif | **Garder la règle, supprimer le label, et la rendre fonctionnelle** : elle devient l'indicateur de progression de la section, et ses graduations se remplissent au scroll        |
+| 2   | **Numéros** 01/02 (services), 01–04 (accordéon), 01–05 (équipe), 01 (témoignage) | Seulement si la séquence apporte une information           | Forte pour « 01✱ 02✱ » (masse graphique), faible ailleurs           | Garder 01✱/02✱ (composition, `aria-hidden`) et le compteur **« 01 / 03 »**. Retirer les index de l'accordéon et de l'équipe, ou les remplacer par une donnée (durée, spécialité) |
+| 3   | **Cartes « hero-metric »** (4.9/5, 20 Years)                                     | Template par défaut                                        | Surtout pour **la masse rouge** de la section                       | Garder la masse rouge, mais avec un contenu qualitatif : un extrait d'avis signé, assumé comme fictif. « 20 ans » se fond dans une phrase                                        |
+| 4   | **Plaques décalées**                                                             | Les ombres dures décalées sont refusées hors néobrutalisme | **Très forte (signature n°1)**                                      | **Garder.** Les construire comme une **forme** (`clip-path` à 8 points, ou pseudo-élément de même couleur), jamais en `box-shadow`. Les réserver aux contrôles et aux médias     |
+| 5   | **Mono** pour les eyebrows, les notes, la navigation du footer                   | Le mono ne doit pas servir de costume « tech »             | Moyenne (texture de fiche technique)                                | **Mono réservé aux données** : durées, horaires, compteurs, tags. Phrases et navigation passent en Inter                                                                         |
+| 6   | **Cartes de même taille** (piliers Why, cartes About)                            | Template par défaut                                        | Moyenne : les piliers ressemblent à un tableau de specs             | Faire de chaque pilier une vraie ligne de specs, avec une donnée par colonne (fictive et assumée)                                                                                |
+| 7   | **Display au-delà de 6rem** (180–273 px)                                         | Maximum 6rem                                               | **Très forte : l'échelle est l'identité**                           | **Garder** (le brief l'emporte), avec `clamp()`, `cqi` et des tests de débordement à chaque palier                                                                               |
+| 8   | **Glyphes ✱ → ↪ en Unicode**                                                     | Interdits comme icônes                                     | Forte (l'astérisque est une signature)                              | Tout passe en **SVG dessiné** : un seul jeu d'icônes, un seul trait                                                                                                              |
+| 9   | **Bandes « verre cannelé »** à droite du hero                                    | Verre et flou décoratifs refusés                           | Faible                                                              | Les intégrer à l'image générée, ou les supprimer. Pas de `backdrop-filter`                                                                                                       |
 
 ---
 
@@ -471,23 +481,23 @@ Impeccable dit à la fois « *the brief wins* » (tu as épinglé ce monde) et, 
 
 ### 9.2 Grammaire
 
-| Tokens | Valeurs |
-|---|---|
-| Courbes | `--ease-out cubic-bezier(.16,1,.3,1)` pour les arrivées ; `--ease-in` pour les sorties ; `--ease-in-out` pour le layout ; `--ease-strike cubic-bezier(.87,0,.13,1)` pour les crans d'astérisque. Ni rebond ni élastique |
-| Durées | appui 90 · feedback 140 · état 240 · layout 420 · overlay 480 · focal 650–900 · plafond de séquence 1 300 ms. Une sortie dure environ 0,65 fois l'entrée |
-| Distances | les **pas mesurés** de l'escalier : 5 / 12 / 27 / 70 px. Un bloc ne bouge jamais d'une valeur arbitraire, il bouge **de son propre pas** |
-| Décalages (stagger) | 40 / 60 / 80–90 ms, total plafonné à 240 ms, jamais caractère par caractère sur du texte courant |
-| Principes | L'état par défaut est **l'état final**. Les états initiaux n'existent que sous `html.motion`, avec un garde-fou de 3 s. **Les H2 ne s'animent pas.** Chaque section a **une seule** entrée, tirée de sa propre matière |
+| Tokens              | Valeurs                                                                                                                                                                                                                 |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Courbes             | `--ease-out cubic-bezier(.16,1,.3,1)` pour les arrivées ; `--ease-in` pour les sorties ; `--ease-in-out` pour le layout ; `--ease-strike cubic-bezier(.87,0,.13,1)` pour les crans d'astérisque. Ni rebond ni élastique |
+| Durées              | appui 90 · feedback 140 · état 240 · layout 420 · overlay 480 · focal 650–900 · plafond de séquence 1 300 ms. Une sortie dure environ 0,65 fois l'entrée                                                                |
+| Distances           | les **pas mesurés** de l'escalier : 5 / 12 / 27 / 70 px. Un bloc ne bouge jamais d'une valeur arbitraire, il bouge **de son propre pas**                                                                                |
+| Décalages (stagger) | 40 / 60 / 80–90 ms, total plafonné à 240 ms, jamais caractère par caractère sur du texte courant                                                                                                                        |
+| Principes           | L'état par défaut est **l'état final**. Les états initiaux n'existent que sous `html.motion`, avec un garde-fou de 3 s. **Les H2 ne s'animent pas.** Chaque section a **une seule** entrée, tirée de sa propre matière  |
 
 **Comportement physique de la plaque**, appliqué à tous les `StepShape` :
 
-| État | Ce que fait la plaque |
-|---|---|
-| Entrée | Elle se **soulève** : `--step` de 0 à sa valeur |
-| Survol | La trace s'allonge (× 1,5) |
-| Appui | Elle s'**enfonce** : `--step` à 0 |
-| Focus | Le contour se resserre, en écho aux repères |
-| Désactivé | Elle est plate |
+| État      | Ce que fait la plaque                           |
+| --------- | ----------------------------------------------- |
+| Entrée    | Elle se **soulève** : `--step` de 0 à sa valeur |
+| Survol    | La trace s'allonge (× 1,5)                      |
+| Appui     | Elle s'**enfonce** : `--step` à 0               |
+| Focus     | Le contour se resserre, en écho aux repères     |
+| Désactivé | Elle est plate                                  |
 
 Le tout passe par une propriété `@property --step` animée sur le compositeur.
 
@@ -495,19 +505,20 @@ Le tout passe par une propriété `@property --step` animée sur le compositeur.
 
 Le tableau complet (déclencheur, propriétés, durée, primitive, version reduced-motion, priorité) est en [annexe a6 §4](annexes/a6-motion.md).
 
-| Section | Mouvement | Priorité |
-|---|---|---|
-| Hero | Moment signature. Puis, au scroll, les stries reviennent avec la **vitesse** de défilement | MUST, puis SHOULD |
-| About | Compteurs **à rouleaux** (« 4.9 » qui se pose, pas un comptage de 0 à n) ; la plaque photo se soulève | SHOULD |
-| Services | « SERVICES. » toujours lisible en contour, **se remplit** au scroll (scrub) avec la trame qui « mesure » ; carrousel en scroll-snap avec la tuile ↪ re-parentée (Flip) et inversion de la carte active | SHOULD / MUST |
-| Programs | Accordéon en `grid-template-rows` 0fr → 1fr, contenu en cascade, compensation de scroll ; image qui se « ré-encoche » au changement | MUST |
-| Why et équipe | Seuls les filets du tableau se tracent ; portraits révélés par masque ; la colonne survolée devient la vedette (CSS `:has()`) | SHOULD |
-| Transformation | **Pile de cartes** : la carte suivante sort de la pile ; citation ligne par ligne ; compteur à rouleau ; **pas d'autoplay** | MUST |
-| Marquee | Vitesse couplée au scroll (plafond × 5), pause au survol et au focus, statique en reduced motion | MUST |
-| Footer | Le geste du hero rejoué « en arrivant » sur le wordmark ; les en-têtes de panneau se remplissent de rouge au survol | SHOULD |
-| Global | **Cliquet des astérisques** : une seule loi (un cran de 45° tous les ~320 px de scroll) pour les 6 occurrences | SHOULD |
+| Section        | Mouvement                                                                                                                                                                                              | Priorité          |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------- |
+| Hero           | Moment signature. Puis, au scroll, les stries reviennent avec la **vitesse** de défilement                                                                                                             | MUST, puis SHOULD |
+| About          | Compteurs **à rouleaux** (« 4.9 » qui se pose, pas un comptage de 0 à n) ; la plaque photo se soulève                                                                                                  | SHOULD            |
+| Services       | « SERVICES. » toujours lisible en contour, **se remplit** au scroll (scrub) avec la trame qui « mesure » ; carrousel en scroll-snap avec la tuile ↪ re-parentée (Flip) et inversion de la carte active | SHOULD / MUST     |
+| Programs       | Accordéon en `grid-template-rows` 0fr → 1fr, contenu en cascade, compensation de scroll ; image qui se « ré-encoche » au changement                                                                    | MUST              |
+| Why et équipe  | Seuls les filets du tableau se tracent ; portraits révélés par masque ; la colonne survolée devient la vedette (CSS `:has()`)                                                                          | SHOULD            |
+| Transformation | **Pile de cartes** : la carte suivante sort de la pile ; citation ligne par ligne ; compteur à rouleau ; **pas d'autoplay**                                                                            | MUST              |
+| Marquee        | Vitesse couplée au scroll (plafond × 5), pause au survol et au focus, statique en reduced motion                                                                                                       | MUST              |
+| Footer         | Le geste du hero rejoué « en arrivant » sur le wordmark ; les en-têtes de panneau se remplissent de rouge au survol                                                                                    | SHOULD            |
+| Global         | **Cliquet des astérisques** : une seule loi (un cran de 45° tous les ~320 px de scroll) pour les 6 occurrences                                                                                         | SHOULD            |
 
 **Micro-interactions** (100 % CSS, actives avant le chargement du JS) :
+
 - plaque soulevée ou enfoncée ;
 - flèche de la tuile redessinée ;
 - grille 3 × 3 du MENU qui se réarrange en × ;
@@ -519,14 +530,14 @@ Aucune affordance de survol sur un élément non cliquable (pastilles).
 
 ### 9.4 Systèmes globaux
 
-| Sujet | Recommandation |
-|---|---|
-| **Lenis** | **Oui, sous conditions** : desktop, pointeur fin, pas de reduced motion, scroll tactile natif. Piloté par le ticker GSAP. `anchors: true` avec déplacement du focus, `lenis.stop()` quand le menu est ouvert. Sans scrub, il ne vaut plus son coût |
-| Préchargeur | **Non.** L'état de chargement, c'est la couche striée |
-| Curseur personnalisé | **Non.** Il masque les affordances natives et n'existe pas au tactile |
-| Barre de progression | Pas de barre générique. Si on garde la règle graduée, elle devient l'index de navigation des sections |
-| Transitions de page | Seulement s'il y a des sous-pages (§12) |
-| Pause globale | Interrupteur « Mettre les animations en pause » (marquee, vidéo), mémorisé |
+| Sujet                | Recommandation                                                                                                                                                                                                                                     |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Lenis**            | **Oui, sous conditions** : desktop, pointeur fin, pas de reduced motion, scroll tactile natif. Piloté par le ticker GSAP. `anchors: true` avec déplacement du focus, `lenis.stop()` quand le menu est ouvert. Sans scrub, il ne vaut plus son coût |
+| Préchargeur          | **Non.** L'état de chargement, c'est la couche striée                                                                                                                                                                                              |
+| Curseur personnalisé | **Non.** Il masque les affordances natives et n'existe pas au tactile                                                                                                                                                                              |
+| Barre de progression | Pas de barre générique. Si on garde la règle graduée, elle devient l'index de navigation des sections                                                                                                                                              |
+| Transitions de page  | Seulement s'il y a des sous-pages (§12)                                                                                                                                                                                                            |
+| Pause globale        | Interrupteur « Mettre les animations en pause » (marquee, vidéo), mémorisé                                                                                                                                                                         |
 
 ### 9.5 Trois niveaux d'intensité
 
@@ -546,15 +557,15 @@ Aucune affordance de survol sur un élément non cliquable (pastilles).
 
 Base sous 40em (640), puis 40em, 48em (768), 64em (1024, où les compositions en 2 colonnes et le retrait du H1 apparaissent) et 80em (1280, composition complète avec les trames et les repères). Au-delà, le contenu est plafonné à 1 320 px et centré, avec des fonds en pleine largeur. **Requêtes de conteneur** pour les cartes de service, d'équipe et de stats, et pour les panneaux du footer.
 
-| Section | 768 | 390 |
-|---|---|---|
-| Hero | Retrait de STRENGTH réduit à 0–0,3em ; sous-titre sous le H1 | `100svh`, H1 de 68 px sans retrait, slogans en 2 × 2, recadrage 9:16 dédié, CTA en pleine largeur puis **barre CTA fixe sous le pouce** |
-| About | Cartes en « note + années » puis photo | Cartes empilées |
-| Services | Cartes égales à 60vw en scroll-snap, avec prev / next et compteur | **Pile verticale** de cartes complètes, la carte au centre de l'écran prenant l'état actif (ou rail à 84vw) |
-| Programs | 1 colonne, image en 16:9 | Toute la ligne cliquable, icône dans une zone de 44 × 44 |
-| Why | Piliers en 2 × 2 ; équipe en **bento** (vedette à gauche, 2 × 2 à droite) | Piliers en liste, sans le vide central ; équipe en 1 + 4 |
-| Transformation | Vidéo en 16:9 pleine largeur, points à l'horizontale | Contrôles `[‹] 01 / 03 [›]` en 44 × 44 |
-| Footer | Panneau principal en pleine largeur, puis 2 à 50 % | Panneaux empilés, chacun en lien sur toute sa surface ; wordmark en `cqi` |
+| Section        | 768                                                                       | 390                                                                                                                                     |
+| -------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Hero           | Retrait de STRENGTH réduit à 0–0,3em ; sous-titre sous le H1              | `100svh`, H1 de 68 px sans retrait, slogans en 2 × 2, recadrage 9:16 dédié, CTA en pleine largeur puis **barre CTA fixe sous le pouce** |
+| About          | Cartes en « note + années » puis photo                                    | Cartes empilées                                                                                                                         |
+| Services       | Cartes égales à 60vw en scroll-snap, avec prev / next et compteur         | **Pile verticale** de cartes complètes, la carte au centre de l'écran prenant l'état actif (ou rail à 84vw)                             |
+| Programs       | 1 colonne, image en 16:9                                                  | Toute la ligne cliquable, icône dans une zone de 44 × 44                                                                                |
+| Why            | Piliers en 2 × 2 ; équipe en **bento** (vedette à gauche, 2 × 2 à droite) | Piliers en liste, sans le vide central ; équipe en 1 + 4                                                                                |
+| Transformation | Vidéo en 16:9 pleine largeur, points à l'horizontale                      | Contrôles `[‹] 01 / 03 [›]` en 44 × 44                                                                                                  |
+| Footer         | Panneau principal en pleine largeur, puis 2 à 50 %                        | Panneaux empilés, chacun en lien sur toute sa surface ; wordmark en `cqi`                                                               |
 
 ### 10.2 Accessibilité (WCAG 2.2 AA) : points clés
 
@@ -572,15 +583,15 @@ Base sous 40em (640), puis 40em, 48em (768), 64em (1024, où les compositions en
 
 ### 10.3 Performance : cibles
 
-| Indicateur | Cible |
-|---|---|
-| LCP (la photo du hero, en `<Picture priority>`, jamais en fond CSS) | ≤ 1,8 s en labo, ≤ 2,5 s sur le terrain |
-| CLS | ≤ 0,05 |
-| INP | ≤ 150 ms |
-| JS au premier chargement | ≤ 60–75 Ko gzip, **un seul moteur d'animation** |
-| Polices | ≤ 110–120 Ko |
-| Image du hero en AVIF, 1440w | ≤ 150–200 Ko |
-| Lighthouse | Performance ≥ 90 sur mobile (95 visé) ; Accessibilité, Bonnes pratiques et SEO à 100 |
+| Indicateur                                                          | Cible                                                                                |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| LCP (la photo du hero, en `<Picture priority>`, jamais en fond CSS) | ≤ 1,8 s en labo, ≤ 2,5 s sur le terrain                                              |
+| CLS                                                                 | ≤ 0,05                                                                               |
+| INP                                                                 | ≤ 150 ms                                                                             |
+| JS au premier chargement                                            | ≤ 60–75 Ko gzip, **un seul moteur d'animation**                                      |
+| Polices                                                             | ≤ 110–120 Ko                                                                         |
+| Image du hero en AVIF, 1440w                                        | ≤ 150–200 Ko                                                                         |
+| Lighthouse                                                          | Performance ≥ 90 sur mobile (95 visé) ; Accessibilité, Bonnes pratiques et SEO à 100 |
 
 ### 10.4 Texte français : ce qui casse en premier
 
@@ -609,15 +620,16 @@ Base sous 40em (640), puis 40em, 48em (768), 64em (1024, où les compositions en
   - 2 textures.
 
   Le détail des formats, points focaux et zones calmes réservées à l'interface est en [annexe a8](annexes/a8-imagery.md).
+
 - **Casting récurrent fixe.** Un même nom correspond à un même visage partout : on corrige le double « Marcus Roy ». Le casting est divers en âge, en origine et en morphologie, et **les identités sont nouvelles** : on ne reproduit pas les modèles du shot. La cohérence passe par des **reference elements** Higgsfield (`vyron-…`).
 - **Quatre familles d'étalonnage**, appliquées en post-production par LUT versionnée pour une cohérence garantie :
 
-| Famille | Images | Traitement |
-|---|---|---|
-| **Crimson velocity** | hero, footer, état actif des services | Décor cramoisi, peau naturelle, flou de bougé sur le décor seulement |
-| **Teal night** | équipe, Programs, coach | Ombres tirées vers `#040F0E` pour fondre dans la section |
-| **Mono** | état inactif des services | N&B. L'état rouge peut être un duotone CSS animable à partir d'une seule image |
-| **Warm film** | témoignages | Noirs relevés, ambre |
+| Famille              | Images                                | Traitement                                                                     |
+| -------------------- | ------------------------------------- | ------------------------------------------------------------------------------ |
+| **Crimson velocity** | hero, footer, état actif des services | Décor cramoisi, peau naturelle, flou de bougé sur le décor seulement           |
+| **Teal night**       | équipe, Programs, coach               | Ombres tirées vers `#040F0E` pour fondre dans la section                       |
+| **Mono**             | état inactif des services             | N&B. L'état rouge peut être un duotone CSS animable à partir d'une seule image |
+| **Warm film**        | témoignages                           | Noirs relevés, ambre                                                           |
 
 - **Modèles** :
   - Nano Banana Pro (portraits et ancres d'identité) ;
@@ -640,30 +652,30 @@ Base sous 40em (640), puis 40em, 48em (768), 64em (1024, où les compositions en
 
 Cas par défaut : site **autonome**, **une page** comme le shot, objectif « montrer une étendue ».
 
-| Couche | Choix | Version au 2026-10-02 |
-|---|---|---|
-| Framework | **Astro**, sortie statique, une page (`index` + `404`) | `astro@7.3.5` |
-| Langage | **TypeScript** strict (`strictest`) | `typescript@~6.0.3`. **Pas la 7.x** : `typescript-eslint` exige `<6.1` |
-| Animation | **GSAP**, moteur unique : core, ScrollTrigger, SplitText, Flip, CustomEase | `gsap@3.15.0`, 100 % gratuit plugins compris depuis la 3.13 |
-| Smooth scroll | **Lenis** sous conditions (§9.4), piloté par le ticker GSAP | `lenis@~1.3.26`. La 2.0 est en dev |
-| Micro-interactions | **CSS natif** : transitions, `@property`, `@starting-style`, `grid-template-rows` | — |
-| Styles | **CSS moderne** (layers, nesting, container queries, `oklch`) + styles scopés Astro, avec des tokens à **source unique** | — |
-| Interactif | **Custom elements** (`<vy-menu>`, `<vy-accordion>`, `<vy-carousel>`, `<vy-video>`), sans island de framework | — |
-| Polices et images | **Astro Fonts API** (stable, auto-hébergement, repli à métriques ajustées) et **`astro:assets`** (AVIF/WebP, `srcset`, `priority`) | — |
-| Hébergement | Sortie statique, **indépendante de l'hébergeur** : Vercel (ton habitude) ou Cloudflare Workers Static Assets | `wrangler@4.147` si Cloudflare |
-| Runtime | Node **24 LTS**, pnpm | `24.21.0` |
+| Couche             | Choix                                                                                                                              | Version au 2026-10-02                                                  |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Framework          | **Astro**, sortie statique, une page (`index` + `404`)                                                                             | `astro@7.3.5`                                                          |
+| Langage            | **TypeScript** strict (`strictest`)                                                                                                | `typescript@~6.0.3`. **Pas la 7.x** : `typescript-eslint` exige `<6.1` |
+| Animation          | **GSAP**, moteur unique : core, ScrollTrigger, SplitText, Flip, CustomEase                                                         | `gsap@3.15.0`, 100 % gratuit plugins compris depuis la 3.13            |
+| Smooth scroll      | **Lenis** sous conditions (§9.4), piloté par le ticker GSAP                                                                        | `lenis@~1.3.26`. La 2.0 est en dev                                     |
+| Micro-interactions | **CSS natif** : transitions, `@property`, `@starting-style`, `grid-template-rows`                                                  | —                                                                      |
+| Styles             | **CSS moderne** (layers, nesting, container queries, `oklch`) + styles scopés Astro, avec des tokens à **source unique**           | —                                                                      |
+| Interactif         | **Custom elements** (`<vy-menu>`, `<vy-accordion>`, `<vy-carousel>`, `<vy-video>`), sans island de framework                       | —                                                                      |
+| Polices et images  | **Astro Fonts API** (stable, auto-hébergement, repli à métriques ajustées) et **`astro:assets`** (AVIF/WebP, `srcset`, `priority`) | —                                                                      |
+| Hébergement        | Sortie statique, **indépendante de l'hébergeur** : Vercel (ton habitude) ou Cloudflare Workers Static Assets                       | `wrangler@4.147` si Cloudflare                                         |
+| Runtime            | Node **24 LTS**, pnpm                                                                                                              | `24.21.0`                                                              |
 
 **Pourquoi**, avec des valeurs mesurées sur des builds jetables :
 
-| Mesure (JS gzip) | Valeur |
-|---|---|
-| Astro, page vide | **0 Ko** |
+| Mesure (JS gzip)                                      | Valeur           |
+| ----------------------------------------------------- | ---------------- |
+| Astro, page vide                                      | **0 Ko**         |
 | Astro + GSAP (core, ScrollTrigger, SplitText) + Lenis | **≈ 51 à 56 Ko** |
-| Vite + React, page vide | 66 Ko |
-| Vite + React + `useGSAP` + la même stack | **116,7 Ko** |
-| Nuxt, page vide | 49,3 Ko |
-| Vue seul + la même stack | 73,4 Ko |
-| Next.js 16, page vide | 168,4 Ko |
+| Vite + React, page vide                               | 66 Ko            |
+| Vite + React + `useGSAP` + la même stack              | **116,7 Ko**     |
+| Nuxt, page vide                                       | 49,3 Ko          |
+| Vue seul + la même stack                              | 73,4 Ko          |
+| Next.js 16, page vide                                 | 168,4 Ko         |
 
 Ce site est le cas d'école d'Astro : éditorial, 4 widgets, aucun état partagé, HTML complet sans hydratation. Astro reste en tête même en comparant honnêtement à Vite + React plutôt qu'à Next.js (scénario S1 de la revue adverse : 4,25 contre 4,03).
 
@@ -706,12 +718,12 @@ Ce site est le cas d'école d'Astro : éditorial, 4 widgets, aucun état partag�
 
 **Q0 : cette pièce doit-elle élargir ton profil ou capitaliser sur ta stack ?**
 
-| | Une page (cas du shot) | Avec sous-pages et transitions |
-|---|---|---|
-| **Site autonome**, élargir | **Astro 7.3 statique**, GSAP, Lenis, CSS natif, custom elements | Transitions en CSS seul (absentes sous Firefox) : Astro MPA + `@view-transition`. Transitions GSAP partout : Astro + `<ClientRouter />` avec adaptateur (`event.loader` pour la sortie, `swapFunctions` pour préserver les classes, `dispose()` puis nouveau Lenis à chaque page), ou swup. **Meilleure alternative selon v3b : Nuxt 4.5 en `nuxt generate`**, avec `<NuxtPage :transition="{ css: false, onLeave, onEnter }">` piloté par GSAP. C'est la chorégraphie inter-pages la plus simple dans tous les navigateurs, et tu connais déjà Nuxt (≈ +44 Ko) |
-| **Site autonome**, capitaliser | **B′ : Vite 8 + React 19.3 + TS 6 + GSAP (`useGSAP`) + `lenis/react` + Tailwind 4.3**, avec prérendu statique obligatoire (environ 117 Ko) | `<ViewTransition>` de React 19.3 ou timelines GSAP orchestrées par le routeur |
-| **Intégré à un portfolio React** | Une route ; `useGSAP` avec `scope` ; Lenis monté et détruit au niveau de la route ; ne jamais mélanger Motion et GSAP sur la même page | idem, avec `context.revert()` avant chaque changement de route |
-| **Intégré à un portfolio Nuxt / Vue** | Un layer Nuxt ; composable `useGsapContext` ; `lenis/vue` | `<Transition :css="false">` avec des hooks GSAP |
+|                                       | Une page (cas du shot)                                                                                                                     | Avec sous-pages et transitions                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Site autonome**, élargir            | **Astro 7.3 statique**, GSAP, Lenis, CSS natif, custom elements                                                                            | Transitions en CSS seul (absentes sous Firefox) : Astro MPA + `@view-transition`. Transitions GSAP partout : Astro + `<ClientRouter />` avec adaptateur (`event.loader` pour la sortie, `swapFunctions` pour préserver les classes, `dispose()` puis nouveau Lenis à chaque page), ou swup. **Meilleure alternative selon v3b : Nuxt 4.5 en `nuxt generate`**, avec `<NuxtPage :transition="{ css: false, onLeave, onEnter }">` piloté par GSAP. C'est la chorégraphie inter-pages la plus simple dans tous les navigateurs, et tu connais déjà Nuxt (≈ +44 Ko) |
+| **Site autonome**, capitaliser        | **B′ : Vite 8 + React 19.3 + TS 6 + GSAP (`useGSAP`) + `lenis/react` + Tailwind 4.3**, avec prérendu statique obligatoire (environ 117 Ko) | `<ViewTransition>` de React 19.3 ou timelines GSAP orchestrées par le routeur                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Intégré à un portfolio React**      | Une route ; `useGSAP` avec `scope` ; Lenis monté et détruit au niveau de la route ; ne jamais mélanger Motion et GSAP sur la même page     | idem, avec `context.revert()` avant chaque changement de route                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| **Intégré à un portfolio Nuxt / Vue** | Un layer Nuxt ; composable `useGsapContext` ; `lenis/vue`                                                                                  | `<Transition :css="false">` avec des hooks GSAP                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 **Règle générale** : même si ton portfolio est en React ou en Vue, **mieux vaut déployer VYRON à part** (sous-domaine) et le lier depuis le portfolio. Lenis sur `<html>`, des ScrollTriggers globaux, des polices et des tokens propres entrent en conflit avec une application hôte.
 
@@ -735,34 +747,37 @@ docs/{adr,analyse}/ + PRODUCT.md + DESIGN.md
 ```
 
 **Conventions** :
+
 - classes pour le style, ARIA et `data-state` pour l'état, `data-motion` pour l'animation ; une animation ne cible jamais une classe de style ;
 - chaque effet est un module `init(root) → cleanup` ;
 - aucune valeur magique hors des tokens.
 
 **Qualité** : un socle obligatoire et des options, en CI sous Node 24.
 
-| Rôle | Outil | Niveau |
-|---|---|---|
-| Format | Prettier + plugin Astro | **Socle** |
-| Lint TS, Astro, a11y | ESLint 10 + typescript-eslint (strictTypeChecked) + eslint-plugin-astro + jsx-a11y-x | **Socle** |
-| Types | `astro check` | **Socle** |
-| E2E | Playwright : clavier, menu, accordéon, carrousel, **projet sans JS**, **projets reduced-motion et no-preference**, retour bfcache | **Socle** |
-| Accessibilité | axe, WCAG 2.2 AA, 0 violation | **Socle** |
-| Animation | test « rien ne reste caché » | **Socle** |
-| Performance | Lighthouse 13 avec budgets | **Socle** |
-| Visuel | captures à 375, 768 et 1440 | Option (recommandée) |
-| Lint CSS | Stylelint 17 (couleurs littérales interdites hors tokens) | Option |
-| Code mort | knip | Option |
-| Unitaires | Vitest (seulement s'il y a de la logique TS pure) | Option |
-| Hooks Git | lefthook + commitlint | Option |
+| Rôle                 | Outil                                                                                                                             | Niveau               |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| Format               | Prettier + plugin Astro                                                                                                           | **Socle**            |
+| Lint TS, Astro, a11y | ESLint 10 + typescript-eslint (strictTypeChecked) + eslint-plugin-astro + jsx-a11y-x                                              | **Socle**            |
+| Types                | `astro check`                                                                                                                     | **Socle**            |
+| E2E                  | Playwright : clavier, menu, accordéon, carrousel, **projet sans JS**, **projets reduced-motion et no-preference**, retour bfcache | **Socle**            |
+| Accessibilité        | axe, WCAG 2.2 AA, 0 violation                                                                                                     | **Socle**            |
+| Animation            | test « rien ne reste caché »                                                                                                      | **Socle**            |
+| Performance          | Lighthouse 13 avec budgets                                                                                                        | **Socle**            |
+| Visuel               | captures à 375, 768 et 1440                                                                                                       | Option (recommandée) |
+| Lint CSS             | Stylelint 17 (couleurs littérales interdites hors tokens)                                                                         | Option               |
+| Code mort            | knip                                                                                                                              | Option               |
+| Unitaires            | Vitest (seulement s'il y a de la logique TS pure)                                                                                 | Option               |
+| Hooks Git            | lefthook + commitlint                                                                                                             | Option               |
 
 **Git** :
+
 - Conventional Commits, avec des scopes par section (`feat(hero): …`) contrôlés par commitlint ; hooks lefthook ;
 - trunk-based, branches courtes, PR avec CI verte et preview, squash merge ;
 - jalons taggés `v0.1` (statique), `v0.2` (interactions), `v0.3` (motion), `v1.0` ;
 - **un ADR par décision structurante.** Le premier, « Astro plutôt que ma stack Vite + React habituelle », avec ses chiffres, est l'ADR le plus parlant pour un recruteur.
 
 **Pièges de version relevés** :
+
 - Astro 7 a `compressHTML: 'jsx'` par défaut, ce qui supprime les espaces entre éléments inline : il faut des `{" "}` explicites ;
 - le compilateur Rust est plus strict ;
 - **TypeScript 7 est incompatible** avec l'outillage de lint actuel ;
@@ -772,18 +787,18 @@ docs/{adr,analyse}/ + PRODUCT.md + DESIGN.md
 
 ## 13. Désaccords entre analystes, et comment je les ai tranchés
 
-| Sujet | Désaccord | Arbitrage |
-|---|---|---|
-| Encre des titres | `#0B1024`, `#0D1127`, `#141A2C` ou `#171A32` | **`#171A32`**, valeur dominante sur environ 28 000 px. Les autres valeurs viennent de pixels de cœur ou d'anticrénelage |
-| Escalier | « 2 rectangles identiques » (a1) contre polygone `dx / t / b` (a4) | **Polygone `dx / t / b`, avec t ≠ b** (v2, mesuré) |
-| Plaque sous la vidéo | « Barre de progression » (a1, a4) contre « carte empilée » (a6, a8, v2) | **Carte empilée** : géométrie mesurée, texture d'image, retrait symétrique |
-| Hauteur de l'onglet rouge du footer | 43 (a1) contre 61–63 (a4, v2) | **≈ 62** |
-| Item d'accordéon ouvert | ~460 (a4) contre ~400 (a1, v2) | **≈ 400** ; items fermés de 173 à 177 |
-| Phrase d'About | H2 (a4) contre taille H3 (a1, a2, v2) | **Taille H3** (capitale ≈ 25 contre 39 pour les H2) |
-| Wordmark et logo | « Face chanfreinée du display » (a4) contre « Tektur 600 à 700 » (a2, v2) | **Tektur 700, tracking 0**, au header comme au footer (v1b, IoU 0,94) |
-| Chiffres 01/02 | `tnum` (a2) contre chiffres par défaut (v1b) | **Chiffres par défaut** (IoU 0,90 contre 0,70 en `tnum`) |
-| Flèche → | absente de Tektur (a2) contre présente (v1b) | **Présente** dans le fichier complet, absente du sous-ensemble « latin » ; les flèches restent de toute façon des SVG |
-| Correctif du rouge | `#E3293E`, `#E3213A`, `#E01028`, `#D8273B`… | **Rampe `#E41E3A` / `#C2152C` / `#F64D57`** (a3), recalculée (§5.4) |
+| Sujet                               | Désaccord                                                                 | Arbitrage                                                                                                               |
+| ----------------------------------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Encre des titres                    | `#0B1024`, `#0D1127`, `#141A2C` ou `#171A32`                              | **`#171A32`**, valeur dominante sur environ 28 000 px. Les autres valeurs viennent de pixels de cœur ou d'anticrénelage |
+| Escalier                            | « 2 rectangles identiques » (a1) contre polygone `dx / t / b` (a4)        | **Polygone `dx / t / b`, avec t ≠ b** (v2, mesuré)                                                                      |
+| Plaque sous la vidéo                | « Barre de progression » (a1, a4) contre « carte empilée » (a6, a8, v2)   | **Carte empilée** : géométrie mesurée, texture d'image, retrait symétrique                                              |
+| Hauteur de l'onglet rouge du footer | 43 (a1) contre 61–63 (a4, v2)                                             | **≈ 62**                                                                                                                |
+| Item d'accordéon ouvert             | ~460 (a4) contre ~400 (a1, v2)                                            | **≈ 400** ; items fermés de 173 à 177                                                                                   |
+| Phrase d'About                      | H2 (a4) contre taille H3 (a1, a2, v2)                                     | **Taille H3** (capitale ≈ 25 contre 39 pour les H2)                                                                     |
+| Wordmark et logo                    | « Face chanfreinée du display » (a4) contre « Tektur 600 à 700 » (a2, v2) | **Tektur 700, tracking 0**, au header comme au footer (v1b, IoU 0,94)                                                   |
+| Chiffres 01/02                      | `tnum` (a2) contre chiffres par défaut (v1b)                              | **Chiffres par défaut** (IoU 0,90 contre 0,70 en `tnum`)                                                                |
+| Flèche →                            | absente de Tektur (a2) contre présente (v1b)                              | **Présente** dans le fichier complet, absente du sous-ensemble « latin » ; les flèches restent de toute façon des SVG   |
+| Correctif du rouge                  | `#E3293E`, `#E3213A`, `#E01028`, `#D8273B`…                               | **Rampe `#E41E3A` / `#C2152C` / `#F64D57`** (a3), recalculée (§5.4)                                                     |
 
 ---
 
@@ -811,23 +826,23 @@ docs/{adr,analyse}/ + PRODUCT.md + DESIGN.md
 
 ### 15.2 Secondaires (défaut proposé, à corriger si besoin)
 
-| Décision | Défaut proposé |
-|---|---|
-| Intensité du motion | **Niveau 2** (MUST, SHOULD et O3) ; WebGL O1 en bonus de fin de projet |
-| Lenis | Oui, sous conditions |
-| Styles | CSS natif à tokens, ou Tailwind 4.3 (ta norme, avec `@theme` comme source de tokens) : les deux sont valables, le choix t'appartient |
-| Rouges | Rampe à 4 rôles (§5.4) |
-| Encre des titres | Marine `#171A32` partout ; chiffres en `#000` |
-| Deux noirs (`#000` HOT, `#040F0E` NIGHT) | Les garder |
-| Hero | `100svh` avec H1 visible au chargement ; image générée avec une zone sombre sous le sous-titre |
-| Services | Carrousel centré (scroll-snap + Flip) sur desktop ; pile verticale sur mobile ; nombre de services à fixer (3 à 5) |
-| Témoignages | Pile de 3 cartes, plans **muets** (pas de talking head), pas d'autoplay ; compteur « 01 / 03 », sans pager vertical en double |
-| Formes arrondies (pastilles, avatar, points) | Passer en carré |
-| Mono | Réservé aux données ; Plex Mono gardé par fidélité |
-| Footer | Panneaux réaffectés (Contact et adresse · Réserver · Horaires), crédit et mention « concept » |
-| Images | 4 familles d'étalonnage ; « Stills essentiels » d'abord, avec un pilote de calibrage des crédits |
-| Mode de construction Impeccable | Défaut d'Impeccable quand la génération d'image est disponible : **comp-first** (3 comps avant de coder). Ici, je propose **code-first**, puisque la référence fait déjà office de comp. **Non enregistré** tant que tu ne l'as pas confirmé |
-| Hébergement | Vercel (ton habitude) ou Cloudflare ; sous-domaine de ton portfolio |
+| Décision                                     | Défaut proposé                                                                                                                                                                                                                               |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Intensité du motion                          | **Niveau 2** (MUST, SHOULD et O3) ; WebGL O1 en bonus de fin de projet                                                                                                                                                                       |
+| Lenis                                        | Oui, sous conditions                                                                                                                                                                                                                         |
+| Styles                                       | CSS natif à tokens, ou Tailwind 4.3 (ta norme, avec `@theme` comme source de tokens) : les deux sont valables, le choix t'appartient                                                                                                         |
+| Rouges                                       | Rampe à 4 rôles (§5.4)                                                                                                                                                                                                                       |
+| Encre des titres                             | Marine `#171A32` partout ; chiffres en `#000`                                                                                                                                                                                                |
+| Deux noirs (`#000` HOT, `#040F0E` NIGHT)     | Les garder                                                                                                                                                                                                                                   |
+| Hero                                         | `100svh` avec H1 visible au chargement ; image générée avec une zone sombre sous le sous-titre                                                                                                                                               |
+| Services                                     | Carrousel centré (scroll-snap + Flip) sur desktop ; pile verticale sur mobile ; nombre de services à fixer (3 à 5)                                                                                                                           |
+| Témoignages                                  | Pile de 3 cartes, plans **muets** (pas de talking head), pas d'autoplay ; compteur « 01 / 03 », sans pager vertical en double                                                                                                                |
+| Formes arrondies (pastilles, avatar, points) | Passer en carré                                                                                                                                                                                                                              |
+| Mono                                         | Réservé aux données ; Plex Mono gardé par fidélité                                                                                                                                                                                           |
+| Footer                                       | Panneaux réaffectés (Contact et adresse · Réserver · Horaires), crédit et mention « concept »                                                                                                                                                |
+| Images                                       | 4 familles d'étalonnage ; « Stills essentiels » d'abord, avec un pilote de calibrage des crédits                                                                                                                                             |
+| Mode de construction Impeccable              | Défaut d'Impeccable quand la génération d'image est disponible : **comp-first** (3 comps avant de coder). Ici, je propose **code-first**, puisque la référence fait déjà office de comp. **Non enregistré** tant que tu ne l'as pas confirmé |
+| Hébergement                                  | Vercel (ton habitude) ou Cloudflare ; sous-domaine de ton portfolio                                                                                                                                                                          |
 
 ### 15.3 Informations à me fournir quand tu peux
 

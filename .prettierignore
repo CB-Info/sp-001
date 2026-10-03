@@ -5,3 +5,6 @@ pnpm-lock.yaml
 public/fonts
 docs/analyse/annexes
 app/assets/css/fonts.css
+
+# Fichiers écrits par l’outil Impeccable, dans son propre format
+.impeccable

@@ -65,14 +65,14 @@
 
 ### Correctifs (et seulement eux)
 
-| Domaine | Correctif |
-|---|---|
-| Contraste | Rouge en 4 rôles : `#F02B42` pour le display et les surfaces sans texte, `#E41E3A` pour les remplissages sous texte blanc, `#C2152C` pour le petit texte rouge sur clair, `#F64D57` pour le texte rouge sur nuit. Gris remontés (`#68696C`, `#788382`). Sous-titre du hero posé sur une **zone sombre prévue dans l'image** |
-| Lisibilité | Micro-textes à 14 px au minimum. Corps en Inter 400 à 16 px, interligne de 1,45 à 1,5 |
-| Mobile et tablette | Recomposition section par section (synthèse §10.1). Hero en `100svh`, avec le H1 entièrement visible au chargement |
-| États | Survol, focus visible, appui et désactivé sur chaque contrôle. Cibles de 44 px au tactile |
-| Accessibilité | Menu en `<dialog>` ; accordéon et carrousels au pattern APG ; marquee arrêtable ; parcours en mouvement réduit ; contenu complet sans JS |
-| Cohérence interne | Une seule encre de titre (`#171A32`) ; H3 unifiés ; une seule règle de casse et de ponctuation ; compteur du témoignage aligné sur les points ; un visage unique par coach |
+| Domaine            | Correctif                                                                                                                                                                                                                                                                                                                   |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Contraste          | Rouge en 4 rôles : `#F02B42` pour le display et les surfaces sans texte, `#E41E3A` pour les remplissages sous texte blanc, `#C2152C` pour le petit texte rouge sur clair, `#F64D57` pour le texte rouge sur nuit. Gris remontés (`#68696C`, `#788382`). Sous-titre du hero posé sur une **zone sombre prévue dans l'image** |
+| Lisibilité         | Micro-textes à 14 px au minimum. Corps en Inter 400 à 16 px, interligne de 1,45 à 1,5                                                                                                                                                                                                                                       |
+| Mobile et tablette | Recomposition section par section (synthèse §10.1). Hero en `100svh`, avec le H1 entièrement visible au chargement                                                                                                                                                                                                          |
+| États              | Survol, focus visible, appui et désactivé sur chaque contrôle. Cibles de 44 px au tactile                                                                                                                                                                                                                                   |
+| Accessibilité      | Menu en `<dialog>` ; accordéon et carrousels au pattern APG ; marquee arrêtable ; parcours en mouvement réduit ; contenu complet sans JS                                                                                                                                                                                    |
+| Cohérence interne  | Une seule encre de titre (`#171A32`) ; H3 unifiés ; une seule règle de casse et de ponctuation ; compteur du témoignage aligné sur les points ; un visage unique par coach                                                                                                                                                  |
 
 ### Ce qu'on ne fait pas
 
@@ -85,15 +85,15 @@
 
 ## 5. États et plages de contenu
 
-| Bloc | Plage retenue (défaut, à corriger si besoin) |
-|---|---|
-| Services | **4 cartes** : 01 Personal Training, 02 Strength Training, 03 Functional Training, 04 Conditioning. La carte 02 est active au chargement, centrée ; défilement borné ; précédent / suivant plus le clavier |
-| Programs | 4 items, le 01 ouvert par défaut, un seul ouvert à la fois. Chaque item porte une description, 4 tags et un coach. Contenu des items 02 à 04 à écrire (fictif) |
-| Équipe | 5 coachs, le 03 en vedette par défaut. Sur desktop, la vedette suit le survol et le focus ; sur mobile, disposition en bento « 1 + 4 » |
-| Témoignages | Pile de **3 cartes**, compteur « 01 / 03 » et points synchronisés, pas d'autoplay |
-| Menu | Plein écran : ancres des 6 sections, téléphone fictif, réseaux sociaux, mention « concept » et crédit |
-| Langue | **Français**, au tutoiement. Le display passe à un interligne ≥ 0,9 si une capitale accentuée tombe en 2ᵉ ligne. Les masques de révélation ont un débord vertical. Les composants sont testés avec des textes 15 à 40 % plus longs |
-| États globaux | Polices et images en chargement (pas de décalage de mise en page), sans JS, mouvement réduit, pause globale des animations. Pas de formulaire, donc pas d'état d'erreur |
+| Bloc          | Plage retenue (défaut, à corriger si besoin)                                                                                                                                                                                       |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Services      | **4 cartes** : 01 Personal Training, 02 Strength Training, 03 Functional Training, 04 Conditioning. La carte 02 est active au chargement, centrée ; défilement borné ; précédent / suivant plus le clavier                         |
+| Programs      | 4 items, le 01 ouvert par défaut, un seul ouvert à la fois. Chaque item porte une description, 4 tags et un coach. Contenu des items 02 à 04 à écrire (fictif)                                                                     |
+| Équipe        | 5 coachs, le 03 en vedette par défaut. Sur desktop, la vedette suit le survol et le focus ; sur mobile, disposition en bento « 1 + 4 »                                                                                             |
+| Témoignages   | Pile de **3 cartes**, compteur « 01 / 03 » et points synchronisés, pas d'autoplay                                                                                                                                                  |
+| Menu          | Plein écran : ancres des 6 sections, téléphone fictif, réseaux sociaux, mention « concept » et crédit                                                                                                                              |
+| Langue        | **Français**, au tutoiement. Le display passe à un interligne ≥ 0,9 si une capitale accentuée tombe en 2ᵉ ligne. Les masques de révélation ont un débord vertical. Les composants sont testés avec des textes 15 à 40 % plus longs |
+| États globaux | Polices et images en chargement (pas de décalage de mise en page), sans JS, mouvement réduit, pause globale des animations. Pas de formulaire, donc pas d'état d'erreur                                                            |
 
 ## 6. Interaction et mise en page
 
@@ -101,14 +101,14 @@
 - **Paliers** : moins de 40em, puis 40, 48, 64 et 80em, avec des requêtes de conteneur sur les cartes. Les mots géants s'ajustent en `cqi`, sans jamais déborder.
 - **Les interactions phares**, au-delà du moment signature :
 
-| Section | Interaction |
-|---|---|
-| Services | « SERVICES. » se remplit au défilement, en même temps que la trame qui « mesure ». La carte active s'inverse en noir et sa photo passe du N&B au rouge. La tuile ↪ suit la carte active |
-| Programs | La hauteur s'anime en `grid-rows`. Le contenu arrive en cascade. L'image se « ré-encoche » au changement d'item |
-| Why | Les filets du tableau se tracent. La vedette de l'équipe se déplace au survol |
-| Transformation | La carte suivante sort de la pile. La citation change ligne par ligne. Le compteur tourne comme un rouleau |
-| Marquee | Sa vitesse suit celle du défilement, avec une pause possible |
-| Global | Les astérisques avancent tous d'un cran selon une loi unique ; menu en rideau au bord en escalier ; soulignés qui se tracent ; focus qui se verrouille |
+| Section        | Interaction                                                                                                                                                                             |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Services       | « SERVICES. » se remplit au défilement, en même temps que la trame qui « mesure ». La carte active s'inverse en noir et sa photo passe du N&B au rouge. La tuile ↪ suit la carte active |
+| Programs       | La hauteur s'anime en `grid-rows`. Le contenu arrive en cascade. L'image se « ré-encoche » au changement d'item                                                                         |
+| Why            | Les filets du tableau se tracent. La vedette de l'équipe se déplace au survol                                                                                                           |
+| Transformation | La carte suivante sort de la pile. La citation change ligne par ligne. Le compteur tourne comme un rouleau                                                                              |
+| Marquee        | Sa vitesse suit celle du défilement, avec une pause possible                                                                                                                            |
+| Global         | Les astérisques avancent tous d'un cran selon une loi unique ; menu en rideau au bord en escalier ; soulignés qui se tracent ; focus qui se verrouille                                  |
 
 ## 7. Contraintes et décisions ouvertes
 

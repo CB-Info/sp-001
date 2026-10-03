@@ -1,3 +1,22 @@
 {
-  "buildPath": "code"
+  "buildPath": "code",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-10-03T06:07:32.141Z",
+        "reason": "user confirmed: police de texte mesurée sur la référence, fidélité validée (PRODUCT.md, brief accueil §4)"
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": ["app/components/programs/ProgramItem.vue"],
+        "createdAt": "2026-10-03T06:07:32.152Z",
+        "reason": "exception argumentée : le padding s'anime dans les mêmes images que la hauteur (grid-template-rows) de l'accordéon, la mise en page est déjà recalculée à chaque image ; aucune passe de layout ajoutée"
+      }
+    ]
+  }
 }

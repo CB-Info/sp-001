@@ -71,6 +71,7 @@ Niveau d'ambition **maximal** (« je veux être impressionné »), dans le cadre
 ### Images
 
 Toutes sont générées avec Higgsfield :
+
 - aucune image du shot en entrée ;
 - aucune marque visible ;
 - personnes fictives étiquetées comme telles ;
@@ -83,6 +84,7 @@ Contenu en **français**, au tutoiement, au ton direct de la référence. La tra
 ### Overdrive
 
 Niveau **complet** :
+
 - moment signature ;
 - échos liés à la vitesse sur les mots géants ;
 - flou directionnel WebGL (OGL) sur la photo du hero ;

@@ -19,7 +19,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:e2e": "playwright test",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck"
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck",
+    "verify": "pnpm check && pnpm generate && pnpm test:e2e"
   },
   "dependencies": {
     "@nuxt/image": "2.1.0",

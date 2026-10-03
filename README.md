@@ -14,6 +14,7 @@ Reconstruction fidèle et animée d'une landing page de salle de sport, sous la 
 ## Méthode
 
 Design piloté par [Impeccable](https://github.com/pbakaus/impeccable) :
+
 1. `init` : écrire `PRODUCT.md`.
 2. `shape` : rédiger le brief de la surface.
 3. Établir le contrat de direction.
