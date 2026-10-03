@@ -3,9 +3,9 @@
  * Statistique d'About : un chiffre en Tektur et son libellé en capitales.
  *
  * Le chiffre reste du vrai texte (visible sans JS). Chaque caractère est posé dans
- * son propre <span> pour le futur compteur à rouleaux, accroché par `motion`
- * (data-motion) ; ce découpage est masqué aux lecteurs d'écran, qui lisent à la
- * place `spoken`, la valeur entière, une seule fois.
+ * son propre <span> : le compteur à rouleaux de la section s'y accroche par
+ * `motion` (data-motion). Ce découpage est masqué aux lecteurs d'écran, qui lisent
+ * à la place `spoken`, la valeur entière, une seule fois.
  */
 const props = withDefaults(
   defineProps<{
@@ -55,7 +55,7 @@ const glyphs = computed(() =>
 }
 
 /*
- * Chiffres qui changeront (rouleaux) : tabulaires, pour qu'ils ne sautillent pas.
+ * Chiffres qui tournent (rouleaux) : tabulaires, pour qu'ils ne sautillent pas.
  * Chaque glyphe est un bloc en ligne (transformable) ; jamais un élément flex, qui
  * ferait copier « 4,9 » sur trois lignes.
  */

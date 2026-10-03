@@ -14,6 +14,7 @@ defineProps<{ images: ImageAsset[] }>();
       v-for="image in images"
       :key="image.src"
       class="avatar-stack__item"
+      data-motion="about-reviewer"
       :src="image.src"
       :width="image.width"
       :height="image.height"
