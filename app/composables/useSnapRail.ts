@@ -136,7 +136,10 @@ export function useSnapRail(scroller: Readonly<Ref<HTMLElement | null>>, options
     clearTimeout(holdTimer);
     target = next;
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-    scroller.value?.scrollTo({ left: position, behavior: instant || reduced ? 'instant' : 'smooth' });
+    scroller.value?.scrollTo({
+      left: position,
+      behavior: instant || reduced ? 'instant' : 'smooth',
+    });
     armRelease(instant ? 60 : 400);
   }
 
