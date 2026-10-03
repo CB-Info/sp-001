@@ -8,6 +8,7 @@ import type { ImageAsset } from '~/types/content';
  * API de style pour le deck :
  * - `--print-ratio` impose un cadrage (16:9 en mobile) ; sinon, celui de l'image ;
  * - `--print-shade` (0 → 1) assombrit la photo : la carte qui attend dans la pile.
+ *   Le deck l'anime avec la pose de la carte (GSAP) : aucune transition ici.
  *
  * Tailles servies : pleine largeur sous 1024 px, ≈ 50 % de la fenêtre jusqu'à
  * 1280 px, puis 726 px au plus (colonne de la pile à 1440). Clés = largeur
@@ -64,20 +65,13 @@ const sizes = { sm: '100vw', md: '100vw', lg: '100vw', xl: '52vw', '2xl': '730px
   object-fit: cover;
 }
 
-/* Voile de profondeur : opacité pilotée par le deck, transition composée sur le GPU. */
+/* Voile de profondeur : opacité pilotée par le deck. */
 .print__frame::after {
   content: '';
   position: absolute;
   inset: 0;
   background-color: var(--surface-inverse);
   opacity: var(--print-shade, 0);
-  transition: opacity var(--dur-layout) var(--ease-out-soft);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .print__frame::after {
-    transition: none;
-  }
 }
 
 @media (forced-colors: active) {

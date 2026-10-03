@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { Testimonial } from '~/types/content';
 import { ui } from '~/data/ui';
+import { loadSplitText } from '~/motion/gsap';
+import { capped, ENTRY, reached } from '~/motion/sequence';
+import { duration, stagger } from '~/motion/tokens';
 
 /**
  * Deck de témoignages (motif APG « carousel », sans rotation automatique).
@@ -93,6 +96,191 @@ function onPointerUp(event: PointerEvent) {
   if (Math.abs(dx) < SWIPE_MIN || Math.abs(dx) < Math.abs(dy)) return;
   goTo(current.value + (dx < 0 ? 1 : -1));
 }
+
+/*
+ * ── Mouvement (docs/analyse/annexes/a6-motion.md §4.6) ─────────────────────
+ * Les poses de repos restent celles du CSS (TestimonialSlide) : GSAP ne joue que
+ * le passage de l'une à l'autre, puis rend la main (clearProps).
+ *
+ * - Entrée, une fois : la pile se donne. Chaque carte visible part de la place de
+ *   celle qui la suit et monte d'un cran, la plus haute d'abord.
+ * - Changement, en deux temps (« vitesse → arrêt ») : ce qui part accélère
+ *   (--ease-in, --dur-state), puis ce qui arrive se pose (--ease-out, --dur-layout).
+ *   Chaque carte qui change de place part de la pose qu'elle affiche (au repos ou
+ *   en vol) : une commande en cours de route reprend chaque carte où elle en est,
+ *   sans file d'attente.
+ * - Citation : ses lignes sortent par le haut de leur masque, puis celles de la
+ *   suivante montent ; en reculant, tout descend.
+ * - Compteur et points glissent en CSS, dès l'appui (TestimonialCounter, TestimonialDots).
+ */
+const deck = useTemplateRef<HTMLElement>('deck');
+
+/** Ce que le CSS de la pile fait varier d'une carte à l'autre. */
+const POSE = 'transform,opacity,visibility,--print-shade';
+
+interface Pose {
+  x: number;
+  y: number;
+  scale: number;
+  autoAlpha: number;
+  '--print-shade': number;
+}
+
+/** La pose qu'une carte affiche : son repos, ou le point où en est son passage. */
+function readPose(card: HTMLElement): Pose {
+  const style = getComputedStyle(card);
+  const { m41: x, m42: y, a: scale } = new DOMMatrixReadOnly(style.transform);
+  return {
+    x,
+    y,
+    scale,
+    autoAlpha: Number(style.opacity),
+    '--print-shade': Number(style.getPropertyValue('--print-shade')),
+  };
+}
+
+type SplitTextClass = Awaited<ReturnType<typeof loadSplitText>>;
+
+useMotion(deck, ({ gsap }, root) => {
+  const slides = [...root.querySelectorAll<HTMLElement>('[data-motion="testimonial-slide"]')];
+  const cards = [...root.querySelectorAll<HTMLElement>('[data-motion="testimonial-card"]')];
+  const quotes = [...root.querySelectorAll<HTMLElement>('[data-motion="testimonial-quote"]')];
+  const layout = duration('--dur-layout');
+  const cascade = capped(stagger('--stagger-list'));
+
+  /* ── Entrée : la pile se donne, une fois ─────────────────────────────── */
+  // Déjà à l'écran quand GSAP arrive (ancre, rechargement) : l'état final reste.
+  if (!reached(root)) {
+    const rest = cards.map(readPose);
+    const deal = gsap.timeline({ scrollTrigger: { trigger: root, ...ENTRY } });
+    const focal = duration('--dur-focal');
+    let dealt = 0;
+    cards.forEach((card, index) => {
+      const deeper = rest[index + 1];
+      if (!deeper || !rest[index]?.autoAlpha) return;
+      deal.from(card, { ...deeper, duration: focal, clearProps: POSE }, cascade(dealt++));
+    });
+  }
+
+  /* ── Cartes : de la pose affichée à la nouvelle pose de repos ─────────── */
+  /** Premier temps d'un changement : ce qui part a quitté la vue. */
+  const exit = duration('--dur-state');
+  let shown: Pose[] = [];
+  let places: (string | undefined)[] = [];
+
+  function moveCards(to: number, forward: boolean) {
+    // En avançant, la carte du dessus part d'abord : celles qui montent attendent
+    // qu'elle ait quitté la pile, sinon elle couvrirait leur montée. Sur un saut, la
+    // nouvelle courante vient d'en dessous, invisible : elle monte aussitôt, sous les
+    // cartes qui partent (la pile ne reste jamais vide). En reculant, la carte revient
+    // par-dessus : rien n'attend.
+    const wait = forward && shown[to]?.autoAlpha ? exit : 0;
+    cards.forEach((card, index) => {
+      const from = shown[index];
+      if (!from || slides[index]?.dataset.state === places[index]) return;
+      gsap.killTweensOf(card);
+      gsap.set(card, { clearProps: POSE });
+      const rest = readPose(card);
+      const leaves = rest.autoAlpha === 0;
+      gsap.fromTo(card, from, {
+        ...rest,
+        duration: leaves ? exit : layout,
+        ease: leaves ? 'in' : 'out',
+        delay: leaves ? 0 : wait,
+        clearProps: POSE,
+      });
+    });
+  }
+
+  /* ── Citation : ligne à ligne, dans des masques ──────────────────────── */
+  // Chargé à part ; tant qu'il manque, la citation change sans animation.
+  let SplitText: SplitTextClass | undefined;
+  loadSplitText().then((loaded) => (SplitText = loaded));
+  /** Le changement de citation en cours, jusqu'à ce que ses lignes soient recollées. */
+  let quoteChange: gsap.core.Timeline | undefined;
+
+  /** Le nom et le texte d'une citation, en lignes masquées, le temps d'un passage. */
+  function splitLines(Split: SplitTextClass, figure: HTMLElement) {
+    const split = Split.create(figure.querySelectorAll('figcaption, p'), {
+      type: 'lines',
+      mask: 'lines',
+      linesClass: 'quote-line',
+      // En <span> : contenu valide d'un <p>, et les mots se mesurent tels qu'ils sont posés.
+      tag: 'span',
+      // Les insécables (« à ma place ») restent insécables : mêmes coupures qu'au repos.
+      reduceWhiteSpace: false,
+      // Le texte reste dans le DOM, dans l'ordre : il se lit d'un seul tenant. Un
+      // aria-label sur <p> serait ignoré (rôle paragraph) et masquerait la citation.
+      aria: 'none',
+    });
+    // Le masque ne coupe qu'en hauteur : le guillemet ouvrant déborde à gauche.
+    gsap.set(split.masks, { overflowX: 'visible' });
+    return split;
+  }
+
+  function changeQuote(from: number, to: number, forward: boolean) {
+    // Un changement en cours va au bout. S'il n'avait pas fini, la citation qu'il
+    // amenait s'efface d'un coup et la suivante entre aussitôt : jamais d'attente.
+    const interrupted = quoteChange !== undefined;
+    quoteChange?.progress(1);
+    const leaving = quotes[from];
+    const arriving = quotes[to];
+    if (!SplitText || !leaving || !arriving) return;
+
+    // En avançant, les lignes sortent par le haut et les suivantes montent ; l'inverse en reculant.
+    const away = forward ? -100 : 100;
+    const into = splitLines(SplitText, arriving);
+    const splits = [into];
+    const timeline = gsap.timeline({
+      onComplete: () => {
+        for (const split of splits) split.revert();
+        gsap.set(leaving, { clearProps: 'opacity,visibility' });
+        quoteChange = undefined;
+      },
+    });
+    let entry = 0;
+    if (!interrupted) {
+      const out = splitLines(SplitText, leaving);
+      splits.push(out);
+      // Elle n'est plus la courante (cachée en CSS) : visible le temps de sortir.
+      gsap.set(leaving, { autoAlpha: 1 });
+      timeline.to(out.lines, { yPercent: away, duration: exit, ease: 'in' }, 0);
+      entry = exit;
+    }
+    timeline.from(into.lines, { yPercent: -away, duration: layout, stagger: cascade }, entry);
+    quoteChange = timeline;
+  }
+
+  /* ── Branchement sur l'index courant ─────────────────────────────────── */
+  // Avant le rendu : ce que chaque carte affiche, et sa place dans la pile.
+  const stopBefore = watch(
+    current,
+    () => {
+      shown = cards.map(readPose);
+      places = slides.map((slide) => slide.dataset.state);
+    },
+    { flush: 'pre' },
+  );
+  // Après : les places ont changé, le CSS donne les nouvelles poses de repos.
+  const stopAfter = watch(
+    current,
+    (to, from) => {
+      const forward = to > from;
+      moveCards(to, forward);
+      changeQuote(from, to, forward);
+    },
+    { flush: 'post' },
+  );
+
+  // Mouvement réduit ou démontage : tout revient à l'état de repos, sur-le-champ.
+  return () => {
+    stopBefore();
+    stopAfter();
+    quoteChange?.progress(1);
+    for (const card of cards) gsap.killTweensOf(card);
+    gsap.set(cards, { clearProps: POSE });
+  };
+});
 </script>
 
 <template>
@@ -102,6 +290,7 @@ function onPointerUp(event: PointerEvent) {
   -->
   <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
   <div
+    ref="deck"
     class="deck"
     role="region"
     :aria-roledescription="ui.carousel"
@@ -197,6 +386,11 @@ function onPointerUp(event: PointerEvent) {
 
 .deck :deep(.testimonial__print) {
   margin-block-end: var(--deck-peek);
+  /*
+   * Balayage : le navigateur garde le défilement vertical et le zoom, et laisse le
+   * geste horizontal au deck (sinon il le prend pour un défilement : pointercancel).
+   */
+  touch-action: pan-y pinch-zoom;
 }
 
 .deck__aside {

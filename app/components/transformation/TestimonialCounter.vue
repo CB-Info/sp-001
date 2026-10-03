@@ -1,27 +1,38 @@
 <script setup lang="ts">
 /**
- * Compteur « 01 / 03 ». Le numéro courant tourne comme un rouleau : tous les
- * numéros partagent la même cellule, décalés d'une hauteur de ligne chacun, et
- * un masque ne laisse voir que le courant (chiffres tabulaires : largeur fixe).
+ * Compteur « 01 / 03 », en odomètre : chaque rang (dizaines, unités) est une
+ * bande de chiffres qui défile dans sa fenêtre. Seul le rang qui change tourne,
+ * vers le haut en avançant, vers le bas en reculant ; un saut fait défiler les
+ * chiffres intermédiaires. Chiffres tabulaires : la largeur ne bouge pas.
  *
  * Décoratif pour les lecteurs d'écran : la position est déjà donnée par
  * l'étiquette de chaque témoignage et par `aria-current` sur les points.
  */
-defineProps<{ current: number; total: number }>();
+const props = defineProps<{ current: number; total: number }>();
 
 const pad = (value: number) => String(value).padStart(2, '0');
+const values = Array.from({ length: props.total }, (_, index) => pad(index + 1));
+
+/** Par rang, les chiffres qu'il prend d'un témoignage à l'autre, dans l'ordre. */
+const wheels = Array.from({ length: pad(props.total).length }, (_, place) => [
+  ...new Set(values.map((value) => value.charAt(place))),
+]);
+
+const shown = computed(() => pad(props.current + 1));
 </script>
 
 <template>
   <p class="counter" aria-hidden="true">
-    <span class="counter__reel" :style="{ '--current': current }">
+    <span class="counter__value">
       <span
-        v-for="index in total"
-        :key="index"
-        class="counter__value"
-        :style="{ '--index': index - 1 }"
+        v-for="(digits, place) in wheels"
+        :key="place"
+        class="counter__wheel"
+        :style="{ '--at': digits.indexOf(shown.charAt(place)) }"
       >
-        {{ pad(index) }}
+        <span class="counter__strip">
+          <span v-for="digit in digits" :key="digit">{{ digit }}</span>
+        </span>
       </span>
     </span>
     <span class="counter__total">/ {{ pad(total) }}</span>
@@ -40,18 +51,29 @@ const pad = (value: number) => String(value).padStart(2, '0');
   white-space: nowrap;
 }
 
-/* Grille d'une cellule : sa ligne de base reste celle du premier numéro, malgré les décalages. */
-.counter__reel {
-  display: inline-grid;
-  clip-path: inset(0);
+.counter__value {
+  display: inline-flex;
   font-size: var(--text-subheading);
   letter-spacing: var(--tracking-heading);
   color: var(--accent-ink);
 }
 
-.counter__value {
-  grid-area: 1 / 1;
-  translate: 0 calc((var(--index) - var(--current)) * 100%);
+/*
+ * Fenêtre d'une ligne : la bande la déborde et le masque (clip-path) n'en montre
+ * qu'un chiffre. La ligne de base reste celle du premier chiffre de la bande :
+ * le décalage (translate) ne touche pas la mise en page.
+ */
+.counter__wheel {
+  display: inline-grid;
+  grid-template-rows: 1lh;
+  clip-path: inset(0);
+}
+
+/* Une seule couche animée par rang, quel que soit le nombre de chiffres. */
+.counter__strip {
+  display: grid;
+  align-self: start;
+  translate: 0 calc(var(--at) * -1lh);
   transition: translate var(--dur-layout) var(--ease-out);
 }
 
@@ -61,7 +83,7 @@ const pad = (value: number) => String(value).padStart(2, '0');
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .counter__value {
+  .counter__strip {
     transition: none;
   }
 }
