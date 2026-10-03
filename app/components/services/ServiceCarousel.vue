@@ -13,7 +13,7 @@ import type { Service } from '~/types/content';
  * Clavier : ← → (et Début / Fin) dès que le focus est dans le carrousel.
  * Pointeur : un clic sur une carte voisine l'amène au centre.
  */
-const props = withDefaults(defineProps<{ items: Service[]; initial?: number }>(), { initial: 1 });
+const props = withDefaults(defineProps<{ items: Service[]; initial?: number }>(), { initial: 0 });
 
 const total = props.items.length;
 const trackId = useId();
@@ -34,7 +34,8 @@ watch(active, (index) => {
   clearTimeout(announceTimer);
   // Un défilement rapide traverse plusieurs cartes : on n'annonce que l'arrêt.
   announceTimer = setTimeout(() => {
-    announcement.value = `Service ${index + 1} sur ${total} : ${props.items[index]?.title}`;
+    // Espace insécable avant le deux-points (typographie française).
+    announcement.value = `Service ${index + 1} sur ${total}\u00a0: ${props.items[index]?.title}`;
   }, 250);
 });
 onBeforeUnmount(() => clearTimeout(announceTimer));
@@ -75,6 +76,11 @@ function onClick(event: MouseEvent) {
 </script>
 
 <template>
+  <!--
+    Délégation : les touches et les clics viennent des contrôles focalisables du carrousel
+    (tuile, rail, précédent / suivant) ou des cartes voisines, qui ont leur équivalent clavier.
+  -->
+  <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
   <div
     class="service-carousel"
     role="region"
@@ -113,6 +119,7 @@ function onClick(event: MouseEvent) {
           :aria-label="`${index + 1} sur ${total}`"
           :aria-current="index === active || undefined"
           :data-slide="index"
+          :data-initial="index === initial || undefined"
           data-motion="services-card"
         >
           <ServiceCard
@@ -200,6 +207,14 @@ function onClick(event: MouseEvent) {
   scroll-snap-stop: always;
 }
 
+/*
+ * Position de départ native : le rail s'ouvre sur la carte initiale avant
+ * l'hydratation (et sans JavaScript), donc aucun saut quand le script prend la main.
+ */
+.service-carousel__slide[data-initial] {
+  scroll-initial-target: nearest;
+}
+
 .service-carousel__slide:not([aria-current]) {
   cursor: pointer;
 }
@@ -214,6 +229,12 @@ function onClick(event: MouseEvent) {
 
 .service-carousel__tile {
   display: none;
+}
+
+/* Mesuré : flèche de 39 × 30 px dans une plaque de 77. La tuile impose sa taille à l'icône. */
+.service-carousel__tile :deep(.icon) {
+  min-inline-size: 50%;
+  min-block-size: 50%;
 }
 
 .service-carousel__pager {
@@ -245,8 +266,7 @@ function onClick(event: MouseEvent) {
 
   .service-carousel__track {
     gap: var(--gap);
-    padding-inline:
-      calc(50cqi + (var(--rail-slot) - var(--rail-card)) / 2)
+    padding-inline: calc(50cqi + (var(--rail-slot) - var(--rail-card)) / 2)
       calc(50cqi - (var(--rail-slot) + var(--rail-card)) / 2);
   }
 
@@ -275,9 +295,28 @@ function onClick(event: MouseEvent) {
   }
 }
 
+/* Au survol, la flèche avance d'un pas dans son sens pendant que la plaque se soulève. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .service-carousel__tile :deep(.icon) {
+    transition: translate var(--dur-feedback) var(--ease-out-soft);
+  }
+
+  .service-carousel__tile:hover :deep(.icon) {
+    translate: var(--step-sm-x) 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .service-carousel[data-moving] .service-carousel__card {
     transition: none;
+  }
+}
+
+/* Sans JavaScript, les boutons n'auraient rien à piloter : le rail reste défilable (clavier, doigt). */
+@media (scripting: none) {
+  .service-carousel__tile,
+  .service-carousel__pager {
+    display: none;
   }
 }
 </style>

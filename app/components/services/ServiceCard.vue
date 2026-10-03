@@ -135,6 +135,7 @@ defineProps<{ service: Service; active: boolean }>();
 }
 
 .service-card__bottom {
+  position: relative;
   grid-area: bottom;
   display: grid;
   grid-template-areas:
@@ -153,6 +154,8 @@ defineProps<{ service: Service; active: boolean }>();
   font-size: var(--text-subheading);
   line-height: var(--leading-tight);
   text-transform: uppercase;
+  /* La boîte s'arrête sur la ligne de base : le titre se pose sur celle du numéro. */
+  text-box: trim-end cap alphabetic;
   color: var(--card-ink);
   transition:
     color var(--card-state),
@@ -216,7 +219,28 @@ defineProps<{ service: Service; active: boolean }>();
   }
 }
 
+/*
+ * Survol d'une carte inactive (elle est cliquable) : la trace de la photo s'allonge,
+ * le titre avance d'un pas et le filet se trace en rouge, puis se rétracte vers la droite.
+ */
 @media (hover: hover) and (pointer: fine) {
+  .service-card__bottom::before {
+    content: '';
+    position: absolute;
+    inset-block-start: -1px;
+    inset-inline: 0;
+    block-size: 1px;
+    background-color: var(--accent);
+    scale: 0 1;
+    transform-origin: right;
+    transition: scale var(--dur-state) var(--ease-out);
+  }
+
+  .service-card:not(.service-card--active):hover .service-card__bottom::before {
+    scale: 1 1;
+    transform-origin: left;
+  }
+
   .service-card:not(.service-card--active):hover .service-card__media {
     --fx: 15%;
     --fb: 27%;
@@ -227,6 +251,14 @@ defineProps<{ service: Service; active: boolean }>();
   }
 }
 
+/* Appui : la plaque s'enfonce, les marches se referment avant que la carte s'active. */
+.service-card:not(.service-card--active):active .service-card__media {
+  --fx: 0%;
+  --fb: 0%;
+
+  transition-duration: var(--dur-press);
+}
+
 /* Mouvement réduit : les états changent toujours, mais sans transition. */
 @media (prefers-reduced-motion: reduce) {
   .service-card,
@@ -235,20 +267,23 @@ defineProps<{ service: Service; active: boolean }>();
   .service-card__media :deep(img),
   .service-card__text,
   .service-card__bottom,
+  .service-card__bottom::before,
   .service-card__title,
   .service-card__figure {
     transition: none;
   }
 }
 
-/* Contrastes forcés : les fonds disparaissent, l'état actif passe par la bordure. */
+/* Contrastes forcés : les fonds disparaissent, l'état actif passe par un contour (sans décalage). */
 @media (forced-colors: active) {
   .service-card {
-    border: 1px solid CanvasText;
+    outline: 1px solid CanvasText;
+    outline-offset: -1px;
   }
 
   .service-card--active {
-    border: 4px solid Highlight;
+    outline: 4px solid Highlight;
+    outline-offset: -4px;
   }
 }
 </style>

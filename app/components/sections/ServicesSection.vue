@@ -31,7 +31,8 @@ const titleId = 'services-titre';
       </div>
     </div>
 
-    <ServiceCarousel class="services__rail" :items="content.items" />
+    <!-- Brief : la carte 02 est active et centrée au chargement. -->
+    <ServiceCarousel class="services__rail" :items="content.items" :initial="1" />
   </section>
 </template>
 
