@@ -1,0 +1,19 @@
+// Worker « assets-only » : il sert la sortie statique de `nuxt generate`, sans code serveur.
+// Doc : https://developers.cloudflare.com/workers/static-assets/routing/static-site-generation/
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Doit correspondre au nom du Worker relié dans Workers Builds.
+  "name": "sp-001",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./.output/public",
+    // URL inconnue : 404.html (généré par Nuxt) avec le statut 404.
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash",
+  },
+  // URL de production *.workers.dev et URL des Previews (branches hors production).
+  "workers_dev": true,
+  "preview_urls": true,
+  // Requis par `wrangler preview` (Preview builds), même vide.
+  "previews": {},
+}

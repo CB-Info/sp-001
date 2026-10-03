@@ -52,6 +52,10 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    // Sortie 100 % statique, y compris dans Workers Builds : sans preset explicite,
+    // Nitro détecte WORKERS_CI=1 et bascule sur cloudflare-module (un Worker SSR),
+    // en écrivant une config Wrangler qui court-circuite wrangler.jsonc.
+    preset: 'static',
     prerender: { routes: ['/'] },
   },
 

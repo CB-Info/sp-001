@@ -6,10 +6,10 @@ import variants from '../data/image-variants.json';
  *
  * NuxtPicture calcule les largeurs utiles (sizes × densités) ; on renvoie la plus
  * petite variante au moins aussi large, plafonnée à la largeur du master. Les URL
- * restent simples (/img/hero/hero-athlete-1440.avif) : aucune redirection côté
+ * restent simples (/img/hero/hero-athlete-1440.3f9a1c2e.avif) : aucune redirection côté
  * Cloudflare, contrairement aux URL IPX (voir le script).
  */
-type Entry = { width: number; height: number; widths: number[] };
+type Entry = { width: number; height: number; widths: number[]; hash: string };
 const manifest = variants as Record<string, Entry>;
 const EXTENSIONS: Record<string, string> = { avif: 'avif', webp: 'webp', jpeg: 'jpg', jpg: 'jpg' };
 
@@ -21,6 +21,6 @@ export default defineProvider({
     const width = entry.widths.find((w) => w >= wanted) ?? entry.width;
     const extension = EXTENSIONS[String(modifiers.format)] ?? 'jpg';
     const base = src.replace(/^\/images\//, '/img/').replace(/\.jpg$/, '');
-    return { url: `${base}-${width}.${extension}` };
+    return { url: `${base}-${width}.${entry.hash}.${extension}` };
   },
 });

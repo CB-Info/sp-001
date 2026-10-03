@@ -10,42 +10,48 @@
       800,
       960,
       1280
-    ]
+    ],
+    "hash": "a2e56585"
   },
   "/images/about/reviewer-01.jpg": {
     "width": 160,
     "height": 160,
     "widths": [
       160
-    ]
+    ],
+    "hash": "64c49cd2"
   },
   "/images/about/reviewer-02.jpg": {
     "width": 160,
     "height": 160,
     "widths": [
       160
-    ]
+    ],
+    "hash": "ce6e8199"
   },
   "/images/about/reviewer-03.jpg": {
     "width": 160,
     "height": 160,
     "widths": [
       160
-    ]
+    ],
+    "hash": "4b1932a2"
   },
   "/images/about/reviewer-04.jpg": {
     "width": 160,
     "height": 160,
     "widths": [
       160
-    ]
+    ],
+    "hash": "03d6d13c"
   },
   "/images/about/reviewer-05.jpg": {
     "width": 160,
     "height": 160,
     "widths": [
       160
-    ]
+    ],
+    "hash": "8868d009"
   },
   "/images/footer/footer-pushup.jpg": {
     "width": 2880,
@@ -62,7 +68,8 @@
       1920,
       2400,
       2880
-    ]
+    ],
+    "hash": "26a98cc1"
   },
   "/images/hero/hero-athlete.jpg": {
     "width": 2880,
@@ -79,7 +86,8 @@
       1920,
       2400,
       2880
-    ]
+    ],
+    "hash": "396fa8a0"
   },
   "/images/programs/program-marcus-roy.jpg": {
     "width": 1040,
@@ -92,7 +100,8 @@
       800,
       960,
       1040
-    ]
+    ],
+    "hash": "5bc20b6a"
   },
   "/images/services/service-01-coaching.jpg": {
     "width": 880,
@@ -104,7 +113,8 @@
       640,
       800,
       880
-    ]
+    ],
+    "hash": "de196345"
   },
   "/images/services/service-02-force.jpg": {
     "width": 880,
@@ -116,7 +126,8 @@
       640,
       800,
       880
-    ]
+    ],
+    "hash": "5e0d0d46"
   },
   "/images/services/service-03-fonctionnel.jpg": {
     "width": 880,
@@ -128,7 +139,8 @@
       640,
       800,
       880
-    ]
+    ],
+    "hash": "5692bdb2"
   },
   "/images/services/service-04-conditioning.jpg": {
     "width": 880,
@@ -140,7 +152,8 @@
       640,
       800,
       880
-    ]
+    ],
+    "hash": "368ea09c"
   },
   "/images/team/team-01-alex-vance.jpg": {
     "width": 720,
@@ -151,7 +164,8 @@
       480,
       640,
       720
-    ]
+    ],
+    "hash": "e6700fda"
   },
   "/images/team/team-02-sarah-jenkins.jpg": {
     "width": 720,
@@ -162,7 +176,8 @@
       480,
       640,
       720
-    ]
+    ],
+    "hash": "4ab2c940"
   },
   "/images/team/team-03-marcus-roy.jpg": {
     "width": 720,
@@ -173,7 +188,8 @@
       480,
       640,
       720
-    ]
+    ],
+    "hash": "143b4b6b"
   },
   "/images/team/team-04-elena-rostova.jpg": {
     "width": 720,
@@ -184,7 +200,8 @@
       480,
       640,
       720
-    ]
+    ],
+    "hash": "f9fb4169"
   },
   "/images/team/team-05-drake-torres.jpg": {
     "width": 720,
@@ -195,7 +212,8 @@
       480,
       640,
       720
-    ]
+    ],
+    "hash": "c9a89b07"
   },
   "/images/testimonials/testimonial-01-jordan-tucker.jpg": {
     "width": 1600,
@@ -209,7 +227,8 @@
       960,
       1280,
       1600
-    ]
+    ],
+    "hash": "1ede3e92"
   },
   "/images/testimonials/testimonial-02-nadia-benali.jpg": {
     "width": 1600,
@@ -223,7 +242,8 @@
       960,
       1280,
       1600
-    ]
+    ],
+    "hash": "ae785a8b"
   },
   "/images/testimonials/testimonial-03-paul-mercier.jpg": {
     "width": 1600,
@@ -237,6 +257,7 @@
       960,
       1280,
       1600
-    ]
+    ],
+    "hash": "45362cba"
   }
 }

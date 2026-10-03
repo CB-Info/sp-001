@@ -4,16 +4,19 @@
 // (/_ipx/f_avif&q_72&s_…/…). Cloudflare (static assets) canonicalise ces
 // caractères et répond par une redirection 307 vers « %26 » ou « %2C » : un aller-
 // retour de plus par image, image LCP comprise. Ici, des noms simples :
-// /img/hero/hero-athlete-1440.avif.
+// /img/hero/hero-athlete-1440.3f9a1c2e.avif.
 //
 // Entrée  : art/masters/**/*.jpg (masters étalonnés, provenance embarquée).
-// Sorties : public/img/**/<nom>-<largeur>.<avif|webp|jpg> (non versionnées) et
-//           app/data/image-variants.json (largeurs disponibles par image, lu par le
-//           provider @nuxt/image de app/providers/variants.ts).
-// Incrémental : une variante plus récente que son master n'est pas refaite.
+// Sorties : public/img/**/<nom>-<largeur>.<empreinte>.<avif|webp|jpg> (non
+//           versionnées) et app/data/image-variants.json (largeurs et empreinte par
+//           image, lu par le provider @nuxt/image de app/providers/variants.ts).
+// L'empreinte dépend du master et des réglages d'encodage : une URL ne change de
+// contenu jamais, d'où un cache « immutable » (public/_headers). Incrémental : une
+// variante déjà présente n'est pas refaite ; les variantes orphelines sont supprimées.
 //
 // Usage : node scripts/build-images.mjs [--force]
-import { glob, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { glob, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { availableParallelism } from 'node:os';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -32,6 +35,9 @@ const LADDER = [160, 320, 480, 640, 800, 960, 1280, 1600, 1920, 2400, 2880];
 const production = JSON.parse(await readFile(join(root, 'art/production.json'), 'utf8'));
 const family = Object.fromEntries(production.map((p) => [p.target, p.family]));
 const jobs = JSON.parse(await readFile(join(root, 'art/manifest.json'), 'utf8')).production.jobs;
+
+/** Version des réglages ci-dessous : à incrémenter pour réencoder toutes les variantes. */
+const ENCODING = 1;
 
 function encoders(master) {
   const crimson = family[relative(root, master)] === 'crimson';
@@ -59,29 +65,35 @@ function xmpFor(master) {
   );
 }
 
-async function isFresh(output, master) {
-  if (force) return false;
-  const [out, src] = await Promise.all([stat(output).catch(() => null), stat(master)]);
-  return Boolean(out && out.mtimeMs >= src.mtimeMs);
+async function fingerprint(master) {
+  const settings = JSON.stringify({ ENCODING, family: family[relative(root, master)] ?? null });
+  return createHash('sha1')
+    .update(await readFile(master))
+    .update(settings)
+    .digest('hex')
+    .slice(0, 8);
 }
 
 async function processMaster(master) {
   const { width, height } = await sharp(master).metadata();
   const widths = [...LADDER.filter((w) => w < width), width];
   const rel = relative(MASTERS, master).replace(/\.jpg$/, '');
+  const hash = await fingerprint(master);
   const xmp = xmpFor(master);
+  const files = [];
   let written = 0;
   for (const w of widths) {
     for (const [ext, encode] of Object.entries(encoders(master))) {
-      const output = join(OUTPUT, `${rel}-${w}.${ext}`);
-      if (await isFresh(output, master)) continue;
+      const output = join(OUTPUT, `${rel}-${w}.${hash}.${ext}`);
+      files.push(output);
+      if (!force && (await stat(output).catch(() => null))) continue;
       await mkdir(dirname(output), { recursive: true });
       await encode(sharp(master).resize({ width: w }).withXmp(xmp)).toFile(output);
       written++;
     }
   }
   // Clé = chemin logique utilisé par le contenu (app/data/home.ts).
-  return { src: `/images/${rel}.jpg`, width, height, widths, written };
+  return { src: `/images/${rel}.jpg`, width, height, widths, hash, files, written };
 }
 
 const masters = [];
@@ -95,9 +107,21 @@ for (let i = 0; i < masters.length; i += pool) {
   results.push(...(await Promise.all(masters.slice(i, i + pool).map(processMaster))));
 }
 
+// Variantes orphelines (master modifié ou supprimé, réglages changés) : supprimées.
+const expected = new Set(results.flatMap((r) => r.files));
+let removed = 0;
+for await (const file of glob('**/*.{avif,webp,jpg}', { cwd: OUTPUT })) {
+  if (!expected.has(join(OUTPUT, file))) {
+    await rm(join(OUTPUT, file));
+    removed++;
+  }
+}
+
 const manifest = Object.fromEntries(
-  results.map(({ src, width, height, widths }) => [src, { width, height, widths }]),
+  results.map(({ src, width, height, widths, hash }) => [src, { width, height, widths, hash }]),
 );
 await writeFile(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
 const written = results.reduce((n, r) => n + r.written, 0);
-console.log(`images : ${masters.length} masters, ${written} variantes écrites → public/img`);
+console.log(
+  `images : ${masters.length} masters, ${written} variantes écrites, ${removed} supprimées → public/img`,
+);

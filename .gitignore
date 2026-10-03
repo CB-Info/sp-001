@@ -31,3 +31,6 @@ __pycache__/
 
 # Variantes d’images générées au build (scripts/build-images.mjs)
 public/img/
+
+# Wrangler (état local de wrangler dev)
+.wrangler

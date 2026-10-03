@@ -1,0 +1,29 @@
+# En-têtes appliqués par Cloudflare Workers (static assets) :
+# https://developers.cloudflare.com/workers/static-assets/headers/
+# Pas de Content-Security-Policy : Nuxt génère des scripts et des styles en ligne,
+# et le nonce exige un serveur. Pas de frame-ancestors : la démo peut être
+# intégrée dans un portfolio.
+
+# Toutes les réponses : démo non indexée, en-têtes de durcissement sans risque.
+/*
+  X-Robots-Tag: noindex
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+
+# Build Nuxt : noms hachés, cache long et immuable.
+/_nuxt/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Manifeste de build (latest.json n'est pas haché) : revalidé à chaque usage.
+/_nuxt/builds/*
+  ! Cache-Control
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Variantes d'images : empreinte de contenu dans le nom (scripts/build-images.mjs).
+/img/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Polices : noms stables, une semaine.
+/fonts/*
+  Cache-Control: public, max-age=604800
