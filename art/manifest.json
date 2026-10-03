@@ -1,0 +1,98 @@
+{
+  "$comment": "Provenance des images générées (Higgsfield). Aucune image de la référence Dribbble en entrée : prompts texte seuls, sans media de référence. Les URL de résultat ne sont pas versionnées (elles contiennent l'identifiant du compte) : le job_id suffit à retrouver chaque image.",
+  "pilot": {
+    "submitted": "2026-10-03",
+    "status": "en attente de validation",
+    "jobs": [
+      {
+        "index": 0,
+        "id": "cast-a-athlete",
+        "job_id": "e46cb3e0-6250-4c79-99b1-bceb6e2e20a5",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/cast-a-athlete.prompt.txt",
+        "status": "completed",
+        "credits": 2,
+        "size": [1856, 2304]
+      },
+      {
+        "index": 1,
+        "id": "cast-c1-alex-vance",
+        "job_id": "43bef2c7-12f6-49c2-b5cd-3e44298c1e85",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/cast-c1-alex-vance.prompt.txt",
+        "status": "completed",
+        "credits": 2,
+        "size": [1856, 2304]
+      },
+      {
+        "index": 2,
+        "id": "cast-c2-sarah-jenkins",
+        "job_id": "aa89161d-fbd5-43d2-b84c-3c3fba1a749b",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/cast-c2-sarah-jenkins.prompt.txt",
+        "status": "completed",
+        "credits": 2,
+        "size": [1856, 2304]
+      },
+      {
+        "index": 3,
+        "id": "cast-c3-marcus-roy",
+        "job_id": "43f54787-3f99-4950-abf3-6c41cc6136c3",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/cast-c3-marcus-roy.prompt.txt",
+        "status": "completed",
+        "credits": 2,
+        "size": [1856, 2304],
+        "note": "carrure moins massive que demandé (« very muscular ») : à renforcer si on regénère"
+      },
+      {
+        "index": 4,
+        "id": "cast-c4-elena-rostova",
+        "job_id": "23e51a06-c35e-4878-84d1-a61f7243743c",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/cast-c4-elena-rostova.prompt.txt",
+        "status": "completed",
+        "credits": 2,
+        "size": [1856, 2304]
+      },
+      {
+        "index": 5,
+        "id": "cast-c5-drake-torres",
+        "job_id": "5899303d-dff1-400d-a002-c66806a8bb29",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/cast-c5-drake-torres.prompt.txt",
+        "status": "completed",
+        "credits": 2,
+        "size": [1856, 2304]
+      },
+      {
+        "index": 6,
+        "id": "hero-athlete--test-3x2",
+        "job_id": "47bc874c-5df8-408d-ad20-6158fed4aa05",
+        "model": "cinematic_studio_2_5",
+        "aspect_ratio": "3:2",
+        "resolution": "4k",
+        "prompt": "art/prompts/hero-athlete--test-3x2.prompt.txt",
+        "status": "completed",
+        "credits": 4,
+        "size": [5056, 3392],
+        "note": "cadrage proche du gabarit (bas à 28 % sombre : luminance moyenne 19/255) ; visage à ~57 % de la largeur au lieu de 72 % ; flou de vitesse faible ; étalonnage brut mauve, corrigé en post (carte de dégradé rouge, 85 %)",
+        "seed": 87442
+      }
+    ],
+    "credits_total": 16,
+    "$comment_model": "Le job renvoie « nano_banana_2 » comme modèle interne ; la facturation indique « Nano Banana Pro » (2 crédits)."
+  }
+}
