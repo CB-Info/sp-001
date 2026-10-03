@@ -1,0 +1,178 @@
+[
+  {
+    "id": "hero-athlete--take-1",
+    "target": "public/images/hero/hero-athlete.jpg",
+    "model": "cinematic_studio_2_5",
+    "ratio": "4:3",
+    "resolution": "4k",
+    "family": "crimson"
+  },
+  {
+    "id": "hero-athlete--take-2",
+    "target": "public/images/hero/hero-athlete.jpg",
+    "model": "cinematic_studio_2_5",
+    "ratio": "4:3",
+    "resolution": "4k",
+    "family": "crimson"
+  },
+  {
+    "id": "footer-pushup",
+    "target": "public/images/footer/footer-pushup.jpg",
+    "model": "cinematic_studio_2_5",
+    "ratio": "16:9",
+    "resolution": "4k",
+    "family": "crimson"
+  },
+  {
+    "id": "about-coach-alex-vance",
+    "target": "public/images/about/coach-alex-vance.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "2k",
+    "family": "teal"
+  },
+  {
+    "id": "about-reviewer-01",
+    "target": "public/images/about/reviewer-01.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "1:1",
+    "resolution": "1k",
+    "family": "warm"
+  },
+  {
+    "id": "about-reviewer-02",
+    "target": "public/images/about/reviewer-02.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "1:1",
+    "resolution": "1k",
+    "family": "warm"
+  },
+  {
+    "id": "about-reviewer-03",
+    "target": "public/images/about/reviewer-03.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "1:1",
+    "resolution": "1k",
+    "family": "warm"
+  },
+  {
+    "id": "about-reviewer-04",
+    "target": "public/images/about/reviewer-04.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "1:1",
+    "resolution": "1k",
+    "family": "warm"
+  },
+  {
+    "id": "about-reviewer-05",
+    "target": "public/images/about/reviewer-05.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "1:1",
+    "resolution": "1k",
+    "family": "warm"
+  },
+  {
+    "id": "service-01-coaching",
+    "target": "public/images/services/service-01-coaching.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "2k",
+    "family": "mono"
+  },
+  {
+    "id": "service-02-force",
+    "target": "public/images/services/service-02-force.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "2k",
+    "family": "mono"
+  },
+  {
+    "id": "service-03-fonctionnel",
+    "target": "public/images/services/service-03-fonctionnel.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "2k",
+    "family": "mono"
+  },
+  {
+    "id": "service-04-conditioning",
+    "target": "public/images/services/service-04-conditioning.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "2k",
+    "family": "mono"
+  },
+  {
+    "id": "program-marcus-roy",
+    "target": "public/images/programs/program-marcus-roy.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "1:1",
+    "resolution": "2k",
+    "family": "teal"
+  },
+  {
+    "id": "team-01-alex-vance",
+    "target": "public/images/team/team-01-alex-vance.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "4:5",
+    "resolution": "2k",
+    "family": "teal"
+  },
+  {
+    "id": "team-02-sarah-jenkins",
+    "target": "public/images/team/team-02-sarah-jenkins.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "4:5",
+    "resolution": "2k",
+    "family": "teal"
+  },
+  {
+    "id": "team-03-marcus-roy",
+    "target": "public/images/team/team-03-marcus-roy.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "4:5",
+    "resolution": "2k",
+    "family": "teal"
+  },
+  {
+    "id": "team-04-elena-rostova",
+    "target": "public/images/team/team-04-elena-rostova.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "4:5",
+    "resolution": "2k",
+    "family": "teal"
+  },
+  {
+    "id": "team-05-drake-torres",
+    "target": "public/images/team/team-05-drake-torres.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "4:5",
+    "resolution": "2k",
+    "family": "teal"
+  },
+  {
+    "id": "testimonial-01-jordan-tucker",
+    "target": "public/images/testimonials/testimonial-01-jordan-tucker.jpg",
+    "model": "cinematic_studio_2_5",
+    "ratio": "21:9",
+    "resolution": "4k",
+    "family": "warm"
+  },
+  {
+    "id": "testimonial-02-nadia-benali",
+    "target": "public/images/testimonials/testimonial-02-nadia-benali.jpg",
+    "model": "cinematic_studio_2_5",
+    "ratio": "21:9",
+    "resolution": "4k",
+    "family": "warm"
+  },
+  {
+    "id": "testimonial-03-paul-mercier",
+    "target": "public/images/testimonials/testimonial-03-paul-mercier.jpg",
+    "model": "cinematic_studio_2_5",
+    "ratio": "21:9",
+    "resolution": "4k",
+    "family": "warm"
+  }
+]

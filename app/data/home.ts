@@ -38,7 +38,7 @@ export const home: HomeContent = typesetDeep<HomeContent>({
       alt: '',
       width: 2880,
       height: 2204,
-      focal: '72% 35%',
+      focal: '56% 32%',
     },
   },
 
@@ -72,7 +72,7 @@ export const home: HomeContent = typesetDeep<HomeContent>({
       alt: 'Alex Vance, coach principal, dans la salle de musculation.',
       width: 1280,
       height: 736,
-      focal: '55% 35%',
+      focal: '50% 29%',
     },
   },
 
@@ -142,7 +142,7 @@ export const home: HomeContent = typesetDeep<HomeContent>({
       alt: 'Marcus Roy, coach de force, entre deux cordes ondulatoires.',
       width: 1040,
       height: 1064,
-      focal: '50% 22%',
+      focal: '50% 15%',
     },
     items: [
       {
@@ -231,7 +231,13 @@ export const home: HomeContent = typesetDeep<HomeContent>({
         id: 'alex-vance',
         name: 'Alex Vance',
         specialty: 'Coach principal',
-        portrait: { src: '/images/team/team-01-alex-vance.jpg', alt: '', width: 720, height: 720 },
+        portrait: {
+          src: '/images/team/team-01-alex-vance.jpg',
+          alt: '',
+          width: 720,
+          height: 904,
+          focal: '50% 30%',
+        },
       },
       {
         id: 'sarah-jenkins',
@@ -241,14 +247,21 @@ export const home: HomeContent = typesetDeep<HomeContent>({
           src: '/images/team/team-02-sarah-jenkins.jpg',
           alt: '',
           width: 720,
-          height: 720,
+          height: 904,
+          focal: '50% 30%',
         },
       },
       {
         id: 'marcus-roy',
         name: 'Marcus Roy',
         specialty: 'Coach de force',
-        portrait: { src: '/images/team/team-03-marcus-roy.jpg', alt: '', width: 720, height: 904 },
+        portrait: {
+          src: '/images/team/team-03-marcus-roy.jpg',
+          alt: '',
+          width: 720,
+          height: 904,
+          focal: '50% 30%',
+        },
       },
       {
         id: 'elena-rostova',
@@ -258,7 +271,8 @@ export const home: HomeContent = typesetDeep<HomeContent>({
           src: '/images/team/team-04-elena-rostova.jpg',
           alt: '',
           width: 720,
-          height: 720,
+          height: 904,
+          focal: '50% 30%',
         },
       },
       {
@@ -269,7 +283,8 @@ export const home: HomeContent = typesetDeep<HomeContent>({
           src: '/images/team/team-05-drake-torres.jpg',
           alt: '',
           width: 720,
-          height: 720,
+          height: 904,
+          focal: '50% 30%',
         },
       },
     ],
@@ -292,6 +307,7 @@ export const home: HomeContent = typesetDeep<HomeContent>({
           alt: "Jordan Tucker à l'entraînement de boxe.",
           width: 1600,
           height: 748,
+          focal: '41% 29%',
         },
       },
       {
@@ -304,6 +320,7 @@ export const home: HomeContent = typesetDeep<HomeContent>({
           alt: 'Nadia Benali pendant une séance de force.',
           width: 1600,
           height: 748,
+          focal: '48% 18%',
         },
       },
       {
@@ -313,9 +330,10 @@ export const home: HomeContent = typesetDeep<HomeContent>({
           "J'avais peur de ne pas être à ma place. Ici, chacun avance à son rythme, et personne ne lâche personne.",
         image: {
           src: '/images/testimonials/testimonial-03-paul-mercier.jpg',
-          alt: 'Paul Mercier pendant un circuit de préparation physique.',
+          alt: 'Paul Mercier, deux kettlebells en main, pendant un circuit de préparation physique.',
           width: 1600,
           height: 748,
+          focal: '50% 20%',
         },
       },
     ],
@@ -358,7 +376,7 @@ export const home: HomeContent = typesetDeep<HomeContent>({
       alt: '',
       width: 2880,
       height: 1700,
-      focal: '20% 40%',
+      focal: '45% 32%',
     },
   },
 });

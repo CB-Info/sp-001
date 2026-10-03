@@ -25,3 +25,6 @@ blob-report
 .env
 .env.*
 !.env.example
+
+# Python (outillage art/)
+__pycache__/

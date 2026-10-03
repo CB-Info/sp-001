@@ -1,0 +1,29 @@
+{
+  "$comment": "Elements de référence Higgsfield (identité des personnages fictifs), créés depuis les ancres de casting validées. Les prompts les insèrent sous la forme <<<id>>>.",
+  "elements": {
+    "clusem-athlete": {
+      "id": "24c75b45-165f-4e21-8638-395462a98416",
+      "anchorJob": "e46cb3e0-6250-4c79-99b1-bceb6e2e20a5"
+    },
+    "clusem-alex-vance": {
+      "id": "07caeaeb-a683-49b1-a12b-28a62f3649df",
+      "anchorJob": "43bef2c7-12f6-49c2-b5cd-3e44298c1e85"
+    },
+    "clusem-marcus-roy": {
+      "id": "dfff11e9-2405-4963-8399-44e9c490d072",
+      "anchorJob": "43f54787-3f99-4950-abf3-6c41cc6136c3"
+    },
+    "clusem-elena-rostova": {
+      "id": "a9ebc4bb-f2ca-466f-84c0-a4d9fc939ec0",
+      "anchorJob": "23e51a06-c35e-4878-84d1-a61f7243743c"
+    },
+    "clusem-drake-torres": {
+      "id": "aa16438f-54d1-4f10-95bf-9ae79f35caac",
+      "anchorJob": "5899303d-dff1-400d-a002-c66806a8bb29"
+    },
+    "clusem-sarah-jenkins": {
+      "id": "d27fb0a3-7e8e-49a6-9f4d-35f9139207cc",
+      "anchorJob": "c583c48d-2d82-42ee-8a48-64c549ec9a28"
+    }
+  }
+}

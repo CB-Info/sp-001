@@ -1,5 +1,5 @@
 {
-  "$comment": "Provenance des images générées (Higgsfield). Aucune image de la référence Dribbble en entrée : prompts texte seuls, sans media de référence. Les URL de résultat ne sont pas versionnées (elles contiennent l'identifiant du compte) : le job_id suffit à retrouver chaque image.",
+  "$comment": "Provenance des images générées (Higgsfield). Aucune image de la référence Dribbble en entrée : prompts texte seuls ; les visages récurrents passent par les elements de art/elements.json, créés depuis nos propres ancres de casting. Le prompt envoyé est exactement art/prompts/<prompt>.prompt.txt (version au moment du job : voir l'historique git). Les URL de résultat ne sont pas versionnées (elles contiennent l'identifiant du compte) : le job_id suffit à retrouver chaque image.",
   "pilot": {
     "submitted": "2026-10-03",
     "status": "en attente de validation",
@@ -94,5 +94,270 @@
     ],
     "credits_total": 16,
     "$comment_model": "Le job renvoie « nano_banana_2 » comme modèle interne ; la facturation indique « Nano Banana Pro » (2 crédits)."
+  },
+  "casting_v2": {
+    "submitted": "2026-10-03",
+    "note": "Sarah Jenkins refaite à la demande de l'utilisateur (européenne, blonde) ; variante A retenue.",
+    "jobs": [
+      {
+        "id": "cast-c2-sarah-jenkins--v2a",
+        "job_id": "c583c48d-2d82-42ee-8a48-64c549ec9a28",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/cast-c2-sarah-jenkins--v2.prompt.txt",
+        "credits": 2,
+        "status": "retenue"
+      },
+      {
+        "id": "cast-c2-sarah-jenkins--v2b",
+        "job_id": "bbc86b80-7c92-441d-8aa9-a1b4b375c5a3",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/cast-c2-sarah-jenkins--v2.prompt.txt",
+        "credits": 2,
+        "status": "alternative"
+      }
+    ]
+  },
+  "production": {
+    "submitted": "2026-10-03",
+    "jobs": [
+      {
+        "id": "hero-athlete--take-1",
+        "job_id": "883d5ccc-2412-4590-9e4d-b89066ee9caa",
+        "model": "cinematic_studio_2_5",
+        "aspect_ratio": "4:3",
+        "resolution": "4k",
+        "prompt": "art/prompts/hero-athlete--take-1.prompt.txt",
+        "target": "public/images/hero/hero-athlete.jpg",
+        "family": "crimson",
+        "status": "retenue"
+      },
+      {
+        "id": "hero-athlete--take-2",
+        "job_id": "25ddd32f-5947-40d5-bf46-64ae4d4cac7b",
+        "model": "cinematic_studio_2_5",
+        "aspect_ratio": "4:3",
+        "resolution": "4k",
+        "prompt": "art/prompts/hero-athlete--take-2.prompt.txt",
+        "target": "public/images/hero/hero-athlete.jpg",
+        "family": "crimson",
+        "status": "alternative non retenue"
+      },
+      {
+        "id": "footer-pushup",
+        "job_id": "2ed91423-a32e-4838-8a21-66aa964fb133",
+        "model": "cinematic_studio_2_5",
+        "aspect_ratio": "16:9",
+        "resolution": "4k",
+        "prompt": "art/prompts/footer-pushup.prompt.txt",
+        "target": "public/images/footer/footer-pushup.jpg",
+        "family": "crimson"
+      },
+      {
+        "id": "about-coach-alex-vance",
+        "job_id": "dad48e68-72d7-4d02-a8d7-b1624d602e9e",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "16:9",
+        "resolution": "2k",
+        "prompt": "art/prompts/about-coach-alex-vance.prompt.txt",
+        "target": "public/images/about/coach-alex-vance.jpg",
+        "family": "teal"
+      },
+      {
+        "id": "about-reviewer-01",
+        "job_id": "e85ae561-7135-4788-82a7-c1ce2174615e",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "1:1",
+        "resolution": "1k",
+        "prompt": "art/prompts/about-reviewer-01.prompt.txt",
+        "target": "public/images/about/reviewer-01.jpg",
+        "family": "warm"
+      },
+      {
+        "id": "about-reviewer-02",
+        "job_id": "c41d43cc-777a-4430-bf93-45284cb6b7ff",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "1:1",
+        "resolution": "1k",
+        "prompt": "art/prompts/about-reviewer-02.prompt.txt",
+        "target": "public/images/about/reviewer-02.jpg",
+        "family": "warm"
+      },
+      {
+        "id": "about-reviewer-03",
+        "job_id": "b49354ef-187e-4848-84a4-d6cdc10379b6",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "1:1",
+        "resolution": "1k",
+        "prompt": "art/prompts/about-reviewer-03.prompt.txt",
+        "target": "public/images/about/reviewer-03.jpg",
+        "family": "warm"
+      },
+      {
+        "id": "about-reviewer-04",
+        "job_id": "466ec3f1-3168-40e9-992f-a625a3983393",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "1:1",
+        "resolution": "1k",
+        "prompt": "art/prompts/about-reviewer-04.prompt.txt",
+        "target": "public/images/about/reviewer-04.jpg",
+        "family": "warm"
+      },
+      {
+        "id": "about-reviewer-05",
+        "job_id": "e22534d0-db00-4f8c-9694-e98fa8b03588",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "1:1",
+        "resolution": "1k",
+        "prompt": "art/prompts/about-reviewer-05.prompt.txt",
+        "target": "public/images/about/reviewer-05.jpg",
+        "family": "warm"
+      },
+      {
+        "id": "service-01-coaching",
+        "job_id": "344239e5-071a-41ac-8a16-4441ab9c139d",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "16:9",
+        "resolution": "2k",
+        "prompt": "art/prompts/service-01-coaching.prompt.txt",
+        "target": "public/images/services/service-01-coaching.jpg",
+        "family": "mono"
+      },
+      {
+        "id": "service-02-force",
+        "job_id": "aa232a35-baac-4db1-a008-42e5f0cc5e9b",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "16:9",
+        "resolution": "2k",
+        "prompt": "art/prompts/service-02-force.prompt.txt",
+        "target": "public/images/services/service-02-force.jpg",
+        "family": "mono"
+      },
+      {
+        "id": "service-03-fonctionnel",
+        "job_id": "2512d11a-4404-4198-b9d6-09aeb2e1015e",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "16:9",
+        "resolution": "2k",
+        "prompt": "art/prompts/service-03-fonctionnel.prompt.txt",
+        "target": "public/images/services/service-03-fonctionnel.jpg",
+        "family": "mono"
+      },
+      {
+        "id": "service-04-conditioning",
+        "job_id": "8ab0659e-e54c-4843-822c-ba449ed5e3fa",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "16:9",
+        "resolution": "2k",
+        "prompt": "art/prompts/service-04-conditioning.prompt.txt",
+        "target": "public/images/services/service-04-conditioning.jpg",
+        "family": "mono"
+      },
+      {
+        "id": "program-marcus-roy",
+        "job_id": "c3a81feb-3c74-4875-8693-a27ac57b57cc",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "1:1",
+        "resolution": "2k",
+        "prompt": "art/prompts/program-marcus-roy.prompt.txt",
+        "target": "public/images/programs/program-marcus-roy.jpg",
+        "family": "teal"
+      },
+      {
+        "id": "team-01-alex-vance",
+        "job_id": "9c72226f-52db-4b79-b567-74a25eefe9ed",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/team-01-alex-vance.prompt.txt",
+        "target": "public/images/team/team-01-alex-vance.jpg",
+        "family": "teal"
+      },
+      {
+        "id": "team-02-sarah-jenkins",
+        "job_id": "f7a4d6e9-2322-4bee-9699-e2371895dc14",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/team-02-sarah-jenkins.prompt.txt",
+        "target": "public/images/team/team-02-sarah-jenkins.jpg",
+        "family": "teal"
+      },
+      {
+        "id": "team-03-marcus-roy",
+        "job_id": "505962d7-1540-4943-85c4-73df1d53f2fd",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/team-03-marcus-roy.prompt.txt",
+        "target": "public/images/team/team-03-marcus-roy.jpg",
+        "family": "teal"
+      },
+      {
+        "id": "team-04-elena-rostova",
+        "job_id": "a71dfb6e-ed6f-4c2f-a119-6affcb6871df",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/team-04-elena-rostova.prompt.txt",
+        "target": "public/images/team/team-04-elena-rostova.jpg",
+        "family": "teal"
+      },
+      {
+        "id": "team-05-drake-torres",
+        "job_id": "82d4f8e9-4e34-4c81-9873-9c82ca006fc0",
+        "model": "nano_banana_pro",
+        "aspect_ratio": "4:5",
+        "resolution": "2k",
+        "prompt": "art/prompts/team-05-drake-torres.prompt.txt",
+        "target": "public/images/team/team-05-drake-torres.jpg",
+        "family": "teal"
+      },
+      {
+        "id": "testimonial-01-jordan-tucker",
+        "job_id": "1750b563-d3fe-454a-9897-b529fb475d3c",
+        "model": "cinematic_studio_2_5",
+        "aspect_ratio": "21:9",
+        "resolution": "4k",
+        "prompt": "art/prompts/testimonial-01-jordan-tucker.prompt.txt",
+        "target": "public/images/testimonials/testimonial-01-jordan-tucker.jpg",
+        "family": "warm"
+      },
+      {
+        "id": "testimonial-02-nadia-benali",
+        "job_id": "ce922eb6-7c55-4fdb-8e7a-96ff524cf666",
+        "model": "cinematic_studio_2_5",
+        "aspect_ratio": "21:9",
+        "resolution": "4k",
+        "prompt": "art/prompts/testimonial-02-nadia-benali.prompt.txt",
+        "target": "public/images/testimonials/testimonial-02-nadia-benali.jpg",
+        "family": "warm"
+      },
+      {
+        "id": "testimonial-03-paul-mercier",
+        "job_id": "a74767f7-574c-48cd-a5ef-0f96149f44ea",
+        "model": "cinematic_studio_2_5",
+        "aspect_ratio": "21:9",
+        "resolution": "4k",
+        "prompt": "art/prompts/testimonial-03-paul-mercier.prompt.txt",
+        "target": "public/images/testimonials/testimonial-03-paul-mercier.jpg",
+        "family": "warm",
+        "status": "rejetée (âge et cadrage hors brief) ; prompt v1"
+      },
+      {
+        "id": "testimonial-03-paul-mercier",
+        "job_id": "7c200e0f-7c45-4141-98fa-e68a859635a7",
+        "model": "cinematic_studio_2_5",
+        "aspect_ratio": "21:9",
+        "resolution": "4k",
+        "prompt": "art/prompts/testimonial-03-paul-mercier.prompt.txt",
+        "target": "public/images/testimonials/testimonial-03-paul-mercier.jpg",
+        "family": "warm",
+        "status": "retenue (prompt v2)"
+      }
+    ]
   }
 }
