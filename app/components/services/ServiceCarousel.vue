@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Service } from '~/types/content';
 import { ui } from '~/data/ui';
+import { duration, length } from '~/motion/tokens';
 
 /**
  * Carrousel des services (motif APG « carousel », sans rotation automatique).
@@ -13,13 +14,24 @@ import { ui } from '~/data/ui';
  *
  * Clavier : ← → (et Début / Fin) dès que le focus est dans le carrousel.
  * Pointeur : un clic sur une carte voisine l'amène au centre.
+ *
+ * Mouvement (a6 §4.3) :
+ * - première entrée : les cartes montent comme des plaques, en cascade, et leur
+ *   photo s'ouvre en escalier ; la tuile monte avec la carte active ;
+ * - changement de carte : la photo de la nouvelle active s'enfonce puis se soulève
+ *   pendant que le rouge l'envahit (CSS), et l'astérisque de son numéro frappe ;
+ * - la tuile suit la carte active, tenue en laisse (un pas L) : elle penche vers la
+ *   carte qui arrive, l'accompagne quand on fait glisser le rail, et glisse vers sa
+ *   nouvelle fente au lieu d'y sauter. Elle ne s'éloigne jamais de plus d'un pas :
+ *   on peut la marteler sans la perdre sous le pointeur.
  */
 const props = withDefaults(defineProps<{ items: Service[]; initial?: number }>(), { initial: 0 });
 
 const total = props.items.length;
 const trackId = useId();
+const carousel = useTemplateRef<HTMLElement>('carousel');
 const scroller = useTemplateRef<HTMLElement>('scroller');
-const { active, goTo, next, previous } = useSnapRail(scroller, {
+const { active, drift, goTo, next, previous } = useSnapRail(scroller, {
   count: total,
   initial: props.initial,
   slideSelector: '[data-slide]',
@@ -73,6 +85,153 @@ function onClick(event: MouseEvent) {
   const index = Number(slide?.dataset.slide ?? active.value);
   if (index !== active.value) goTo(index);
 }
+
+/** a6 §3.6 : en se soulevant, la photo se pose dans son cadre (échelle 1,06 → 1). */
+const IMAGE_SETTLE = 1.06;
+/** L'astérisque n'a que quatre axes de symétrie : un quart de tour le laisse identique. */
+const NUMBER_STRIKE = '90deg';
+/** Écart du rail, en pas de laisse, sur lequel la laisse se tend : la tuile revient en douceur. */
+const SLACK = 2;
+const FLAT = { '--fx': '0%', '--ft': '0%', '--fb': '0%' };
+const NOTCH = ['--fx', '--ft', '--fb'] as const;
+
+/** Retire des styles posés à la main (le nettoyage ne doit rien créer dans GSAP). */
+const unset = (elements: Iterable<HTMLElement>, names: readonly string[]) => {
+  for (const element of elements) for (const name of names) element.style.removeProperty(name);
+};
+
+useMotion(carousel, ({ gsap }, root) => {
+  const rail = scroller.value;
+  const tile = root.querySelector<HTMLElement>('[data-motion="services-arrow"]');
+  const slides = [...root.querySelectorAll<HTMLElement>('[data-motion="services-card"]')];
+  const medias = [...root.querySelectorAll<HTMLElement>('[data-motion="services-media"]')];
+  const asterisks = [...root.querySelectorAll<HTMLElement>('[data-motion="services-asterisk"]')];
+  const focal = duration('--dur-focal');
+  const layout = duration('--dur-layout');
+  const press = duration('--dur-press');
+  // Un décalage de liste est une durée comme une autre ; duration() ne type que --dur-*.
+  const list = duration('--stagger-list' as `--dur-${string}`);
+  const leash = length('--move-l');
+
+  // Encoches de repos des photos, lues sur la carte active (le survol ne la touche pas).
+  const reference = getComputedStyle(medias[active.value] ?? root);
+  const notch = Object.fromEntries(NOTCH.map((name) => [name, reference.getPropertyValue(name)]));
+  /** Les encoches transitionnent en CSS (survol, appui) : pas pendant que GSAP les tient. */
+  const hold = (media: HTMLElement) => gsap.set(media, { transition: 'none' });
+  const release = [...NOTCH, 'transition'];
+
+  /*
+   * Tuile : suit la carte active, au bout d'une laisse d'un pas. Elle bouge par
+   * --follow (sa transform, voir le CSS), jamais par `translate` : celui-ci reste
+   * au soulèvement et à l'appui de la plaque.
+   */
+  const glide = { offset: 0 };
+  let shown = 0;
+  const setFollow = tile ? gsap.quickSetter(tile, '--follow', 'px') : undefined;
+  const clampToLeash = gsap.utils.clamp(-leash, leash);
+  // Plus le rail s'écarte, plus la laisse se tend, sans jamais dépasser un pas.
+  const tether = () => leash * Math.tanh(drift() / (SLACK * leash));
+  function place() {
+    // Masquée (mobile) : rien à suivre.
+    if (!tile?.offsetParent || !setFollow) return;
+    // Jamais plus d'un pas, même quand la glissade s'ajoute à une laisse qui se détend.
+    shown = clampToLeash(tether() + glide.offset);
+    setFollow(shown);
+  }
+  /** La carte active change : la cible de la tuile saute, la tuile glisse. */
+  function follow() {
+    gsap.fromTo(
+      glide,
+      { offset: shown - tether() },
+      { offset: 0, duration: layout, ease: 'in-out', overwrite: true, onUpdate: place },
+    );
+  }
+
+  /* ── Nouvelle carte active : la plaque s'enfonce puis se soulève ─────────── */
+  function activate(index: number) {
+    const media = medias[index];
+    const asterisk = asterisks[index];
+    if (media) {
+      gsap.killTweensOf(media);
+      hold(media);
+      gsap
+        .timeline()
+        .to(media, { ...FLAT, duration: press, ease: 'none' })
+        .to(media, { ...notch, duration: layout, clearProps: release.join() });
+    }
+    // Une frappe en cours va au bout : jamais de file d'attente.
+    if (asterisk && !gsap.isTweening(asterisk)) {
+      gsap.fromTo(
+        asterisk,
+        { '--number-turn': '0deg' },
+        {
+          '--number-turn': NUMBER_STRIKE,
+          duration: duration('--dur-strike'),
+          ease: 'strike',
+          delay: press,
+          clearProps: '--number-turn',
+        },
+      );
+    }
+  }
+
+  const stopWatching = watch(active, (index) => {
+    follow();
+    activate(index);
+  });
+
+  rail?.addEventListener('scroll', place, { passive: true });
+  window.addEventListener('resize', place, { passive: true });
+  place();
+
+  /* ── Première entrée : les plaques montent, en cascade ───────────────────── */
+  // Déjà à l'écran quand GSAP arrive (ancre, rechargement) : l'état final reste.
+  if (root.getBoundingClientRect().top > innerHeight) {
+    const rise = `${length('--move-l')}px`;
+    const entry = gsap.timeline({
+      scrollTrigger: { trigger: root, start: 'top 85%', once: true },
+    });
+    slides.forEach((slide, index) => {
+      // Au-delà de 6 éléments, les suivants partagent le dernier délai (a6 §3.4).
+      const at = Math.min(index, 5) * list;
+      const media = medias[index];
+      entry.from(slide, { y: rise, duration: focal, clearProps: 'transform' }, at);
+      // La tuile monte avec la carte active : elles forment une unité.
+      if (index === active.value && tile) {
+        entry.fromTo(
+          tile,
+          { '--rise': rise },
+          { '--rise': '0px', duration: focal, clearProps: '--rise' },
+          at,
+        );
+      }
+      if (!media) return;
+      hold(media);
+      entry
+        .fromTo(media, FLAT, { ...notch, duration: layout, clearProps: release.join() }, at)
+        .from(
+          media.querySelector('img'),
+          { scale: IMAGE_SETTLE, duration: focal, force3D: false, clearProps: 'transform' },
+          at,
+        );
+    });
+  }
+
+  /*
+   * Les tweens nés après la mise en place (changement de carte) échappent au
+   * contexte GSAP : on les arrête et on efface leurs styles ici, pour qu'un passage
+   * en mouvement réduit ou un démontage rende l'état final exact.
+   */
+  return () => {
+    stopWatching();
+    rail?.removeEventListener('scroll', place);
+    window.removeEventListener('resize', place);
+    gsap.killTweensOf([glide, ...medias, ...asterisks]);
+    unset(medias, release);
+    unset(asterisks, ['--number-turn']);
+    if (tile) unset([tile], ['--follow']);
+  };
+});
 </script>
 
 <template>
@@ -82,6 +241,7 @@ function onClick(event: MouseEvent) {
   -->
   <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
   <div
+    ref="carousel"
     class="service-carousel"
     role="region"
     :aria-roledescription="ui.carousel"
@@ -229,6 +389,8 @@ function onClick(event: MouseEvent) {
 
 .service-carousel__tile {
   display: none;
+  /* Mouvement (posé par le script, nul au repos) : la tuile suit la carte active et monte avec elle. */
+  transform: translate(var(--follow, 0px), var(--rise, 0px));
 }
 
 .service-carousel__pager {

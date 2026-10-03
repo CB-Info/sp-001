@@ -80,6 +80,16 @@ export function useSnapRail(scroller: Readonly<Ref<HTMLElement | null>>, options
     return best;
   }
 
+  /**
+   * Écart, en px, entre le défilement courant et la position d'arrêt de la
+   * diapositive active : positif tant qu'elle est encore à droite de sa place.
+   */
+  function drift(): number {
+    const el = scroller.value;
+    const position = positionOf(active.value);
+    return el && position !== undefined ? position - el.scrollLeft : 0;
+  }
+
   /** Recale le rail sur une diapositive, sans animation, s'il s'en est écarté. */
   function align(index: number) {
     const el = scroller.value;
@@ -167,6 +177,7 @@ export function useSnapRail(scroller: Readonly<Ref<HTMLElement | null>>, options
 
   return {
     active: readonly(active),
+    drift,
     goTo,
     next: () => goTo(active.value + 1),
     previous: () => goTo(active.value - 1),

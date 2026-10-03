@@ -9,6 +9,9 @@ import type { Service } from '~/types/content';
  *
  * Ordre du DOM : titre, description, puis photo, pour que le titre précède son
  * texte à la lecture ; la grille replace chaque bloc comme dans la référence.
+ *
+ * Mouvement : la photo et l'astérisque portent des points d'accroche (data-motion)
+ * que le carrousel anime quand la carte devient active.
  */
 defineProps<{ service: Service; active: boolean }>();
 </script>
@@ -20,11 +23,11 @@ defineProps<{ service: Service; active: boolean }>();
         <h3 class="service-card__title">{{ service.title }}</h3>
         <p class="service-card__figure" aria-hidden="true">
           <span class="service-card__number">{{ service.number }}</span>
-          <Asterisk class="service-card__asterisk" size="0.41em" />
+          <Asterisk class="service-card__asterisk" size="0.41em" data-motion="services-asterisk" />
         </p>
       </div>
       <p class="service-card__text">{{ service.description }}</p>
-      <div class="service-card__media step-frame">
+      <div class="service-card__media step-frame" data-motion="services-media">
         <NuxtPicture
           :src="service.image.src"
           :width="service.image.width"
@@ -117,12 +120,19 @@ defineProps<{ service: Service; active: boolean }>();
   transition: opacity var(--card-state);
 }
 
+/*
+ * À l'activation, le rouge monte plus lentement que l'inversion du fond : il
+ * accompagne la plaque qui se soulève (--dur-layout). Il se retire au rythme d'un
+ * état ordinaire, plus vite qu'il n'est venu.
+ */
 .service-card--active .service-card__media :deep(img) {
   filter: grayscale(1) contrast(1.15) brightness(1.2);
+  transition-duration: var(--dur-layout);
 }
 
 .service-card--active .service-card__media::after {
   opacity: 1;
+  transition-duration: var(--dur-layout);
 }
 
 .service-card__text {
@@ -180,10 +190,15 @@ defineProps<{ service: Service; active: boolean }>();
   margin-block: -0.05em;
 }
 
-/* Mesuré : astérisque de 74 px pour des chiffres de 180, qui mord sur le dernier chiffre. */
+/*
+ * Mesuré : astérisque de 74 px pour des chiffres de 180, qui mord sur le dernier chiffre.
+ * --number-turn : quart de tour frappé quand la carte devient active (posé par le
+ * carrousel, nul au repos), en plus de la rotation du cliquet global.
+ */
 .service-card__asterisk {
   flex: none;
   margin-inline-start: -0.1em;
+  transform: rotate(var(--number-turn, 0deg));
 }
 
 /* Carte large (≥ 26rem, soit 23,5rem de contenu) : la composition de la référence. */
