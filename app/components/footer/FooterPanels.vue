@@ -86,7 +86,7 @@ const kindOf = (index: number) => bodies[index] ?? 'empty';
 /* Survol ou focus de l'en-tête : l'astérisque avance d'un cran de 45° (grammaire). */
 @media (prefers-reduced-motion: no-preference) {
   .footer-panels .footer-panels__asterisk {
-    rotate: calc((var(--ratchet, 0) + var(--panel-active, 0)) * 45deg);
+    rotate: calc((var(--scroll-step, 0) + var(--ratchet, 0) + var(--panel-active, 0)) * 45deg);
   }
 }
 

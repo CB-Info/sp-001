@@ -3,6 +3,9 @@
  * Astérisque de marque à 8 branches : 4 barres à bouts carrés, épaisseur ≈ 19,5 %
  * du diamètre, diagonales légèrement plus courtes (mesures de la référence).
  * Purement décoratif : toujours masqué aux lecteurs d'écran.
+ *
+ * Il tourne de 45° par cran : `--scroll-step`, le cliquet du défilement (posé par
+ * app/motion/scroll.ts), plus `--ratchet`, les crans locaux (survol, focus, état).
  */
 withDefaults(defineProps<{ size?: string }>(), { size: '4.5rem' });
 </script>
@@ -28,7 +31,7 @@ withDefaults(defineProps<{ size?: string }>(), { size: '4.5rem' });
   block-size: auto;
   aspect-ratio: 1;
   fill: var(--accent);
-  rotate: calc(var(--ratchet, 0) * 45deg);
+  rotate: calc((var(--scroll-step, 0) + var(--ratchet, 0)) * 45deg);
   transition: rotate var(--dur-strike) var(--ease-strike);
 }
 

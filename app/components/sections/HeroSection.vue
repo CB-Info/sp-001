@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { scroll } from '~/motion/scroll';
+import { followScroll, scroll } from '~/motion/scroll';
 import { duration } from '~/motion/tokens';
 import type { HomeContent } from '~/types/content';
 
@@ -42,30 +42,31 @@ useMotion(hero, ({ gsap, ScrollTrigger }, root) => {
     plate.style.removeProperty('opacity');
     plate.style.removeProperty('will-change');
   };
+  /** Une image de l'effet ; `true` tant que les stries ne sont pas éteintes. */
   const follow = () => {
     const target = Math.min(Math.abs(scroll.velocity) * STREAK_GAIN, STREAK_MAX);
-    if (target === 0 && level === 0) return;
+    if (target === 0 && level === 0) return false;
     // Calque promu seulement le temps de l'effet.
     if (level === 0) plate.style.willChange = 'opacity';
     // Lissage indépendant de la cadence d'affichage.
     level += (target - level) * (1 - (1 - STREAK_LERP) ** gsap.ticker.deltaRatio(60));
     if (target === 0 && level < 0.01) {
       rest();
-      return;
+      return false;
     }
     plate.style.opacity = level.toFixed(3);
+    return true;
   };
   // Rien ne tourne quand le hero est hors de l'écran.
+  let unfollow: (() => void) | undefined;
   ScrollTrigger.create({
     trigger: root,
     start: 'top bottom',
     end: 'bottom top',
     onToggle: ({ isActive }) => {
-      if (isActive) gsap.ticker.add(follow);
-      else {
-        gsap.ticker.remove(follow);
-        rest();
-      }
+      unfollow?.();
+      rest();
+      unfollow = isActive ? followScroll(follow) : undefined;
     },
   });
 
@@ -84,7 +85,7 @@ useMotion(hero, ({ gsap, ScrollTrigger }, root) => {
   });
 
   return () => {
-    gsap.ticker.remove(follow);
+    unfollow?.();
     rest();
   };
 });

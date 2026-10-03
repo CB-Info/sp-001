@@ -2,14 +2,25 @@
  * Les valeurs de mouvement ne sont écrites qu'une fois, dans tokens.css. Le JS
  * les relit ici (getComputedStyle) au lieu de les recopier : une courbe ou une
  * durée changée en CSS change aussi les timelines GSAP.
+ *
+ * Chaque lecture force un calcul de style (et de mise en page pour une longueur) :
+ * les valeurs sont gardées, les longueurs jusqu'au prochain redimensionnement
+ * (rem, clamp() et vw en dépendent).
  */
 const rootStyle = () => getComputedStyle(document.documentElement);
+const times = new Map<string, number>();
+const lengths = new Map<string, number>();
+let lengthsWatched = false;
 
 /** Temps d'un token (« 240ms » ou « 0.24s ») en secondes, l'unité de GSAP. */
 function seconds(token: `--${string}`): number {
+  const known = times.get(token);
+  if (known !== undefined) return known;
   const value = rootStyle().getPropertyValue(token).trim();
   const amount = Number.parseFloat(value);
-  return value.endsWith('ms') ? amount / 1000 : amount;
+  const result = value.endsWith('ms') ? amount / 1000 : amount;
+  times.set(token, result);
+  return result;
 }
 
 /** Durée d'un token (--dur-*, ou --seq-max, le plafond d'une séquence), en secondes. */
@@ -26,13 +37,25 @@ export function bezier(token: `--ease-${string}`): string {
   return points.replaceAll(' ', '');
 }
 
-/** Longueur d'un token, résolue en pixels (rem, clamp() et calc() compris). */
-export function length(token: `--${string}`, context: Element = document.documentElement): number {
+/**
+ * Longueur d'un token, résolue en pixels (rem, clamp() et calc() compris). Avec un
+ * `context`, elle est résolue dans ce conteneur (unités locales) et jamais gardée.
+ */
+export function length(token: `--${string}`, context?: Element): number {
+  const known = context ? undefined : lengths.get(token);
+  if (known !== undefined) return known;
   const probe = document.createElement('div');
   probe.style.cssText = `position:absolute;visibility:hidden;inline-size:var(${token})`;
-  context.append(probe);
+  (context ?? document.documentElement).append(probe);
   const px = probe.getBoundingClientRect().width;
   probe.remove();
+  if (!context) {
+    if (!lengthsWatched) {
+      lengthsWatched = true;
+      addEventListener('resize', () => lengths.clear(), { passive: true });
+    }
+    lengths.set(token, px);
+  }
   return px;
 }
 
