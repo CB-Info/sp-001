@@ -28,11 +28,26 @@ MODELS = {j["id"]: j["model"] for j in json.loads((ART / "manifest.json").read_t
 
 
 @dataclass(frozen=True)
+class Ring:
+    """Anneau elliptique à lisser (disque de fonte), en fraction de l'image livrée."""
+
+    cx: float
+    cy: float
+    rx: float  # rayons extérieurs
+    ry: float
+    hub: float = 0.45  # rayon du moyeu, en fraction des rayons extérieurs (laissé intact)
+    keep: tuple[float, float] | None = None  # bande verticale [x0, x1] laissée intacte (montant du rack)
+
+
+@dataclass(frozen=True)
 class Plate:
     master: str  # id du master (= nom du PNG brut et du prompt)
     size: tuple[int, int]  # taille livrée (2x)
     focal: tuple[float, float] = (0.5, 0.5)  # centre du recadrage, en fraction du master
     zoom: float = 1.0  # > 1 : recadrage plus serré (cadrage aligné sur le reste de la série)
+    # Retouche : le modèle a gravé un faux lettrage en relief sur certains disques
+    # malgré le prompt (« aucun texte ») ; on lisse ces anneaux.
+    retouch: tuple[Ring, ...] = ()
 
 
 SQUAD = ["alex-vance", "sarah-jenkins", "marcus-roy", "elena-rostova", "drake-torres"]
@@ -45,7 +60,10 @@ PLATES = [
         for slug in SQUAD
     ],
     Plate("squad-team-photo", (2880, 1222), (0.5, 0.52)),
-    Plate("method-squat", (1280, 1600)),
+    Plate("method-squat", (1280, 1600), retouch=(
+        Ring(0.1, 0.427, 0.084, 0.13, hub=0.5),
+        Ring(0.777, 0.446, 0.08, 0.092, hub=0.25, keep=(0.722, 0.786)),
+    )),
     # La force est cadrée en pied, plus petite que les autres disciplines : on resserre.
     *[
         Plate(f"discipline-{slug}", (1200, 1500), (0.5, 0.55) if slug == "force" else (0.5, 0.5),
@@ -68,6 +86,35 @@ def grade_jour(img: np.ndarray) -> np.ndarray:
     return v1.s_curve(out, 1.05, 0.46)
 
 
+def smooth_rings(img: np.ndarray, rings: tuple[Ring, ...]) -> np.ndarray:
+    """Lisse le relief (faux lettrage) des anneaux : médian large, fondu progressif."""
+    from PIL import ImageFilter
+
+    h, w = img.shape[:2]
+    pil = Image.fromarray((img * 255).round().astype(np.uint8))
+    smooth = np.asarray(
+        pil.filter(ImageFilter.MedianFilter(13)).filter(ImageFilter.GaussianBlur(2.2)),
+        dtype=np.float64,
+    ) / 255
+    yy, xx = np.mgrid[0:h, 0:w]
+    mask = np.zeros((h, w))
+    for ring in rings:
+        d = np.sqrt(((xx / w - ring.cx) / ring.rx) ** 2 + ((yy / h - ring.cy) / ring.ry) ** 2)
+        # 1 dans l'anneau, fondu de 6 % vers le moyeu et vers le bord.
+        inner = np.clip((d - ring.hub) / 0.06, 0, 1)
+        outer = np.clip((0.97 - d) / 0.06, 0, 1)
+        m = inner * outer
+        if ring.keep:
+            x0, x1 = ring.keep
+            m[:, int(x0 * w):int(x1 * w)] = 0
+        mask = np.maximum(mask, m)
+    mask = np.asarray(
+        Image.fromarray((mask * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(3)),
+        dtype=np.float64,
+    )[..., None] / 255
+    return img * (1 - mask) + smooth * mask
+
+
 def produce(plate: Plate, raw: Path, seed: int) -> dict:
     src = np.asarray(Image.open(raw / f"{plate.master}.png").convert("RGB"), dtype=np.float64) / 255
     h, w = src.shape[:2]
@@ -81,6 +128,8 @@ def produce(plate: Plate, raw: Path, seed: int) -> dict:
         right, bottom = round(left + cw), round(top + ch)
     cropped = Image.fromarray((src[top:bottom, left:right] * 255).round().astype(np.uint8))
     out = np.asarray(cropped.resize(plate.size, Image.LANCZOS), dtype=np.float64) / 255
+    if plate.retouch:
+        out = smooth_rings(out, plate.retouch)
     out = v1.add_grain(grade_jour(out), seed)
 
     job = next(j for j in json.loads((ART / "manifest.json").read_text())["jobs"] if j["id"] == plate.master)
