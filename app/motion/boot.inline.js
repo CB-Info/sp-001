@@ -11,7 +11,7 @@
 //   hero-ready  l'intro démarre (keyframes CSS) : dès que les images marquées
 //               [data-intro-media] sont décodées (V1 : photo du hero et plaque de
 //               stries) et que la police nommée par <html data-intro-font> est
-//               chargée (V2 : Saira), au plus tard 1,2 s après le parsing.
+//               chargée (V2 : CAP Display), au plus tard 1,2 s après le parsing.
 (() => {
   const root = document.documentElement;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');

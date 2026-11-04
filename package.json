@@ -9,9 +9,9 @@
   },
   "scripts": {
     "images": "node scripts/build-images.mjs",
-    "dev": "node scripts/build-images.mjs && nuxt dev",
-    "build": "node scripts/build-images.mjs && nuxt build",
-    "generate": "node scripts/build-images.mjs && nuxt generate",
+    "dev": "node scripts/build-ics.mjs && node scripts/build-images.mjs && nuxt dev",
+    "build": "node scripts/build-ics.mjs && node scripts/build-images.mjs && nuxt build",
+    "generate": "node scripts/build-ics.mjs && node scripts/build-images.mjs && nuxt generate",
     "preview": "nuxt preview",
     "preview:worker": "wrangler dev",
     "postinstall": "nuxt prepare",
@@ -21,7 +21,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test:e2e": "playwright test",
-    "check": "pnpm format:check && pnpm lint && pnpm typecheck",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && node scripts/check-fit.mjs",
     "verify": "pnpm check && pnpm generate && pnpm test:e2e"
   },
   "dependencies": {
@@ -47,6 +47,7 @@
     "eslint": "10.12.0",
     "eslint-plugin-vuejs-accessibility": "2.6.0",
     "globals": "^17.13.0",
+    "jiti": "2.7.0",
     "prettier": "3.9.9",
     "sharp": "0.35.5",
     "typescript": "6.0.3",

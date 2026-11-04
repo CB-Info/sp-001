@@ -1,99 +1,125 @@
 <script setup lang="ts">
 import '~/assets/css/v2.css';
-import { club } from '~/data/club';
+import { cap } from '~/data/cap';
+import variants from '~/data/image-variants.json';
 
 /**
- * Direction B « Le Club » : CLUSEM traité comme un club sportif, en plein jour
- * et en couleurs de club. Brief : docs/brief/v2.md ; analyse de la V1 qui en
- * fait le contrepoint : docs/v2/analyse-v1.md.
+ * V2 : maquette non officielle de site pour CAP Fitness by EBC Sport, direction
+ * « Pleins & Déliés ». Brief : docs/brief/v2.md ; analyse : docs/v2/analyse/.
  *
- * <html data-site="v2"> active les tokens de la V2 (app/assets/css/v2.css) : mêmes
- * rôles que la V1, autres valeurs, lus aussi par le JS du mouvement. La V1 et la
- * V2 ne se lient que par des liens pleine page : chacune charge les siens.
+ * <html data-site="v2"> active les tokens de app/assets/css/v2.css : mêmes rôles
+ * que la V1, autres valeurs, lus aussi par le JS du mouvement. La V1 et la V2 ne
+ * se lient que par des liens pleine page : chacune charge les siens.
+ *
+ * Les chapitres sous la ligne de flottaison s'hydratent à l'approche (ou jamais,
+ * pour les infos pratiques, tout en HTML natif) : le JS du premier chargement
+ * reste léger.
  */
 useSeoMeta({
-  title: club.meta.title,
-  description: club.meta.description,
-  ogTitle: club.meta.title,
-  ogDescription: club.meta.description,
+  title: cap.meta.title,
+  description: cap.meta.description,
+  ogTitle: cap.meta.title,
+  ogDescription: cap.meta.description,
+  ogImage: '/v2/og.png',
   ogLocale: 'fr_FR',
   ogType: 'website',
 });
 
+const $img = useImage();
+const srcset = (src: string) =>
+  ((variants as Record<string, { widths: number[] }>)[src]?.widths ?? [])
+    .map((width) => `${$img(src, { width, format: 'avif' })} ${width}w`)
+    .join(', ');
+const cover = cap.photos.couverture;
+
 useHead({
-  // data-intro-font : l'intro du hero attend Saira (boot.inline.js), au plus 1,2 s.
-  htmlAttrs: { 'data-site': 'v2', 'data-intro-font': '800 1em Saira' },
-  meta: [{ name: 'theme-color', content: '#0f5233' }],
+  // data-intro-font : l'intro de la couverture attend CAP Display (boot.inline.js), au plus 1,2 s.
+  htmlAttrs: { 'data-site': 'v2', 'data-intro-font': '900 1em "CAP Display"' },
+  meta: [{ name: 'theme-color', content: '#0c0c0b' }],
   link: [
-    // Le titre du hero est l'élément LCP (pas de photo) : sa police part dès le HTML.
+    { key: 'icon', rel: 'icon', type: 'image/svg+xml', href: '/v2/favicon.svg' },
+    { rel: 'apple-touch-icon', href: '/v2/apple-touch-icon.png' },
     {
       rel: 'preload',
       as: 'font',
       type: 'font/woff2',
-      href: '/fonts/saira-latin-standard-normal.woff2',
+      href: '/fonts/cap-display-900.woff2',
       crossorigin: '',
     },
+    {
+      rel: 'preload',
+      as: 'font',
+      type: 'font/woff2',
+      href: '/fonts/figtree-latin-wght-normal.woff2',
+      crossorigin: '',
+    },
+    // La photo de la couverture, dans le cadrage que l'écran choisira : jamais les deux.
+    ...[
+      { media: '(max-width: 47.99em)', src: cover.mobile?.src ?? cover.src },
+      { media: '(min-width: 48em)', src: cover.src },
+    ].map(({ media, src }) => ({
+      rel: 'preload',
+      as: 'image',
+      type: 'image/avif',
+      fetchpriority: 'high' as const,
+      media,
+      imagesrcset: srcset(src),
+      imagesizes: '100vw',
+    })),
   ],
 });
-
-const disciplines = club.disciplines.items;
-const coaches = club.squad.coaches;
-const sessions = club.schedule.sessions;
 </script>
 
 <template>
-  <div id="haut" class="club-page">
-    <a class="club-skip" href="#contenu">{{ club.ui.skipLink }}</a>
-    <ClubHeader :name="club.name" :nav="club.nav" :cta="club.cta" :labels="club.ui" />
+  <div class="cap-page">
+    <a class="cap-skip" href="#contenu">{{ cap.ui.skip }}</a>
+    <CapMockBanner />
+    <CapHeader />
+    <CapMenu />
     <main id="contenu" tabindex="-1">
-      <ClubHero
-        :content="club.hero"
-        :season="club.season"
-        :sessions="sessions"
-        :disciplines="disciplines"
-        :coaches="coaches"
-      />
-      <ClubStats />
-      <ClubMethod />
-      <ClubDisciplines />
-      <ClubSchedule />
-      <ClubSquad />
-      <ClubPlans />
-      <ClubTribune />
-      <ClubScarf />
-      <ClubFaq />
-      <ClubHouse />
-      <ClubTrial />
+      <CapCover />
+      <LazyCapEdito hydrate-on-visible />
+      <LazyCapCourses hydrate-on-visible />
+      <LazyCapWeek hydrate-on-visible />
+      <LazyCapFamily hydrate-on-visible />
+      <LazyCapPractical hydrate-never />
+      <LazyCapFinale hydrate-on-visible />
     </main>
-    <ClubFooter />
+    <LazyCapFooter hydrate-on-visible />
+    <ClientOnly><CapNextBar /></ClientOnly>
   </div>
 </template>
 
 <style scoped>
-.club-page {
-  background: var(--bg);
+.cap-page {
+  background: var(--cf-noir);
+  color: var(--cf-craie);
 }
 
 main:focus {
   outline: none;
 }
 
-.club-skip {
+.cap-skip {
   position: fixed;
-  inset-block-start: var(--space-12);
-  inset-inline-start: var(--space-12);
+  inset-block-start: 8px;
+  inset-inline-start: 8px;
   z-index: 100;
-  padding: var(--space-12) var(--space-20);
-  border-radius: var(--radius-pill);
-  background: var(--canary-400);
-  color: var(--pitch-950);
-  font-family: var(--font-display);
-  font-weight: 800;
-  text-transform: uppercase;
+  padding: 12px 20px;
+  background: var(--cf-citron);
+  color: var(--cf-noir);
+  font-family: var(--font-body);
+  font-weight: 600;
   translate: 0 -200%;
 }
 
-.club-skip:focus-visible {
+.cap-skip:focus-visible {
   translate: 0 0;
+}
+
+@media (max-width: 63.99em) {
+  :global(html.js[data-site='v2'] main) {
+    padding-block-end: calc(64px + env(safe-area-inset-bottom));
+  }
 }
 </style>
