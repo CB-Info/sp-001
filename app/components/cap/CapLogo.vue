@@ -33,7 +33,6 @@ const markup = computed(() =>
 </script>
 
 <template>
-  <!-- eslint-disable-next-line vue/no-v-html -- SVG du dépôt, généré par art/v2/logo/build_logo.py -->
   <span
     class="cap-logo"
     :class="`cap-logo--${variant}`"

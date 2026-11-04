@@ -411,6 +411,8 @@ export const cap = typesetDeep({
   },
 
   banner: {
+    /** Nom du repère (aside) : le bandeau est un avertissement, pas un titre. */
+    label: 'Maquette non officielle',
     long: 'Maquette non officielle : proposition de site pour CAP Fitness by EBC Sport, non validée par le club.',
     short: 'Maquette non officielle ·',
     link: { label: 'Ce qui reste à confirmer', href: '#a-confirmer' },
@@ -499,6 +501,8 @@ export const cap = typesetDeep({
       ],
       hors: '(hors sélection)',
       annonce: '{n} créneaux mis en avant',
+      annonceUn: '{n} créneau mis en avant',
+      annoncePlus: ', plus la piste Bien-être',
     },
     coupure: '14 h → 17 h',
     maintenant: 'maintenant',
@@ -590,6 +594,8 @@ export const cap = typesetDeep({
     plein: 'Ensemble,',
     signature: 'allons plus loin.',
     attente: 'On t’attend',
+    /** Ferme la question après l'horaire : « On t'attend mer. 19 h 00 ? ». */
+    attenteFin: ' ?',
     attenteNeutre: 'On t’attend au prochain cours ?',
   },
 

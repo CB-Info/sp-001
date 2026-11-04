@@ -25,6 +25,13 @@ useSeoMeta({
   ogType: 'website',
 });
 
+/**
+ * Les chapitres s'hydratent un écran avant d'entrer : leur mouvement d'entrée peut
+ * encore poser son état initial (reached() faux), et leur JS reste hors du
+ * premier chargement.
+ */
+const EARLY = { rootMargin: '0px 0px 100% 0px' };
+
 const $img = useImage();
 const srcset = (src: string) =>
   ((variants as Record<string, { widths: number[] }>)[src]?.widths ?? [])
@@ -58,8 +65,8 @@ useHead({
       { media: '(max-width: 47.99em)', src: cover.mobile?.src ?? cover.src },
       { media: '(min-width: 48em)', src: cover.src },
     ].map(({ media, src }) => ({
-      rel: 'preload',
-      as: 'image',
+      rel: 'preload' as const,
+      as: 'image' as const,
       type: 'image/avif',
       fetchpriority: 'high' as const,
       media,
@@ -78,14 +85,14 @@ useHead({
     <CapMenu />
     <main id="contenu" tabindex="-1">
       <CapCover />
-      <LazyCapEdito hydrate-on-visible />
-      <LazyCapCourses hydrate-on-visible />
-      <LazyCapWeek hydrate-on-visible />
-      <LazyCapFamily hydrate-on-visible />
+      <LazyCapEdito :hydrate-on-visible="EARLY" />
+      <LazyCapCourses :hydrate-on-visible="EARLY" />
+      <LazyCapWeek :hydrate-on-visible="EARLY" />
+      <LazyCapFamily :hydrate-on-visible="EARLY" />
       <LazyCapPractical hydrate-never />
-      <LazyCapFinale hydrate-on-visible />
+      <LazyCapFinale :hydrate-on-visible="EARLY" />
     </main>
-    <LazyCapFooter hydrate-on-visible />
+    <LazyCapFooter :hydrate-on-visible="EARLY" />
     <ClientOnly><CapNextBar /></ClientOnly>
   </div>
 </template>
