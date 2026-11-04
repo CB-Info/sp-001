@@ -118,6 +118,7 @@ const year = club.season.label;
 
 .footer__crest {
   display: block;
+  aspect-ratio: 64 / 76;
   flex: none;
   block-size: clamp(7rem, 5rem + 8vw, 11rem);
 }

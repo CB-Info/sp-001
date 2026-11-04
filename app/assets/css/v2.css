@@ -12,6 +12,14 @@
  * la bande du maillot et les actions), Saira variable pour le flocage et les
  * numéros, Schibsted Grotesk pour le texte. Brief : docs/brief/v2.md.
  */
+/*
+ * Même ordre de couches que main.css, redéclaré ici : la feuille de la page est
+ * insérée en ligne AVANT la feuille globale dans le HTML généré ; sans cette
+ * ligne, ses couches seraient créées les premières et « reset » passerait après
+ * « components ».
+ */
+@layer reset, tokens, base, layout, components, utilities;
+
 @layer tokens {
   :root[data-site='v2'] {
     /* ── 1. Primitives : couleurs du club ─────────────────────────────────── */
@@ -46,7 +54,7 @@
     --stretch-narrow: 75%;
 
     /* Échelle fluide 390 → 1440 px, bornes en rem (WCAG 1.4.4). */
-    --text-hero: clamp(3rem, 1.1rem + 7.8vw, 8.25rem); /* 132 px à 1440 */
+    --text-hero: clamp(5rem, 1rem + 7.4vw, 8.25rem); /* hero sur 7 colonnes : 122 px à 1440 */
     --text-display: clamp(2.375rem, 1.5893rem + 3.2238vw, 4.5rem); /* titres de section : 72 px */
     --text-figure: clamp(3.5rem, 2.2143rem + 5.2762vw, 7rem); /* tableau des scores */
     --text-heading: clamp(1.75rem, 1.4286rem + 1.3186vw, 2.625rem);
@@ -231,9 +239,10 @@
     font-stretch: var(--stretch-semi);
     letter-spacing: 0.04em;
     line-height: 1;
+    text-align: center;
     text-decoration: none;
     text-transform: uppercase;
-    white-space: nowrap;
+    text-wrap: balance;
     cursor: pointer;
     transition:
       background-color var(--dur-feedback) var(--ease-out-soft),

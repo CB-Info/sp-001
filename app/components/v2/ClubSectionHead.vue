@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { ENTRY, reached } from '~/motion/sequence';
+import { duration, length, stagger } from '~/motion/tokens';
+
 /**
  * Tête de section du club : numéro de programme (un écusson de numéro, comme
  * sur une feuille de match), libellé, titre en Saira large, texte d'appui.
@@ -15,10 +18,42 @@ withDefaults(
   }>(),
   { lead: undefined, align: 'start' },
 );
+
+/*
+ * Entrée : le numéro se pose, puis le titre arrive un peu grand et se tasse,
+ * comme un flocage (même geste que le hero, en plus court).
+ */
+const root = useTemplateRef<HTMLElement>('root');
+useMotion(root, ({ gsap, ScrollTrigger }, element) => {
+  if (reached(element, 'bottom')) return undefined;
+  const kicker = element.querySelector('.head__kicker');
+  const title = element.querySelector('.head__title');
+  const lead = element.querySelector('.head__lead');
+  gsap.set(kicker, { opacity: 0, x: -length('--move-s') });
+  gsap.set(title, { opacity: 0, scale: 1.05, transformOrigin: '0% 100%' });
+  if (lead) gsap.set(lead, { opacity: 0, y: length('--move-s') });
+  ScrollTrigger.create({
+    trigger: element,
+    ...ENTRY,
+    onEnter: () => {
+      const timeline = gsap.timeline();
+      timeline
+        .to(kicker, { opacity: 1, x: 0, duration: duration('--dur-layout') })
+        .to(
+          title,
+          { opacity: 1, scale: 1, duration: duration('--dur-overlay'), ease: 'strike' },
+          stagger('--stagger-lines'),
+        );
+      if (lead)
+        timeline.to(lead, { opacity: 1, y: 0, duration: duration('--dur-layout') }, '<+=0.12');
+    },
+  });
+  return undefined;
+});
 </script>
 
 <template>
-  <header class="head" :class="`head--${align}`" data-motion="club-head">
+  <header ref="root" class="head" :class="`head--${align}`">
     <p class="head__kicker club-label">
       <span class="head__number club-number" aria-hidden="true">{{
         String(number).padStart(2, '0')

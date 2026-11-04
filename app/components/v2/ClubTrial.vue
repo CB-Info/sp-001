@@ -40,7 +40,7 @@ onMounted(() => {
 // Le prénom du maillot et la discipline du calendrier pré-remplissent le formulaire,
 // tant que le visiteur n'y a rien écrit lui-même.
 watch(
-  flock,
+  () => flock.value.trim(),
   (name, previous) => {
     if (!form.firstName || form.firstName === previous) form.firstName = name;
   },
@@ -546,6 +546,8 @@ html.has-motion .ticket__paper {
 
 .ticket__crest {
   display: block;
+  flex: none;
+  aspect-ratio: 64 / 76;
   block-size: 3.5rem;
 }
 

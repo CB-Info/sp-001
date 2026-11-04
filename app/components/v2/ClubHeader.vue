@@ -164,6 +164,8 @@ function closeDrawer() {
 
 .club-header__crest {
   display: block;
+  flex: none;
+  aspect-ratio: 64 / 76;
   block-size: 2.625rem;
   transition: block-size var(--dur-layout) var(--ease-out);
 }
@@ -262,7 +264,7 @@ function closeDrawer() {
   }
 }
 
-@media (min-width: 64rem) {
+@media (min-width: 75rem) {
   .club-header__nav {
     display: block;
   }

@@ -66,6 +66,7 @@ const clip = `crest-clip-${id}`;
   display: block;
   inline-size: auto;
   block-size: 100%;
+  aspect-ratio: 64 / 76;
   overflow: visible;
 }
 

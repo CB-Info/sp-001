@@ -19,7 +19,7 @@ const total = (plan: (typeof content.items)[number]) =>
 
 const root = useTemplateRef<HTMLElement>('root');
 useMotion(root, ({ gsap, ScrollTrigger }, element) => {
-  const cards = element.querySelectorAll('.ticket');
+  const cards = element.querySelectorAll('.ticket__card');
   if (!cards.length || reached(cards[0]!, 'bottom')) return undefined;
   gsap.set(cards, { opacity: 0, y: length('--move-xl') });
   ScrollTrigger.create({
@@ -85,7 +85,6 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
             :data-surface="plan.featured ? 'pitch' : undefined"
             :aria-labelledby="`formule-${plan.id}`"
           >
-            <span class="ticket__sticker club-label" aria-hidden="true">{{ content.badge }}</span>
             <header class="ticket__head">
               <p class="ticket__kind club-label">
                 <span class="ticket__crest"><ClubCrest /></span>
@@ -97,6 +96,7 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
             </header>
 
             <div class="ticket__price">
+              <span class="ticket__sticker club-label" aria-hidden="true">{{ content.badge }}</span>
               <p class="ticket__amount">
                 <span class="ticket__drum club-number" aria-hidden="true">
                   <span class="ticket__digits">
@@ -271,6 +271,8 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
 
 .ticket__crest {
   display: block;
+  flex: none;
+  aspect-ratio: 64 / 76;
   block-size: 1.375rem;
 }
 
@@ -313,6 +315,7 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
 
 .ticket__digits {
   display: grid;
+  justify-items: end;
   transition: translate var(--dur-overlay) var(--ease-strike);
 }
 
@@ -423,11 +426,16 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
   inline-size: 100%;
 }
 
-/* Le macaron posé sur la carte quand on passe à la saison. */
+/* Le macaron posé sur la carte, à côté du prix, quand on passe à la saison. */
+.ticket__price {
+  position: relative;
+}
+
 .ticket__sticker {
   position: absolute;
-  inset-block-start: -1rem;
-  inset-inline-end: 1rem;
+  inset-block-start: 50%;
+  inset-inline-end: 0;
+  translate: 0 -50%;
   z-index: 1;
   display: grid;
   place-items: center;
@@ -446,10 +454,6 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
   scale: 1.6;
   rotate: 12deg;
   pointer-events: none;
-}
-
-.ticket--featured .ticket__sticker {
-  inset-block-start: -1.5rem;
 }
 
 .plans:has(#formule-saison:checked) .ticket__sticker {

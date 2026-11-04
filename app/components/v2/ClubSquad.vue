@@ -32,7 +32,7 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
   const cards = element.querySelectorAll('.squad__card');
   const photo = element.querySelector('.squad__photo');
   if (photo && !reached(photo, 'bottom')) {
-    const tagEls = photo.querySelectorAll('.squad__tag');
+    const tagEls = photo.querySelectorAll('.squad__pill');
     gsap.set(tagEls, { opacity: 0, y: length('--move-s') });
     ScrollTrigger.create({
       trigger: photo,
@@ -99,8 +99,10 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
               class="squad__tag"
               :style="{ left: `${tag.x * 100}%` }"
             >
-              <span class="squad__tag-number club-number">{{ tag.number }}</span>
-              <span class="squad__tag-name">{{ tag.name }}</span>
+              <span class="squad__pill">
+                <span class="squad__tag-number club-number">{{ tag.number }}</span>
+                <span class="squad__tag-name">{{ tag.name }}</span>
+              </span>
             </li>
           </ul>
         </div>
@@ -153,13 +155,17 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
   position: absolute;
   inset-block-end: 3%;
   display: none;
+  translate: -50% 0;
+}
+
+.squad__pill {
+  display: inline-flex;
   gap: 0.375rem;
   align-items: center;
   padding: 0.25rem 0.75rem 0.25rem 0.375rem;
   border-radius: var(--radius-pill);
   background: var(--kit-white);
   color: var(--pitch-950);
-  translate: -50% 0;
   box-shadow: var(--shadow-card);
 }
 
@@ -184,7 +190,7 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
 
 @media (min-width: 48rem) {
   .squad__tag {
-    display: inline-flex;
+    display: block;
   }
 }
 

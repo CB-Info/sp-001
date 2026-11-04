@@ -179,7 +179,8 @@ const name = useState<string>('club-flock', () => '');
 
 .club-hero__title {
   display: grid;
-  font-size: var(--text-hero);
+  /* Une colonne : le titre suit la largeur de l'écran (« LE CLUB. » ≈ 4,75 em). */
+  font-size: clamp(3rem, 13.5vw, 6rem);
   font-weight: 900;
   line-height: var(--leading-display);
   letter-spacing: var(--tracking-display);
@@ -228,6 +229,11 @@ const name = useState<string>('club-flock', () => '');
 
   .club-hero__copy {
     grid-column: 1 / span 7;
+  }
+
+  /* Sept colonnes : le titre tient dans les siennes, de 1 024 à 1 440 px et au-delà. */
+  .club-hero__title {
+    font-size: var(--text-hero);
   }
 
   .club-hero__kit {

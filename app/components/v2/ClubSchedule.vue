@@ -554,14 +554,26 @@ html.js .day__title {
   font-size: var(--text-label);
 }
 
-.match__coach :deep(.match__portrait) {
+.match__coach :deep(picture) {
   display: block;
-  inline-size: 2rem;
-  block-size: 2rem;
+  flex: none;
+  inline-size: 2.25rem;
+  block-size: 2.25rem;
+  border: var(--line-pitch) solid var(--chalk);
   border-radius: 50%;
   background: var(--mist-200);
+  overflow: hidden;
+}
+
+/* Le visage, pas le maillot : le portrait officiel est recadré serré. */
+.match__coach :deep(.match__portrait) {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
   object-fit: cover;
-  object-position: 50% 22%;
+  object-position: 50% 30%;
+  scale: 1.9;
+  transform-origin: 50% 24%;
 }
 
 .match__state {

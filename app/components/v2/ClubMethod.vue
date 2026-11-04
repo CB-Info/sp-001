@@ -294,12 +294,13 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
   place-items: center;
   inline-size: 1.875rem;
   block-size: 1.875rem;
+  /* Centré par ses marges, pas par translate : GSAP anime son échelle. */
+  margin: -0.9375rem 0 0 -0.9375rem;
   border: var(--line-pitch) solid var(--pitch-800);
   border-radius: 50%;
   background: var(--canary-400);
   color: var(--pitch-950);
   font-size: 1rem;
-  translate: -50% -50%;
   box-shadow: 0 0 0 4px rgb(255 255 255 / 0.55);
 }
 
