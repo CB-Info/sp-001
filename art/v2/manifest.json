@@ -1,0 +1,250 @@
+{
+  "$comment": "Provenance des images de la direction B (/v2). Les URL de résultat Higgsfield ne sont pas versionnées (elles contiennent l'identifiant du compte) : un master se retrouve par son job_id. Modèle demandé nano_banana_pro ; Higgsfield l'a servi sous le nom nano_banana_2.",
+  "jobs": [
+    {
+      "id": "squad-alex-vance",
+      "job_id": "2635b0b7-3c40-42c3-ba48-c74d46089156",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/squad-alex-vance.prompt.txt",
+      "target": "art/masters/v2/squad/squad-alex-vance.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "squad-sarah-jenkins",
+      "job_id": "c65eb108-b3e0-44db-be04-9ddf54336176",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/squad-sarah-jenkins.prompt.txt",
+      "target": "art/masters/v2/squad/squad-sarah-jenkins.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "squad-marcus-roy",
+      "job_id": "67181ce9-c96f-49fd-b604-faaca3e701f3",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/squad-marcus-roy.prompt.txt",
+      "target": "art/masters/v2/squad/squad-marcus-roy.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "squad-elena-rostova",
+      "job_id": "be077375-f5c5-4de3-9ba9-b644960d6e76",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/squad-elena-rostova.prompt.txt",
+      "target": "art/masters/v2/squad/squad-elena-rostova.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "squad-drake-torres",
+      "job_id": "51b29e1e-ff29-4528-8401-01814333d1e9",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/squad-drake-torres.prompt.txt",
+      "target": "art/masters/v2/squad/squad-drake-torres.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "squad-team-photo",
+      "job_id": "427f9950-d2df-4b41-a395-8c545c7596db",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "21:9",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/squad-team-photo.prompt.txt",
+      "target": "art/masters/v2/squad/team-photo.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "method-squat",
+      "job_id": "4a9b3ae9-2551-4567-9b13-dad29f2e23b4",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/method-squat.prompt.txt",
+      "target": "art/masters/v2/method/method-squat.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "discipline-force",
+      "job_id": "164291b0-ae9b-4e16-b9b3-04dc8dc2e65c",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/discipline-force.prompt.txt",
+      "target": "art/masters/v2/disciplines/discipline-force.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "discipline-cross-training",
+      "job_id": "c5fef13b-5a0b-4a71-8775-062af52002e5",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/discipline-cross-training.prompt.txt",
+      "target": "art/masters/v2/disciplines/discipline-cross-training.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "discipline-boxe",
+      "job_id": "47be6cc7-f641-4b14-b42c-1ca239fe19b4",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/discipline-boxe.prompt.txt",
+      "target": "art/masters/v2/disciplines/discipline-boxe.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "discipline-mobilite",
+      "job_id": "976237a8-a66b-4e3e-98af-be748513c0e3",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/discipline-mobilite.prompt.txt",
+      "target": "art/masters/v2/disciplines/discipline-mobilite.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "discipline-cardio",
+      "job_id": "709e032b-7859-474b-99f7-d96fb3efd1a1",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/discipline-cardio.prompt.txt",
+      "target": "art/masters/v2/disciplines/discipline-cardio.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "discipline-recuperation",
+      "job_id": "21d8a7b6-122b-41c1-ba20-d095b0d908ac",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/discipline-recuperation.prompt.txt",
+      "target": "art/masters/v2/disciplines/discipline-recuperation.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "clubhouse-floor",
+      "job_id": "362fb6d6-98b1-491c-a632-828885850a7a",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "16:9",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/clubhouse-floor.prompt.txt",
+      "target": "art/masters/v2/clubhouse/clubhouse-floor.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "clubhouse-vestiaire",
+      "job_id": "65126010-687d-4ace-9b5f-886d942c3cd1",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/clubhouse-vestiaire.prompt.txt",
+      "target": "art/masters/v2/clubhouse/clubhouse-vestiaire.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "clubhouse-accueil",
+      "job_id": "f955328a-f701-4c0d-8630-5dcb0f2bda91",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "prompt": "art/v2/prompts/clubhouse-accueil.prompt.txt",
+      "target": "art/masters/v2/clubhouse/clubhouse-accueil.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "tribune-camille",
+      "job_id": "144b856c-c5df-4d6d-b053-421c94c67903",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "prompt": "art/v2/prompts/tribune-camille.prompt.txt",
+      "target": "art/masters/v2/tribune/tribune-camille.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "tribune-bernard",
+      "job_id": "13ce8a58-0d75-4df8-bba5-139509d2d224",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "prompt": "art/v2/prompts/tribune-bernard.prompt.txt",
+      "target": "art/masters/v2/tribune/tribune-bernard.jpg",
+      "family": "jour",
+      "status": "retenue"
+    },
+    {
+      "id": "tribune-yanis",
+      "job_id": "94954d01-dd7b-4672-8539-57c6e6878239",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "prompt": "art/v2/prompts/tribune-yanis.prompt.txt",
+      "target": "art/masters/v2/tribune/tribune-yanis.jpg",
+      "family": "jour",
+      "status": "retenue"
+    }
+  ],
+  "rejected": [
+    {
+      "id": "discipline-force--pilot",
+      "job_id": "cefa2bbd-b3e5-4462-9328-740a6e6c4c32",
+      "status": "rejetée : chiffres en relief sur les disques, sujet trop petit"
+    },
+    {
+      "id": "discipline-force--take-1",
+      "job_id": "98628e31-62c2-4a6e-95a2-52f5923dd4a6",
+      "status": "rejetée : chiffres en relief sur les disques, technique approximative"
+    },
+    {
+      "id": "discipline-cardio--take-1",
+      "job_id": "2ce77007-295f-4ace-9691-a5279492c865",
+      "status": "rejetée : marque lisible sur le rameur"
+    }
+  ]
+}
