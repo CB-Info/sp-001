@@ -37,12 +37,6 @@ const name = useState<string>('club-flock', () => '');
 
     <div class="container club-hero__grid">
       <div class="club-hero__copy">
-        <p class="club-hero__programme club-label">
-          <template v-for="(item, index) in props.content.programme" :key="item">
-            <span v-if="index" class="club-hero__dot" aria-hidden="true" />
-            <span>{{ item }}</span>
-          </template>
-        </p>
         <h1 :id="titleId" class="club-hero__title">
           <span
             v-for="(line, index) in props.content.titleLines"
@@ -75,6 +69,12 @@ const name = useState<string>('club-flock', () => '');
             {{ props.content.secondary.label }}
           </a>
         </div>
+        <p class="club-hero__programme">
+          <template v-for="(item, index) in props.content.programme" :key="item">
+            <span v-if="index" class="club-hero__dot" aria-hidden="true" />
+            <span>{{ item }}</span>
+          </template>
+        </p>
       </div>
 
       <div class="club-hero__kit">
@@ -165,16 +165,17 @@ const name = useState<string>('club-flock', () => '');
 .club-hero__programme {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem 0.75rem;
+  gap: 0.25rem 0.625rem;
   align-items: center;
-  color: var(--accent);
+  color: var(--ink-secondary);
+  font-size: var(--text-label);
 }
 
 .club-hero__dot {
-  inline-size: 0.375rem;
-  block-size: 0.375rem;
+  inline-size: 0.3125rem;
+  block-size: 0.3125rem;
   border-radius: 50%;
-  background: currentcolor;
+  background: var(--accent);
 }
 
 .club-hero__title {
@@ -268,7 +269,7 @@ html.hero-ready .club-hero__actions {
 }
 
 html.hero-ready .club-hero__programme {
-  animation-delay: 0ms;
+  animation-delay: 540ms;
 }
 
 html.hero-ready .club-hero__line {

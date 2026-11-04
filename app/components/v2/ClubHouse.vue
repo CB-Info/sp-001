@@ -55,12 +55,7 @@ const [floor, ...portraits] = content.photos;
     :aria-labelledby="titleId"
   >
     <div class="container">
-      <ClubSectionHead
-        :number="11"
-        :kicker="content.kicker"
-        :title="content.title"
-        :title-id="titleId"
-      />
+      <ClubSectionHead :number="11" :title="content.title" :title-id="titleId" />
 
       <div class="house__grid">
         <div class="house__info">

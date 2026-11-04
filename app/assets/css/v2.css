@@ -160,7 +160,7 @@
     --ink: var(--kit-white);
     --ink-strong: var(--kit-white);
     --ink-secondary: var(--pitch-200);
-    --ink-muted: var(--pitch-300);
+    --ink-muted: var(--pitch-200);
     --rule: rgb(255 255 255 / 0.22);
     --pattern-line: rgb(255 255 255 / 0.1);
     --accent: var(--canary-400);

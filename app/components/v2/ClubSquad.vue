@@ -73,7 +73,6 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
     <div class="container">
       <ClubSectionHead
         :number="6"
-        :kicker="content.kicker"
         :title="content.title"
         :title-id="titleId"
         :lead="content.lead"

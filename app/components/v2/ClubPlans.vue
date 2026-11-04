@@ -48,7 +48,6 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
     <div class="container">
       <ClubSectionHead
         :number="7"
-        :kicker="content.kicker"
         :title="content.title"
         :title-id="titleId"
         :lead="content.lead"
@@ -420,6 +419,7 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
   color: var(--ink-secondary);
   font-size: 1rem;
   letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .ticket__stub .club-action {

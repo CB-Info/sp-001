@@ -5,7 +5,7 @@
  * Le tissu est un SVG ; le flocage (nom et numéro) est du texte HTML posé
  * dessus, pour que chaque lettre soit un élément qu'on presse au fer :
  * - chaque lettre nouvelle se pose (surpression, écrasement d'un cheveu, repos)
- *   puis prend son reflet de vinyle. Une lettre inchangée ne bouge pas ;
+ *   puis le vinyle refroidit, du gris-vert au blanc. Une lettre inchangée ne bouge pas ;
  * - le corps du nom se règle sur sa longueur (unités de conteneur), sans JS ;
  * - mouvement réduit ou sans JS : les lettres sont là, sans pression.
  *
@@ -205,21 +205,17 @@ const BODY =
 /*
  * Le flocage au fer à transfert, lettre par lettre (CSS : il suit la saisie sans
  * attendre GSAP). Une lettre arrive au-dessus du tissu, se pose avec une légère
- * surpression, s'écrase d'un cheveu puis revient au repos ; son reflet passe
- * ensuite une fois. Décalage plafonné : un nom collé d'un coup se pose en vague.
+ * surpression, s'écrase d'un cheveu puis revient au repos ; le vinyle, encore
+ * chaud, passe du gris-vert au blanc en refroidissant, et son relief se pose.
+ * Décalage plafonné : un nom collé d'un coup se pose en vague.
  */
 html.has-motion .jersey:not(.jersey--empty) .jersey__letter:not(.jersey__letter--space) {
-  background: linear-gradient(100deg, var(--kit-white) 38%, #cfe0d5 48%, var(--kit-white) 58%) 0 0 /
-    300% 100% no-repeat;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
   animation:
     jersey-press var(--dur-strike) var(--ease-strike) both,
-    jersey-sheen var(--dur-focal) var(--ease-out) both;
+    jersey-cure var(--dur-focal) var(--ease-out) both;
   animation-delay:
     calc(min(var(--letter-index), 5) * var(--stagger-tight)),
-    calc(min(var(--letter-index), 5) * var(--stagger-tight) + var(--dur-strike));
+    calc(min(var(--letter-index), 5) * var(--stagger-tight) + var(--dur-press));
 }
 
 @keyframes jersey-press {
@@ -239,13 +235,15 @@ html.has-motion .jersey:not(.jersey--empty) .jersey__letter:not(.jersey__letter-
   }
 }
 
-@keyframes jersey-sheen {
+@keyframes jersey-cure {
   from {
-    background-position: 100% 0;
+    color: #b9cfc1;
+    filter: drop-shadow(0 0 0 rgb(0 0 0 / 0));
   }
 
   to {
-    background-position: 0 0;
+    color: var(--kit-white);
+    filter: drop-shadow(0 0.012em 0 rgb(0 0 0 / 0.28));
   }
 }
 

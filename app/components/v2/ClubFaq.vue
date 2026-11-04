@@ -13,12 +13,7 @@ const content = club.faq;
 <template>
   <section id="questions" class="club-section faq" :aria-labelledby="titleId">
     <div class="container faq__grid">
-      <ClubSectionHead
-        :number="10"
-        :kicker="content.kicker"
-        :title="content.title"
-        :title-id="titleId"
-      />
+      <ClubSectionHead :number="10" :title="content.title" :title-id="titleId" />
       <div class="faq__list">
         <details
           v-for="(item, index) in content.items"

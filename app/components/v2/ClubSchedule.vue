@@ -116,7 +116,6 @@ const filterOptions = computed(() => [
     <div class="container">
       <ClubSectionHead
         :number="5"
-        :kicker="content.kicker"
         :title="content.title"
         :title-id="titleId"
         :lead="content.lead"
@@ -185,7 +184,9 @@ const filterOptions = computed(() => [
                 class="day__now"
                 aria-hidden="true"
               >
-                <span class="day__now-label club-label">{{ content.now }} · {{ nowLabel }}</span>
+                <span class="day__now-label club-label"
+                  >{{ content.now }} · <span class="day__now-time">{{ nowLabel }}</span></span
+                >
               </li>
               <li
                 class="match"
@@ -239,7 +240,9 @@ const filterOptions = computed(() => [
               class="day__now"
               aria-hidden="true"
             >
-              <span class="day__now-label club-label">{{ content.now }} · {{ nowLabel }}</span>
+              <span class="day__now-label club-label"
+                >{{ content.now }} · <span class="day__now-time">{{ nowLabel }}</span></span
+              >
             </li>
           </ol>
           <p v-else class="day__empty">{{ content.empty }}</p>
@@ -597,8 +600,18 @@ html.js .day__title {
   transition: scale var(--dur-layout) var(--ease-out);
 }
 
+/* Terminé : le match s'éteint par ses couleurs (contrastes tenus), pas par l'opacité. */
 .match--done {
-  opacity: 0.55;
+  --accent: var(--pitch-200);
+
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--rule);
+}
+
+.match--done .match__discipline {
+  text-decoration: line-through;
+  text-decoration-color: var(--rule);
+  text-decoration-thickness: 2px;
 }
 
 .match--done .match__state {
@@ -650,6 +663,10 @@ html.js .day__title {
 
 .day__now-label {
   color: var(--canary-400);
+}
+
+.day__now-time {
+  text-transform: none;
 }
 
 @media (min-width: 48rem) {

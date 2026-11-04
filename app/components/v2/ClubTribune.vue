@@ -35,12 +35,7 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
 <template>
   <section ref="root" class="club-section tribune" :aria-labelledby="titleId">
     <div class="container">
-      <ClubSectionHead
-        :number="8"
-        :kicker="content.kicker"
-        :title="content.title"
-        :title-id="titleId"
-      />
+      <ClubSectionHead :number="8" :title="content.title" :title-id="titleId" />
 
       <div class="tribune__grid">
         <figure v-if="lead" class="quote quote--lead">

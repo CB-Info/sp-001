@@ -106,7 +106,6 @@ const disciplineName = computed(
       <div class="trial__intro">
         <ClubSectionHead
           :number="12"
-          :kicker="content.kicker"
           :title="content.title"
           :title-id="titleId"
           :lead="content.lead"

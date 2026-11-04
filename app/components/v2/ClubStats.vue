@@ -73,12 +73,7 @@ useMotion(root, ({ gsap, ScrollTrigger }, element) => {
 <template>
   <section ref="root" class="club-section stats" :aria-labelledby="titleId">
     <div class="container">
-      <ClubSectionHead
-        :number="2"
-        :kicker="content.kicker"
-        :title="content.title"
-        :title-id="titleId"
-      />
+      <ClubSectionHead :number="2" :title="content.title" :title-id="titleId" />
       <div class="board" data-surface="pitch">
         <div class="board__top club-label" aria-hidden="true">
           <span>{{ club.name }}</span>
