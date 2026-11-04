@@ -1,4 +1,4 @@
-// Configuration Nuxt : génération statique d'une page unique.
+// Configuration Nuxt : génération statique des deux directions (/ et /v2).
 // Les décisions de stack sont documentées dans docs/adr/0001-stack-nuxt-gsap.md.
 import { readFileSync } from 'node:fs';
 
@@ -23,30 +23,14 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'fr' },
-      title: 'CLUSEM — Forge ta force',
+      // Titre, description, couleur du navigateur et police préchargée sont propres à
+      // chaque direction : posés par leur page (pages/index.vue, pages/v2.vue).
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
-        {
-          name: 'description',
-          content:
-            "CLUSEM, salle de force et de coaching (projet conceptuel). Reconstruction animée d'une landing page, réalisée pour un portfolio.",
-        },
-        { name: 'theme-color', content: '#600305' },
         { name: 'robots', content: 'noindex' },
       ],
       // Icône déclarée : sans elle, le navigateur demande /favicon.ico (404 en console).
-      link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-        // Le H1 du hero est l'élément LCP : sa police (Tektur, sous-ensemble latin) part
-        // dès le HTML au lieu d'attendre la découverte de la feuille de style.
-        {
-          rel: 'preload',
-          as: 'font',
-          type: 'font/woff2',
-          href: '/fonts/tektur-latin-wght-normal.woff2',
-          crossorigin: '',
-        },
-      ],
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
       script: [{ innerHTML: motionBoot, tagPriority: 'critical' }],
     },
   },
@@ -88,7 +72,7 @@ export default defineNuxtConfig({
     // Nitro détecte WORKERS_CI=1 et bascule sur cloudflare-module (un Worker SSR),
     // en écrivant une config Wrangler qui court-circuite wrangler.jsonc.
     preset: 'static',
-    prerender: { routes: ['/'] },
+    prerender: { routes: ['/', '/v2'] },
   },
 
   typescript: {
