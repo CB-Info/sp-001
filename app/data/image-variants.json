@@ -260,6 +260,268 @@
     ],
     "hash": "45362cba"
   },
+  "/images/v2/clubhouse/clubhouse-accueil.jpg": {
+    "width": 1200,
+    "height": 1500,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1200
+    ],
+    "hash": "f4fde370"
+  },
+  "/images/v2/clubhouse/clubhouse-floor.jpg": {
+    "width": 2400,
+    "height": 1350,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1280,
+      1600,
+      1920,
+      2400
+    ],
+    "hash": "681ae829"
+  },
+  "/images/v2/clubhouse/clubhouse-vestiaire.jpg": {
+    "width": 1200,
+    "height": 1500,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1200
+    ],
+    "hash": "a93dacf7"
+  },
+  "/images/v2/disciplines/discipline-boxe.jpg": {
+    "width": 1200,
+    "height": 1500,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1200
+    ],
+    "hash": "971b06cf"
+  },
+  "/images/v2/disciplines/discipline-cardio.jpg": {
+    "width": 1200,
+    "height": 1500,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1200
+    ],
+    "hash": "d968eb2c"
+  },
+  "/images/v2/disciplines/discipline-cross-training.jpg": {
+    "width": 1200,
+    "height": 1500,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1200
+    ],
+    "hash": "b938f9c9"
+  },
+  "/images/v2/disciplines/discipline-force.jpg": {
+    "width": 1200,
+    "height": 1500,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1200
+    ],
+    "hash": "0da48e66"
+  },
+  "/images/v2/disciplines/discipline-mobilite.jpg": {
+    "width": 1200,
+    "height": 1500,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1200
+    ],
+    "hash": "efbf7245"
+  },
+  "/images/v2/disciplines/discipline-recuperation.jpg": {
+    "width": 1200,
+    "height": 1500,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1200
+    ],
+    "hash": "c822b0c2"
+  },
+  "/images/v2/method/method-squat.jpg": {
+    "width": 1280,
+    "height": 1600,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1280
+    ],
+    "hash": "36033dbe"
+  },
+  "/images/v2/squad/squad-alex-vance.jpg": {
+    "width": 960,
+    "height": 1200,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960
+    ],
+    "hash": "35376e9b"
+  },
+  "/images/v2/squad/squad-drake-torres.jpg": {
+    "width": 960,
+    "height": 1200,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960
+    ],
+    "hash": "a92ca5ed"
+  },
+  "/images/v2/squad/squad-elena-rostova.jpg": {
+    "width": 960,
+    "height": 1200,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960
+    ],
+    "hash": "e46068ae"
+  },
+  "/images/v2/squad/squad-marcus-roy.jpg": {
+    "width": 960,
+    "height": 1200,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960
+    ],
+    "hash": "b201eac0"
+  },
+  "/images/v2/squad/squad-sarah-jenkins.jpg": {
+    "width": 960,
+    "height": 1200,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960
+    ],
+    "hash": "08a25826"
+  },
+  "/images/v2/squad/team-photo.jpg": {
+    "width": 2880,
+    "height": 1222,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      800,
+      960,
+      1280,
+      1600,
+      1920,
+      2400,
+      2880
+    ],
+    "hash": "fb4fd20c"
+  },
+  "/images/v2/tribune/tribune-bernard.jpg": {
+    "width": 720,
+    "height": 720,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      720
+    ],
+    "hash": "3e4a0234"
+  },
+  "/images/v2/tribune/tribune-camille.jpg": {
+    "width": 720,
+    "height": 720,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      720
+    ],
+    "hash": "c8782043"
+  },
+  "/images/v2/tribune/tribune-yanis.jpg": {
+    "width": 720,
+    "height": 720,
+    "widths": [
+      160,
+      320,
+      480,
+      640,
+      720
+    ],
+    "hash": "b36caeb0"
+  },
   "/images/hero/hero-streaks.jpg": {
     "width": 560,
     "height": 429,

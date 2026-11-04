@@ -34,10 +34,22 @@ const force = process.argv.includes('--force');
 /** Échelle de largeurs commune ; chaque image s'arrête à sa propre largeur. */
 const LADDER = [160, 320, 480, 640, 800, 960, 1280, 1600, 1920, 2400, 2880];
 
-/** Famille d'étalonnage par master (art/production.json) : les rouges saturés gardent leur chroma. */
-const production = JSON.parse(await readFile(join(root, 'art/production.json'), 'utf8'));
+/** Lit un JSON du dossier art/. */
+const readArt = async (path) => JSON.parse(await readFile(join(root, 'art', path), 'utf8'));
+
+/**
+ * Famille d'étalonnage par master (art/production.json, puis art/v2/ pour la
+ * direction B) : les rouges saturés gardent leur chroma.
+ */
+const production = [
+  ...(await readArt('production.json')),
+  ...(await readArt('v2/production.json')),
+];
 const family = Object.fromEntries(production.map((p) => [p.target, p.family]));
-const jobs = JSON.parse(await readFile(join(root, 'art/manifest.json'), 'utf8')).production.jobs;
+const jobs = [
+  ...(await readArt('manifest.json')).production.jobs,
+  ...(await readArt('v2/manifest.json')).jobs,
+];
 
 /** Version des réglages ci-dessous : à incrémenter pour réencoder toutes les variantes. */
 const ENCODING = 1;
