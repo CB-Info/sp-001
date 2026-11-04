@@ -1,154 +1,93 @@
 [
   {
-    "id": "squad-alex-vance",
-    "target": "art/masters/v2/squad/squad-alex-vance.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "squad-sarah-jenkins",
-    "target": "art/masters/v2/squad/squad-sarah-jenkins.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "squad-marcus-roy",
-    "target": "art/masters/v2/squad/squad-marcus-roy.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "squad-elena-rostova",
-    "target": "art/masters/v2/squad/squad-elena-rostova.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "squad-drake-torres",
-    "target": "art/masters/v2/squad/squad-drake-torres.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "squad-team-photo",
-    "target": "art/masters/v2/squad/team-photo.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "21:9",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "method-squat",
-    "target": "art/masters/v2/method/method-squat.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "discipline-force",
-    "target": "art/masters/v2/disciplines/discipline-force.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "discipline-cross-training",
-    "target": "art/masters/v2/disciplines/discipline-cross-training.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "discipline-boxe",
-    "target": "art/masters/v2/disciplines/discipline-boxe.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "discipline-mobilite",
-    "target": "art/masters/v2/disciplines/discipline-mobilite.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "discipline-cardio",
-    "target": "art/masters/v2/disciplines/discipline-cardio.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "discipline-recuperation",
-    "target": "art/masters/v2/disciplines/discipline-recuperation.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
-  },
-  {
-    "id": "clubhouse-floor",
-    "target": "art/masters/v2/clubhouse/clubhouse-floor.jpg",
+    "id": "cap-couverture",
+    "target": "art/masters/v2/cap-couverture.jpg",
     "model": "nano_banana_pro",
     "ratio": "16:9",
-    "resolution": "2k",
-    "family": "jour"
+    "resolution": "4k",
+    "family": "nuit",
+    "references": [
+      "a",
+      "b",
+      "e",
+      "d"
+    ]
   },
   {
-    "id": "clubhouse-vestiaire",
-    "target": "art/masters/v2/clubhouse/clubhouse-vestiaire.jpg",
+    "id": "cap-pound",
+    "target": "art/masters/v2/cap-pound.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "4k",
+    "family": "nuit",
+    "references": [
+      "c",
+      "b"
+    ]
+  },
+  {
+    "id": "cap-jump",
+    "target": "art/masters/v2/cap-jump.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "4k",
+    "family": "nuit",
+    "references": [
+      "d"
+    ]
+  },
+  {
+    "id": "cap-step",
+    "target": "art/masters/v2/cap-step.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "4k",
+    "family": "nuit",
+    "references": []
+  },
+  {
+    "id": "cap-force",
+    "target": "art/masters/v2/cap-force.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "3:4",
+    "resolution": "2k",
+    "family": "nuit",
+    "references": []
+  },
+  {
+    "id": "cap-calme",
+    "target": "art/masters/v2/cap-calme.jpg",
     "model": "nano_banana_pro",
     "ratio": "4:5",
     "resolution": "2k",
-    "family": "jour"
+    "family": "nuit",
+    "references": [
+      "f"
+    ]
   },
   {
-    "id": "clubhouse-accueil",
-    "target": "art/masters/v2/clubhouse/clubhouse-accueil.jpg",
+    "id": "cap-famille",
+    "target": "art/masters/v2/cap-famille.jpg",
     "model": "nano_banana_pro",
-    "ratio": "4:5",
-    "resolution": "2k",
-    "family": "jour"
+    "ratio": "16:9",
+    "resolution": "4k",
+    "family": "nuit",
+    "references": [
+      "a",
+      "c",
+      "d",
+      "e",
+      "f",
+      "b"
+    ]
   },
   {
-    "id": "tribune-camille",
-    "target": "art/masters/v2/tribune/tribune-camille.jpg",
+    "id": "cap-lieu",
+    "target": "art/masters/v2/cap-lieu.jpg",
     "model": "nano_banana_pro",
-    "ratio": "1:1",
-    "resolution": "1k",
-    "family": "jour"
-  },
-  {
-    "id": "tribune-bernard",
-    "target": "art/masters/v2/tribune/tribune-bernard.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "1:1",
-    "resolution": "1k",
-    "family": "jour"
-  },
-  {
-    "id": "tribune-yanis",
-    "target": "art/masters/v2/tribune/tribune-yanis.jpg",
-    "model": "nano_banana_pro",
-    "ratio": "1:1",
-    "resolution": "1k",
-    "family": "jour"
+    "ratio": "21:9",
+    "resolution": "4k",
+    "family": "nuit",
+    "references": []
   }
 ]

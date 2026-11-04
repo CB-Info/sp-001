@@ -1,0 +1,188 @@
+{
+  "cap-couverture": {
+    "gris_vrai": true,
+    "p5": 0.0118,
+    "mediane": 0.0235,
+    "p99": 0.7843,
+    "zones": {
+      "en-tête": {
+        "p95_Y": 0.0887,
+        "max_y": 0.1,
+        "ok": true
+      },
+      "titre": {
+        "p95_Y": 0.1022,
+        "max_y": 0.12,
+        "ok": true
+      },
+      "texte": {
+        "p95_Y": 0.0137,
+        "max_y": 0.1,
+        "ok": true
+      }
+    },
+    "ok": true
+  },
+  "cap-couverture-mobile": {
+    "gris_vrai": true,
+    "p5": 0.0118,
+    "mediane": 0.0196,
+    "p99": 0.8627,
+    "zones": {
+      "en-tête": {
+        "p95_Y": 0.0953,
+        "max_y": 0.1,
+        "ok": true
+      },
+      "titre et texte": {
+        "p95_Y": 0.0319,
+        "max_y": 0.12,
+        "ok": true
+      }
+    },
+    "ok": true
+  },
+  "cap-pound": {
+    "gris_vrai": true,
+    "p5": 0.0157,
+    "mediane": 0.0471,
+    "p99": 0.8157,
+    "zones": {
+      "colonne de texte": {
+        "p95_Y": 0.0144,
+        "max_y": 0.1,
+        "ok": true
+      }
+    },
+    "ok": true
+  },
+  "cap-pound-mobile": {
+    "gris_vrai": true,
+    "p5": 0.0157,
+    "mediane": 0.1255,
+    "p99": 0.8471,
+    "zones": {},
+    "ok": true
+  },
+  "cap-jump": {
+    "gris_vrai": true,
+    "p5": 0.0078,
+    "mediane": 0.0235,
+    "p99": 0.8627,
+    "zones": {
+      "colonne de texte": {
+        "p95_Y": 0.0782,
+        "max_y": 0.1,
+        "ok": true
+      }
+    },
+    "ok": true
+  },
+  "cap-jump-mobile": {
+    "gris_vrai": true,
+    "p5": 0.0157,
+    "mediane": 0.0745,
+    "p99": 0.8784,
+    "zones": {},
+    "ok": true
+  },
+  "cap-step": {
+    "gris_vrai": true,
+    "p5": 0.0039,
+    "mediane": 0.102,
+    "p99": 0.6784,
+    "zones": {
+      "colonne de texte": {
+        "p95_Y": 0.0931,
+        "max_y": 0.1,
+        "ok": true
+      }
+    },
+    "ok": true
+  },
+  "cap-step-mobile": {
+    "gris_vrai": true,
+    "p5": 0.0118,
+    "mediane": 0.1608,
+    "p99": 0.7137,
+    "zones": {},
+    "ok": true
+  },
+  "cap-force": {
+    "gris_vrai": true,
+    "p5": 0.0157,
+    "mediane": 0.0824,
+    "p99": 0.8667,
+    "zones": {},
+    "ok": true
+  },
+  "cap-calme": {
+    "gris_vrai": true,
+    "p5": 0.0118,
+    "mediane": 0.051,
+    "p99": 0.749,
+    "zones": {},
+    "ok": true
+  },
+  "cap-famille": {
+    "gris_vrai": true,
+    "p5": 0.0235,
+    "mediane": 0.0784,
+    "p99": 0.8902,
+    "zones": {
+      "bas": {
+        "p95_Y": 0.0144,
+        "max_y": 0.12,
+        "ok": true
+      }
+    },
+    "ok": true
+  },
+  "cap-famille-mobile": {
+    "gris_vrai": true,
+    "p5": 0.0235,
+    "mediane": 0.0745,
+    "p99": 0.8941,
+    "zones": {
+      "bas": {
+        "p95_Y": 0.0152,
+        "max_y": 0.12,
+        "ok": true
+      }
+    },
+    "ok": true
+  },
+  "cap-lieu": {
+    "gris_vrai": true,
+    "p5": 0.0157,
+    "mediane": 0.0353,
+    "p99": 0.8471,
+    "zones": {
+      "titre": {
+        "p95_Y": 0.0865,
+        "max_y": 0.12,
+        "ok": true
+      },
+      "bas du recadrage mobile": {
+        "p95_Y": 0.0908,
+        "max_y": 0.12,
+        "ok": true
+      }
+    },
+    "ok": true
+  },
+  "cap-lieu-mobile": {
+    "gris_vrai": true,
+    "p5": 0.0196,
+    "mediane": 0.0667,
+    "p99": 0.8471,
+    "zones": {
+      "bas": {
+        "p95_Y": 0.0908,
+        "max_y": 0.1,
+        "ok": true
+      }
+    },
+    "ok": true
+  }
+}

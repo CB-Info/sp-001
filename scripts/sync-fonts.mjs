@@ -12,7 +12,8 @@ mkdirSync(outDir, { recursive: true });
 /**
  * Familles servies : nom CSS, paquet, motif de fichier par sous-ensemble, graisses,
  * chasses (axe `wdth`, facultatif), feuille du paquet où lire l'unicode-range, et
- * nom du fichier de licence copié. Saira et Schibsted Grotesk servent la direction B (/v2).
+ * style (facultatif) et nom du fichier de licence copié. Figtree sert la V2 (/v2), dont la
+ * police d'affiche « CAP Display » est construite à part (scripts/fonts/build-cap-display.py).
  */
 const families = [
   {
@@ -44,20 +45,20 @@ const families = [
     license: 'OFL-IBM-Plex-Mono.txt',
   },
   {
-    family: 'Saira',
-    pkg: '@fontsource-variable/saira',
-    file: (s) => `saira-${s}-standard-normal.woff2`,
-    weight: '100 900',
-    stretch: '50% 125%',
-    sheet: 'standard.css',
-    license: 'OFL-Saira.txt',
+    family: 'Figtree',
+    pkg: '@fontsource-variable/figtree',
+    file: (s) => `figtree-${s}-wght-normal.woff2`,
+    weight: '300 900',
+    license: 'OFL-Figtree.txt',
   },
   {
-    family: 'Schibsted Grotesk',
-    pkg: '@fontsource-variable/schibsted-grotesk',
-    file: (s) => `schibsted-grotesk-${s}-wght-normal.woff2`,
-    weight: '400 900',
-    license: 'OFL-Schibsted-Grotesk.txt',
+    family: 'Figtree',
+    pkg: '@fontsource-variable/figtree',
+    file: (s) => `figtree-${s}-wght-italic.woff2`,
+    weight: '300 900',
+    style: 'italic',
+    sheet: 'wght-italic.css',
+    license: 'OFL-Figtree.txt',
   },
 ];
 const subsets = ['latin-ext', 'latin'];
@@ -81,14 +82,14 @@ function unicodeRange(pkg, fileName, sheet) {
 }
 
 let css = '/* Fichier généré par scripts/sync-fonts.mjs. Ne pas modifier à la main. */\n';
-for (const { family, pkg, file, weight, stretch, sheet, license } of families) {
+for (const { family, pkg, file, weight, stretch, style = 'normal', sheet, license } of families) {
   for (const subset of subsets) {
     const name = file(subset);
     copyFileSync(join(root, 'node_modules', pkg, 'files', name), join(outDir, name));
     css += `
 @font-face {
   font-family: '${family}';
-  font-style: normal;
+  font-style: ${style};
   font-display: swap;
   font-weight: ${weight};${stretch ? `\n  font-stretch: ${stretch};` : ''}
   src: url('/fonts/${name}') format('woff2');

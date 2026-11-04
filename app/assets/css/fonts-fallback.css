@@ -31,21 +31,24 @@
   line-gap-override: 0%;
 }
 
-/* Direction B (/v2). Saira est mesurée à sa chasse et sa graisse par défaut (100 %, 400). */
+/*
+ * V2 (CAP Fitness). CAP Display est mesurée à sa chasse de plein (80 %), contre
+ * Arial Bold ; Figtree en 400 contre Arial. Valeurs : scripts/fonts/fallback-metrics.py.
+ */
 @font-face {
-  font-family: 'Saira Fallback';
-  src: local('Arial');
-  size-adjust: 102.6%;
-  ascent-override: 110.6%;
-  descent-override: 42.8%;
+  font-family: 'CAP Display Fallback';
+  src: local('Arial Bold'), local('Arial');
+  size-adjust: 92.8%;
+  ascent-override: 85.6%;
+  descent-override: 25.9%;
   line-gap-override: 0%;
 }
 
 @font-face {
-  font-family: 'Schibsted Grotesk Fallback';
+  font-family: 'Figtree Fallback';
   src: local('Arial');
-  size-adjust: 104.9%;
-  ascent-override: 93.1%;
-  descent-override: 24.6%;
+  size-adjust: 99.6%;
+  ascent-override: 95.4%;
+  descent-override: 25.1%;
   line-gap-override: 0%;
 }
