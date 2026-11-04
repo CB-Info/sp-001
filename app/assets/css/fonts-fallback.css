@@ -30,3 +30,22 @@
   descent-override: 25.4%;
   line-gap-override: 0%;
 }
+
+/* Direction B (/v2). Saira est mesurée à sa chasse et sa graisse par défaut (100 %, 400). */
+@font-face {
+  font-family: 'Saira Fallback';
+  src: local('Arial');
+  size-adjust: 102.6%;
+  ascent-override: 110.6%;
+  descent-override: 42.8%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Schibsted Grotesk Fallback';
+  src: local('Arial');
+  size-adjust: 104.9%;
+  ascent-override: 93.1%;
+  descent-override: 24.6%;
+  line-gap-override: 0%;
+}
