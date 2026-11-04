@@ -1,0 +1,330 @@
+/*
+ * Direction B « Le Club » (route /v2) : tokens et base propres au site.
+ *
+ * La page /v2 pose <html data-site="v2"> (app/pages/v2.vue). Tout ce qui suit ne
+ * s'applique que sous cet attribut : la V1 (/) ne voit rien de ce fichier. Les
+ * rôles sémantiques gardent les noms de la V1 (--bg, --ink, --accent-fill,
+ * --dur-*, --ease-*…) : base.css, layout.css et le JS du mouvement (tokens.ts,
+ * gsap.ts) les lisent sans savoir quel site est servi. Les deux directions ne se
+ * lient que par des liens pleine page : chaque chargement lit les siens.
+ *
+ * Monde : couleurs de club (vert bouteille en champs entiers, jaune canari pour
+ * la bande du maillot et les actions), Saira variable pour le flocage et les
+ * numéros, Schibsted Grotesk pour le texte. Brief : docs/brief/v2.md.
+ */
+@layer tokens {
+  :root[data-site='v2'] {
+    /* ── 1. Primitives : couleurs du club ─────────────────────────────────── */
+    --pitch-950: #0b2418; /* encre vert-noir : texte sur blanc (16,4:1) */
+    --pitch-900: #0c4029; /* vert profond : survol des champs */
+    --pitch-800: #0f5233; /* vert bouteille : les champs (blanc dessus 9,2:1) */
+    --pitch-700: #15603d; /* bandes du tissu, à peine plus claires */
+    --pitch-600: #1d6e47;
+    --pitch-300: #b9cfc1; /* texte secondaire sur vert (5,6:1) */
+    --pitch-200: #c9ddd0; /* texte courant atténué sur vert (6,5:1) */
+    --canary-400: #ffd83d; /* bande du maillot, actions (encre dessus 11,8:1) */
+    --canary-300: #ffe375; /* survol des actions */
+    --canary-600: #e5b800;
+    --kit-white: #fff;
+    --mist-200: #e3e9e4; /* fond gris-vert des portraits officiels */
+    --mist-100: #eef3ef;
+    --mist-50: #f6f9f7;
+    --slate-600: #4a5e53; /* texte secondaire sur blanc (7:1) et sur brume (5,7:1) */
+    --chalk: rgb(255 255 255 / 0.92); /* filets de terrain */
+    --alert-700: #b42318; /* erreurs de formulaire sur blanc (6,6:1) */
+    --alert-200: #ffb4a8; /* erreurs sur vert (5,4:1) */
+
+    /* ── 1. Primitives : typographie ──────────────────────────────────────── */
+    --font-display: 'Saira', 'Saira Fallback', 'Arial', sans-serif;
+    --font-lead: var(--font-body);
+    --font-body: 'Schibsted Grotesk', 'Schibsted Grotesk Fallback', system-ui, sans-serif;
+    --font-mono: var(--font-display);
+
+    /* Chasses de Saira : large pour le flocage et les titres, étroite pour les numéros. */
+    --stretch-wide: 125%;
+    --stretch-semi: 112.5%;
+    --stretch-narrow: 75%;
+
+    /* Échelle fluide 390 → 1440 px, bornes en rem (WCAG 1.4.4). */
+    --text-hero: clamp(3rem, 1.1rem + 7.8vw, 8.25rem); /* 132 px à 1440 */
+    --text-display: clamp(2.375rem, 1.5893rem + 3.2238vw, 4.5rem); /* titres de section : 72 px */
+    --text-figure: clamp(3.5rem, 2.2143rem + 5.2762vw, 7rem); /* tableau des scores */
+    --text-heading: clamp(1.75rem, 1.4286rem + 1.3186vw, 2.625rem);
+    --text-subheading: clamp(1.25rem, 1.1214rem + 0.5276vw, 1.625rem);
+    --text-quote: clamp(1.5rem, 1.0893rem + 1.6857vw, 2.625rem);
+    --text-lead: clamp(1.125rem, 1.0179rem + 0.4395vw, 1.4375rem);
+    --text-ui: 1rem;
+    --text-body: 1.0625rem;
+    --text-label: 0.875rem;
+    --text-micro: 0.8125rem;
+
+    --leading-display: 0.88;
+    --leading-heading: 0.95;
+    --leading-tight: 1.1;
+    --leading-snug: 1.25;
+    --leading-body: 1.55;
+
+    --tracking-display: -0.01em;
+    --tracking-heading: 0;
+    --tracking-label: 0.08em;
+
+    /* ── 2. Sémantiques : mise en page (une seule grille stricte, 12 colonnes) ── */
+    --content-max: 80rem; /* 1280 px */
+    --grid-columns: 12;
+    --gap: clamp(1rem, 0.8143rem + 0.7619vw, 1.5rem);
+    --section-pad: clamp(4.5rem, 3.3214rem + 4.8381vw, 7.75rem);
+    --header-gap: clamp(2rem, 1.4429rem + 2.2857vw, 3.5rem);
+    --block-gap: clamp(3rem, 2.2571rem + 3.0476vw, 5rem);
+    --header-height: 4.5rem;
+    --header-height-compact: 3.75rem;
+
+    /* Matières : carte plastifiée, pilule, filet de terrain. */
+    --radius-card: 14px;
+    --radius-small: 8px;
+    --radius-pill: 999px;
+    --line-pitch: 2px;
+    --shadow-card: 0 1px 0 rgb(11 36 24 / 0.06), 0 12px 28px -14px rgb(11 36 24 / 0.32);
+    --shadow-lift: 0 2px 0 rgb(11 36 24 / 0.08), 0 22px 40px -18px rgb(11 36 24 / 0.42);
+
+    /* ── 2. Sémantiques : mouvement (grammaire « poser, basculer, avancer ») ──
+       Mêmes noms que la V1, autres valeurs : gsap.ts enregistre ces courbes. */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* arrivées */
+    --ease-out-soft: cubic-bezier(0.33, 1, 0.68, 1); /* changements d'état */
+    --ease-in: cubic-bezier(0.64, 0, 0.78, 0); /* sorties */
+    --ease-in-out: cubic-bezier(0.83, 0, 0.17, 1); /* bascule d'une carte */
+    --ease-strike: cubic-bezier(0.34, 1.56, 0.64, 1); /* la pose : légère surpression */
+    --dur-press: 80ms;
+    --dur-feedback: 150ms;
+    --dur-state: 260ms;
+    --dur-layout: 460ms;
+    --dur-overlay: 520ms;
+    --dur-focal: 760ms;
+    --dur-strike: 320ms; /* une lettre floquée */
+    --seq-max: 1400ms;
+    --dur-travel: 1000ms;
+    --dur-underline-in: 220ms;
+    --dur-underline-out: 180ms;
+
+    --move-xs: 4px;
+    --move-s: 10px;
+    --move-l: 24px;
+    --move-xl: 64px;
+
+    --stagger-tight: 35ms;
+    --stagger-list: 70ms;
+    --stagger-lines: 90ms;
+
+    /* ── 2. Sémantiques : couleurs (surface « maillot » blanche par défaut) ── */
+    --bg: var(--kit-white);
+    --surface: var(--mist-100);
+    --surface-inverse: var(--pitch-800);
+    --ink: var(--pitch-950);
+    --ink-strong: var(--pitch-950);
+    --ink-secondary: var(--slate-600);
+    --ink-muted: var(--slate-600);
+    --rule: rgb(11 36 24 / 0.14);
+    --pattern-line: rgb(11 36 24 / 0.08);
+    --accent: var(--pitch-800);
+    --accent-ink: var(--pitch-800);
+    --accent-fill: var(--canary-400);
+    --accent-fill-hover: var(--canary-300);
+    --on-accent: var(--pitch-950);
+    --field: var(--pitch-800);
+    --on-field: var(--kit-white);
+    --error: var(--alert-700);
+    --focus: var(--pitch-800);
+    --selection-bg: var(--canary-400);
+    --selection-ink: var(--pitch-950);
+
+    color-scheme: light;
+  }
+
+  /* ── 3. Surfaces de la V2 ────────────────────────────────────────────────── */
+  [data-site='v2'] [data-surface='mist'] {
+    --bg: var(--mist-100);
+    --surface: var(--kit-white);
+    --rule: rgb(11 36 24 / 0.16);
+  }
+
+  [data-site='v2'] [data-surface='pitch'] {
+    --bg: var(--pitch-800);
+    --surface: var(--pitch-900);
+    --ink: var(--kit-white);
+    --ink-strong: var(--kit-white);
+    --ink-secondary: var(--pitch-200);
+    --ink-muted: var(--pitch-300);
+    --rule: rgb(255 255 255 / 0.22);
+    --pattern-line: rgb(255 255 255 / 0.1);
+    --accent: var(--canary-400);
+    --accent-ink: var(--canary-400);
+    --error: var(--alert-200);
+    --focus: var(--canary-400);
+    --selection-bg: var(--canary-400);
+    --selection-ink: var(--pitch-950);
+
+    color-scheme: dark;
+  }
+
+  [data-site='v2'] [data-surface='canary'] {
+    --bg: var(--canary-400);
+    --surface: var(--canary-300);
+    --ink: var(--pitch-950);
+    --ink-strong: var(--pitch-950);
+    --ink-secondary: var(--pitch-950);
+    --ink-muted: var(--pitch-950);
+    --rule: rgb(11 36 24 / 0.24);
+    --accent: var(--pitch-800);
+    --accent-ink: var(--pitch-800);
+    --accent-fill: var(--pitch-800);
+    --accent-fill-hover: var(--pitch-900);
+    --on-accent: var(--kit-white);
+    --focus: var(--pitch-950);
+  }
+}
+
+@layer base {
+  html[data-site='v2'] {
+    scrollbar-color: var(--pitch-800) var(--mist-100);
+  }
+
+  [data-site='v2'] :is(h1, h2, h3) {
+    font-weight: 800;
+    font-stretch: var(--stretch-wide);
+    text-transform: uppercase;
+  }
+
+  /* Les ancres passent sous l'en-tête collant (WCAG 2.4.11). */
+  [data-site='v2'] :target {
+    scroll-margin-top: calc(var(--header-height-compact) + 1rem);
+  }
+
+  [data-site='v2'] :focus-visible {
+    outline-width: 3px;
+    outline-offset: 3px;
+  }
+}
+
+/*
+ * Primitives partagées par les zones de la V2 : actions en pilule, titre de
+ * section, numéros. Les styles scopés des composants restent hors couche.
+ */
+@layer components {
+  /* ── Actions : pilule pleine (canari) et pilule contour ─────────────────── */
+  [data-site='v2'] .club-action {
+    --action-bg: var(--accent-fill);
+    --action-ink: var(--on-accent);
+    --action-edge: transparent;
+
+    display: inline-flex;
+    gap: 0.625rem;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 3.25rem;
+    padding: 0.75rem 1.5rem;
+    border: var(--line-pitch) solid var(--action-edge);
+    border-radius: var(--radius-pill);
+    background: var(--action-bg);
+    color: var(--action-ink);
+    font-family: var(--font-display);
+    font-size: var(--text-ui);
+    font-weight: 700;
+    font-stretch: var(--stretch-semi);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    text-decoration: none;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-feedback) var(--ease-out-soft),
+      color var(--dur-feedback) var(--ease-out-soft),
+      border-color var(--dur-feedback) var(--ease-out-soft),
+      scale var(--dur-press) var(--ease-out);
+  }
+
+  [data-site='v2'] .club-action:hover {
+    --action-bg: var(--accent-fill-hover);
+  }
+
+  [data-site='v2'] .club-action:active {
+    scale: 0.97;
+  }
+
+  [data-site='v2'] .club-action--outline {
+    --action-bg: transparent;
+    --action-ink: var(--ink);
+    --action-edge: currentcolor;
+  }
+
+  [data-site='v2'] .club-action--outline:hover {
+    --action-bg: var(--ink);
+    --action-ink: var(--bg);
+    --action-edge: var(--ink);
+  }
+
+  [data-site='v2'] .club-action--small {
+    min-block-size: 2.75rem;
+    padding: 0.5rem 1.125rem;
+    font-size: var(--text-label);
+  }
+
+  [data-site='v2'] .club-action__arrow {
+    inline-size: 1.125em;
+    block-size: 1.125em;
+    flex: none;
+    transition: translate var(--dur-feedback) var(--ease-out);
+  }
+
+  [data-site='v2'] .club-action:hover .club-action__arrow {
+    translate: 3px 0;
+  }
+
+  @media (forced-colors: active) {
+    [data-site='v2'] .club-action {
+      border-color: ButtonText;
+    }
+  }
+
+  /* ── Sections : une grille, un filet de touche sous chacune ──────────────── */
+  [data-site='v2'] .club-section {
+    position: relative;
+    padding-block: var(--section-pad);
+    border-block-end: var(--line-pitch) solid var(--touchline, var(--pitch-800));
+  }
+
+  [data-site='v2'] [data-surface='pitch'].club-section {
+    --touchline: var(--chalk);
+  }
+
+  [data-site='v2'] .club-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    gap: var(--gap);
+  }
+
+  /* Mention de fiction, toujours lisible, jamais cachée. */
+  [data-site='v2'] .club-note {
+    color: var(--ink-muted);
+    font-size: var(--text-micro);
+    line-height: 1.4;
+  }
+
+  /* ── Libellés : petites capitales larges, jamais de mono ────────────────── */
+  [data-site='v2'] .club-label {
+    font-family: var(--font-display);
+    font-size: var(--text-label);
+    font-weight: 700;
+    font-stretch: var(--stretch-semi);
+    letter-spacing: var(--tracking-label);
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  /* Numéros d'effectif et chiffres : Saira étroite, chiffres tabulaires. */
+  [data-site='v2'] .club-number {
+    font-family: var(--font-display);
+    font-stretch: var(--stretch-narrow);
+    font-variant-numeric: tabular-nums lining-nums;
+    font-weight: 800;
+  }
+}
