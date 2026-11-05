@@ -12,9 +12,9 @@ import { jourCourt } from '~/utils/cap-time';
  *
  * Hydraté jamais (v2.vue, hydrate-never) : tout est HTML et CSS natifs. La FAQ
  * est faite de <details name="faq"> (accordéon exclusif natif). Sous
- * html.has-motion, la réponse se révèle comme une fiche de cours (hauteur, puis
- * fondu du texte ; fermeture plus rapide), par app/plugins/faq.client.ts, dans
- * tous les navigateurs. Sans JS ou en mouvement réduit : instantanée.
+ * html.has-motion, la réponse se révèle comme une fiche de cours : transition
+ * CSS de grid-template-rows, puis fondu du texte ; fermeture plus rapide. Les
+ * attributs sont posés par app/plugins/faq.client.ts. Sans JS ou en mouvement réduit : instantanée.
  *
  * Gabarit G6, sur photo : « Viens nous » en plein craie, puis « voir. » en délié
  * craie. Sous 64em, ce délié ferait moins de 64 px : il devient plein (R2). Les
@@ -178,16 +178,18 @@ const faq = cap.faq.map((item) => ({ ...item, parts: parts(item.reponse) }));
               <span class="cap-practical__sign" aria-hidden="true" />
             </summary>
             <div class="cap-practical__answer">
-              <p class="cap-practical__answer-text">
-                <template v-for="(part, index) in item.parts" :key="index"
-                  ><CapPending v-if="part.pending" :text="part.text" /><template v-else>{{
-                    part.text
-                  }}</template></template
-                ><template v-if="item.lien"
-                  >{{ ' '
-                  }}<a class="cap-link" :href="item.lien.href">{{ item.lien.label }}</a></template
-                >
-              </p>
+              <div class="cap-practical__answer-inner">
+                <p class="cap-practical__answer-text">
+                  <template v-for="(part, index) in item.parts" :key="index"
+                    ><CapPending v-if="part.pending" :text="part.text" /><template v-else>{{
+                      part.text
+                    }}</template></template
+                  ><template v-if="item.lien"
+                    >{{ ' '
+                    }}<a class="cap-link" :href="item.lien.href">{{ item.lien.label }}</a></template
+                  >
+                </p>
+              </div>
             </div>
           </details>
         </div>
@@ -531,12 +533,12 @@ const faq = cap.faq.map((item) => ({ ...item, parts: parts(item.reponse) }));
   content: '+';
 }
 
-.cap-practical__item[open]:not([data-closing]) .cap-practical__sign {
+.cap-practical__item[open]:not([data-shut]) .cap-practical__sign {
   background: var(--cf-citron);
   color: var(--cf-noir);
 }
 
-.cap-practical__item[open]:not([data-closing]) .cap-practical__sign::before {
+.cap-practical__item[open]:not([data-shut]) .cap-practical__sign::before {
   content: '−';
 }
 
@@ -549,7 +551,51 @@ const faq = cap.faq.map((item) => ({ ...item, parts: parts(item.reponse) }));
 }
 
 .cap-practical__answer {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+
+.cap-practical__answer-inner {
+  min-block-size: 0;
+}
+
+/* Le retrait du bas est porté par le texte : à 0fr, la réponse tombe à 0 px. */
+.cap-practical__answer-text {
   padding-block-end: 1.5rem;
+}
+
+/*
+ * ── Révélation, le mécanisme des fiches de cours (CapCourseSheet) ──────────
+ * Transitions CSS seules, identiques dans tous les navigateurs ; le greffon
+ * app/plugins/faq.client.ts pose `data-shut` (repliée) et `data-moving` (une
+ * transition joue). Ouverture : la hauteur en --dur-layout, puis le texte en
+ * fondu. Fermeture : 0,65 × l'ouverture, le texte s'efface sur la moitié.
+ */
+.cap-practical__item {
+  --faq-open: var(--dur-layout);
+  --faq-close: calc(var(--dur-layout) * 0.65);
+}
+
+html.has-motion .cap-practical__answer {
+  transition: grid-template-rows var(--faq-open) var(--ease-in-out);
+}
+
+html.has-motion .cap-practical__answer-text {
+  transition: opacity var(--dur-state) var(--ease-out-soft) var(--dur-feedback);
+}
+
+html.has-motion .cap-practical__item[data-moving] .cap-practical__answer-inner {
+  overflow: hidden;
+}
+
+html.has-motion .cap-practical__item[data-shut] .cap-practical__answer {
+  grid-template-rows: 0fr;
+  transition-duration: var(--faq-close);
+}
+
+html.has-motion .cap-practical__item[data-shut] .cap-practical__answer-text {
+  opacity: 0;
+  transition: opacity calc(var(--faq-close) * 0.5) var(--ease-in);
 }
 
 .cap-practical__answer-text {
@@ -671,7 +717,7 @@ const faq = cap.faq.map((item) => ({ ...item, parts: parts(item.reponse) }));
     color: CanvasText;
   }
 
-  .cap-practical__item[open]:not([data-closing]) .cap-practical__sign {
+  .cap-practical__item[open]:not([data-shut]) .cap-practical__sign {
     background: CanvasText;
     color: Canvas;
   }
