@@ -93,15 +93,18 @@ const titleStyle = {
 const bodyStyle = { '--fit-min': `${(delie.mobile * DELIE_FLOOR_REM + 0.0625).toFixed(4)}rem` };
 
 /* ── Tracé blanc plein (§2.8, style « plein ») ───────────────────────────────
- * Unités : la capitale du délié vaut 100. Amplitude R = 1,1 capitale (R6), empan
- * 0,9 × l'amplitude, trait de 0,08 capitale. L'origine x = 0 est le bord gauche
- * du H1 ; y = 0 est la ligne de base (l'origine de la mise à l'échelle O2).
+ * Unités : la capitale du délié vaut 100. Empan de 99 (0,9 × 1,1 capitale), trait
+ * de 0,08 capitale. Pointes vives (onglet de 20) : l'aiguille prolonge le pic R
+ * d'environ 33, l'amplitude de 0,8 capitale garde sa hauteur visible d'avant
+ * (≈ 1,1 capitale, R6) et l'aiguille loin de l'en-tête. L'origine x = 0 est le
+ * bord gauche du H1 ; y = 0 est la ligne de base (l'origine de la mise à
+ * l'échelle O2).
  * Le SVG est calé à droite et rogné à gauche : la ligne plate s'étire jusqu'au
  * bord de l'écran, quelle que soit sa largeur, sans calcul côté client.
  */
 const CAP = 100;
-const AMP = 1.1 * CAP;
-const SPAN = SPAN_RATIO * AMP;
+const AMP = 0.8 * CAP;
+const SPAN = SPAN_RATIO * 1.1 * CAP;
 const STROKE = 0.08 * CAP;
 /** Plat entre le complexe et le bord du H1 : le complexe reste dans la marge du pouls. */
 const TAIL = 28;
@@ -572,7 +575,8 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
   stroke: currentcolor;
   stroke-width: var(--w);
   stroke-linejoin: miter;
-  stroke-miterlimit: 4;
+  /* Pointes vives, comme le logo : le pic R (≈ 10°) demande un onglet de 11,3 (15 étiré par O2). */
+  stroke-miterlimit: 20;
   stroke-linecap: butt;
   vector-effect: non-scaling-stroke;
 }

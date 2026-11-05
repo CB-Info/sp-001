@@ -395,6 +395,7 @@
     stroke: currentcolor;
     stroke-width: 1.5;
     stroke-linejoin: miter;
+    stroke-miterlimit: 20; /* pointes vives, comme le logo */
     clip-path: inset(0 100% 0 0);
     transition: clip-path 160ms var(--ease-in);
   }

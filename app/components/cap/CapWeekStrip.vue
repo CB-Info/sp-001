@@ -528,7 +528,8 @@ const choose = (slot: WeekSlot) => {
   fill: none;
   stroke-linecap: butt;
   stroke-linejoin: miter;
-  stroke-miterlimit: 4;
+  /* Pointes vives, comme le logo : le pic R (≈ 10°) demande un onglet de 11,3 (15 étiré par O2). */
+  stroke-miterlimit: 20;
 }
 
 /* O1 : chaque piste découverte jusqu'au curseur, le temps de l'écriture. */

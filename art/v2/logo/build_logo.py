@@ -44,6 +44,12 @@ NOIR = "#0C0C0B"
 # l'empan, y en fraction de l'amplitude R, vers le haut positif.
 ECG = [(0, 0), (0.115, 0.435), (0.30, -0.375), (0.54, 1), (0.59, -0.92), (0.85, 0.295), (1, 0)]
 
+# Pointes vives, comme le logo fourni : le pic R (≈ 10°) demande un onglet de
+# 11,3 ; à 4, il était coupé à plat. Les lettres gardent l'onglet de 4.
+ECG_MITER = 20.0
+# Tube : deux parois fines qui se rejoignent en aiguille aux pics (logo fourni).
+TUBE, WALL = 8.0, 2.2
+
 
 # ── Polices ───────────────────────────────────────────────────────────────────
 def load(path: Path, axes: dict | None = None) -> TTFont:
@@ -148,9 +154,9 @@ def complex_points(x_start: float, baseline: float, span: float, amp: float) -> 
 def trace_solid(points, width: float, taper_from: float | None = None) -> pathops.Path:
     """Tracé plein ; départ en pointe effilée (largeur 0 → `width` sur 3 × `width`)."""
     if taper_from is None:
-        return stroked(polyline(points), width)
+        return stroked(polyline(points), width, miter=ECG_MITER)
     x0, y = points[0]
-    body = stroked(polyline([(x0 + 3 * width, y), *points[1:]]), width)
+    body = stroked(polyline([(x0 + 3 * width, y), *points[1:]]), width, miter=ECG_MITER)
     tip = polyline([(x0, y), (x0 + 3 * width, y - width / 2), (x0 + 3 * width, y + width / 2)])
     tip.close()
     return union(body, tip)
@@ -158,9 +164,27 @@ def trace_solid(points, width: float, taper_from: float | None = None) -> pathop
 
 def trace_tube(points, width: float, wall: float) -> pathops.Path:
     """Tube : le trait large moins le trait intérieur. L'intérieur est réellement vide."""
-    outer = stroked(polyline(points), width)
-    inner = stroked(polyline(points), width - 2 * wall, miter=6.0)
+    outer = stroked(polyline(points), width, miter=ECG_MITER)
+    inner = stroked(polyline(points), width - 2 * wall, miter=ECG_MITER)
     return difference(outer, inner)
+
+
+def fit_amp(make, view: str, hi: float = 110.0, margin: float = 1.0) -> float:
+    """
+    La plus grande amplitude (≤ `hi`) dont le tracé tient dans la viewBox : l'onglet
+    vif prolonge chaque pic au-delà de son sommet, la viewBox (donc la mise en page)
+    ne change pas.
+    """
+    x, y, w, h = (float(v) for v in view.split())
+    lo, best = 20.0, 20.0
+    for _ in range(30):
+        mid = (lo + hi) / 2
+        bx0, by0, bx1, by1 = make(mid).bounds
+        if by0 >= y + margin and by1 <= y + h - margin and bx0 >= x - 1e-6 and bx1 <= x + w + 1e-6:
+            best, lo = mid, mid
+        else:
+            hi = mid
+    return round(best, 1)
 
 
 def wedge(edge_x: float, y: float, direction: int, depth: float, opening: float) -> pathops.Path:
@@ -228,8 +252,17 @@ def horizontal() -> tuple[str, dict]:
     fit_word = fit(EXO_900, "FITNESS", cap, 450, base, 520, sx=0.97, track_em=-0.04)
     plein = difference(fit_word.path, fitness_cuts(fit_word, cap, base))
     delie = stroked(cap_word.path, 6.0, miter=4.0)
-    left = trace_solid([(0, iso), *complex_points(50, iso, 99, 110), (150, iso)], 8.0, taper_from=0)
-    right = trace_tube([(970, iso), *complex_points(990, iso, 99, 110), (1120, iso)], 15.0, 3.0)
+    view = "0 -21 1120 213"
+    # Empan d'origine (99) : l'amplitude est réduite pour que l'aiguille tienne dans
+    # la viewBox ; l'angle du pic s'ouvre un peu, l'aiguille raccourcit d'autant.
+    amp = fit_amp(lambda a: union(
+        trace_solid([(0, iso), *complex_points(50, iso, 99, a), (150, iso)], 8.0, taper_from=0),
+        trace_tube([(970, iso), *complex_points(990, iso, 99, a), (1120, iso)], TUBE, WALL),
+    ), view)
+    left = trace_solid([(0, iso), *complex_points(50, iso, 99, amp), (150, iso)], 8.0,
+                       taper_from=0)
+    right = trace_tube([(970, iso), *complex_points(990, iso, 99, amp), (1120, iso)],
+                       TUBE, WALL)
     sig_cap = 27.0
     probe = word(MONT_500I, "BY EBC SPORT", sig_cap, 0, 145, track_em=0.02)
     sig = word(MONT_500I, "BY EBC SPORT", sig_cap, 973 - (probe.x1 - probe.x0) - probe.x0, 145, track_em=0.02)
@@ -240,8 +273,9 @@ def horizontal() -> tuple[str, dict]:
         ("cap-logo__tube", CITRON, right),
         ("cap-logo__signature", CITRON, sig.path),
     ]
-    report = {"CAP": (cap_word.x0, cap_word.x1), "FITNESS": (fit_word.x0, fit_word.x1), "signature": (sig.x0, sig.x1)}
-    return svg("0 -21 1120 213", parts), report
+    report = {"CAP": (cap_word.x0, cap_word.x1), "FITNESS": (fit_word.x0, fit_word.x1), "signature": (sig.x0, sig.x1),
+              "amplitude": (0, amp)}
+    return svg(view, parts), report
 
 
 def reduit() -> str:
@@ -266,8 +300,13 @@ def carre() -> str:
     sig_base = fit_base + 0.35 * fit_cap + sig_cap
     probe = word(MONT_500I, "BY EBC SPORT", sig_cap, 0, sig_base, track_em=0.02)
     sig = word(MONT_500I, "BY EBC SPORT", sig_cap, 325 - (probe.x1 - probe.x0) - probe.x0, sig_base, track_em=0.02)
-    left = trace_tube([(-150, 100), *complex_points(-112, 100, 99, 110), (-4, 100)], 14.0, 2.8)
-    right = trace_tube([(344, fit_base), *complex_points(366, fit_base, 99, 110), (494, fit_base)], 14.0, 2.8)
+    view = "-152 -14 648 302"
+    tubes = lambda a: (  # noqa: E731
+        trace_tube([(-150, 100), *complex_points(-62.5 - 0.45 * a, 100, 0.9 * a, a), (-4, 100)], TUBE, WALL),
+        trace_tube([(344, fit_base), *complex_points(415.5 - 0.45 * a, fit_base, 0.9 * a, a), (494, fit_base)],
+                   TUBE, WALL),
+    )
+    left, right = tubes(fit_amp(lambda a: union(*tubes(a)), view))
     parts = [
         ("cap-logo__tube", BLANC, left),
         ("cap-logo__tube", BLANC, right),
@@ -275,7 +314,7 @@ def carre() -> str:
         ("cap-logo__plein", BLANC, plein),
         ("cap-logo__signature", CITRON, sig.path),
     ]
-    return svg("-152 -14 648 302", parts)
+    return svg(view, parts)
 
 
 def monogramme() -> str:

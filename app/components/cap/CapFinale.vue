@@ -43,7 +43,7 @@ const titleId = 'fin-titre';
 /* ── Mesure du plein ajusté ──────────────────────────────────────────────────
  * Même calcul que CapFitWord (largeur mesurée en em, plus l'approche par lettre) :
  * la taille de « Ensemble, » est connue en CSS, pour poser le tube sur sa ligne de
- * base et le dimensionner (R6 : amplitude R = 1,1 capitale).
+ * base et le dimensionner (amplitude R = 0,8 capitale, aiguille comprise ≈ 1,1).
  */
 const TRACKING_PLEIN = -0.005;
 const fit = (() => {
@@ -64,14 +64,19 @@ const bodyStyle = {
 /* ── Le tube citron (§2.8, style « tube ») ───────────────────────────────────
  * Unités : la capitale du plein vaut 100 ; y = 0 est la ligne de base (l'origine
  * des mises à l'échelle O2 et O3), x = 0 le départ du tube. Amorce plate de
- * 0,1 capitale, complexe d'amplitude 110 et d'empan 99, puis ligne plate jusqu'au
+ * 0,1 capitale, complexe d'amplitude 80 et d'empan 99, puis ligne plate jusqu'au
  * bord de l'écran (rognée par la section). Sous 64em, une amorce part aussi vers
  * la gauche, jusqu'au bord de l'écran.
  *
- * Masque : trait blanc de 15 (0,15 capitale), moins trait noir de 9 : il reste
- * deux parois de 3, l'intérieur est réellement transparent. Le trait noir part
- * 3 unités après le blanc : le départ du tube est fermé par une paroi. Le rect
+ * Masque : trait blanc de 8 (0,08 capitale), moins trait noir de 3,6 : il reste
+ * deux parois de 2,2, l'intérieur est réellement transparent. Le trait noir part
+ * 2,2 unités après le blanc : le départ du tube est fermé par une paroi. Le rect
  * citron passe par ce masque. Extrémités droites (butt).
+ *
+ * Pointes vives, comme le logo : le tube fin finit chaque pic en aiguille (onglet
+ * de 20). L'aiguille prolonge le pic R d'environ 33 unités : l'amplitude de 80
+ * garde la hauteur visible d'avant (≈ 113, contre 110 + le sommet coupé), et
+ * l'empan de 99 garde la largeur du complexe, donc la place de la donnée.
  *
  * Tout le tracé (lignes plates comprises) est mis à l'échelle autour de la ligne
  * de base : les plats restent en place, seul le complexe change d'amplitude, et
@@ -79,14 +84,15 @@ const bodyStyle = {
  * l'épaisseur des parois).
  */
 const CAP = 100;
-const AMP = 1.1 * CAP;
-const SPAN = SPAN_RATIO * AMP;
+const AMP = 0.8 * CAP;
+/** Empan d'avant (0,9 × 110) : la donnée posée sur le tube garde sa place. */
+const SPAN = SPAN_RATIO * 1.1 * CAP;
 const LEAD = 0.1 * CAP;
-const WALL = 0.03 * CAP;
+const WALL = 0.022 * CAP;
 /** Longueurs des plats, vers la gauche (mobile) et vers la droite : plus que tout écran. */
 const BLEED = 10 * CAP;
 const REACH = 20 * CAP;
-/** Marges verticales : le complexe à 1,35 fois son amplitude (O2), plus la demi-épaisseur du tube. */
+/** Marges verticales : le complexe à 1,35 fois son amplitude (O2), plus l'aiguille du pic (≈ 44). */
 const RISE = 1.6 * CAP;
 const FALL = 1.5 * CAP;
 
@@ -290,8 +296,8 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
  * Cotes @1440 (brief §4.8) : « Ensemble, » sur les colonnes 1 à 8 (872 px),
  * 181 px, capitale de 122 px, ligne de base Y ; signature de 40 px ferrée à
  * droite sur x 932, haut des capitales à Y + 22 ; tube de x 956 au bord de
- * l'écran, complexe de x 968 à 1088 (amplitude 134), tube de 18 px et parois de
- * 3,6 px ; donnée de x 1112 à 1380, ligne de base à Y − 14 ; bouton à x 60,
+ * l'écran, complexe de x 968 à 1088 (amplitude 98, aiguille comprise ≈ 138), tube
+ * de 10 px et parois de 2,7 px ; donnée de x 1112 à 1380, ligne de base à Y − 14 ; bouton à x 60,
  * 48 px sous la ligne de base de la signature. @390 : « Ensemble, » à 78 px,
  * signature à gauche, tube pleine largeur (complexe de x 20 à 71, tube de
  * 7,8 px), donnée dès x 88, bouton pleine largeur.
@@ -386,19 +392,20 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
   fill: none;
   stroke-linecap: butt;
   stroke-linejoin: miter;
-  stroke-miterlimit: 4;
+  /* Pointes vives, comme le logo : le pic R (≈ 10°) demande un onglet de 11,3 (15 étiré par O2). */
+  stroke-miterlimit: 20;
   vector-effect: non-scaling-stroke;
 }
 
-/* Paroi extérieure (0,15 capitale), puis le creux (0,09) : deux parois de 0,03. */
+/* Paroi extérieure (0,08 capitale), puis le creux (0,036) : deux parois de 0,022. */
 .cap-finale__beat .cap-finale__wall {
   stroke: #fff;
-  stroke-width: 0.15em;
+  stroke-width: 0.08em;
 }
 
 .cap-finale__beat .cap-finale__hollow {
   stroke: #000;
-  stroke-width: 0.09em;
+  stroke-width: 0.036em;
 }
 
 /*
@@ -411,7 +418,7 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
  */
 .cap-finale__attente {
   position: absolute;
-  inset-block-end: calc(var(--cap) * 0.075 + 5px - 0.1725em);
+  inset-block-end: calc(var(--cap) * 0.04 + 5px - 0.1725em);
   inset-inline: calc(var(--x0) + var(--cap) * 1.09 + var(--gap)) var(--page-gutter);
   margin: 0;
   color: var(--cf-craie);
