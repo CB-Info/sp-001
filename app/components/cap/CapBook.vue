@@ -9,7 +9,9 @@ import {
   jourLong,
   prochainCours,
   sortSessions,
+  toMinutes,
   useParisClock,
+  type ParisNow,
 } from '~/utils/cap-time';
 import { complexAtR, path } from '~/utils/ecg';
 
@@ -44,14 +46,27 @@ const NBSP = ' ';
 
 const courseName = (slug: string) => cap.courses.find((course) => course.slug === slug)?.nom ?? '';
 
-/** Le cours affiché : de quoi écrire la ligne de choix et viser son .ics. */
-function shown(label: string, session: Session) {
+/**
+ * Créneau du jour déjà commencé : son prochain passage tombe dans sept jours.
+ * Écrit « mer. 18 h 00 » à 18 h 20, il se lirait « aujourd'hui, déjà passé ».
+ */
+const semaineProchaine = (session: Session, now?: ParisNow) =>
+  now !== undefined && session.day === now.day && toMinutes(session.start) <= now.minutes;
+
+/**
+ * Le cours affiché : de quoi écrire la ligne de choix et viser son .ics. `now`
+ * n'est passé que pour le cours choisi : le prochain cours et le premier de la
+ * semaine ne retombent jamais sur un créneau déjà commencé.
+ */
+function shown(label: string, session: Session, now?: ParisNow) {
   const heure = formatHeure(session.start);
   const name = courseName(session.course);
+  // « mer. prochain 18 h 00 », « mercredi prochain 18 h 00 » (le .ics, hebdomadaire, ne change pas).
+  const prochain = semaineProchaine(session, now) ? `${NBSP}${cap.ui.jourProchain}` : '';
   return {
     label,
     name,
-    when: `${jourCourt(session.day)}${NBSP}${heure}`,
+    when: `${jourCourt(session.day)}${prochain}${NBSP}${heure}`,
     /**
      * Suite masquée du nom du bouton : « Ajouter ce cours à mon agenda pour Cross
      * training, mercredi 19 h 00 ». Elle s'ouvre sur une espace et un mot
@@ -59,7 +74,7 @@ function shown(label: string, session: Session) {
      */
     suite: cap.book.boutonSuite
       .replace('{cours}', name)
-      .replace('{quand}', `${jourLong(session.day)}${NBSP}${heure}`),
+      .replace('{quand}', `${jourLong(session.day)}${prochain}${NBSP}${heure}`),
     href: `/v2/agenda/${session.id}.ics`,
   };
 }
@@ -73,7 +88,7 @@ const current = computed(() => {
     const chosen = choice.value
       ? cap.sessions.find((session) => session.id === choice.value)
       : undefined;
-    if (chosen) return shown(cap.book.choisi, chosen);
+    if (chosen) return shown(cap.book.choisi, chosen, clock.value);
     const next = prochainCours(cap.sessions, clock.value);
     if (next) return shown(cap.book.prochain, next.session);
   }

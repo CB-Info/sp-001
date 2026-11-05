@@ -234,7 +234,12 @@ onBeforeUnmount(() => clearTimeout(closeTimer));
   font-stretch: 75%;
   letter-spacing: -0.005em;
   line-height: 0.92;
-  white-space: nowrap;
+  /*
+   * Chaque nom tient sur une ligne à toutes les largeurs ; s'il s'élargit
+   * (espacement du texte, WCAG 1.4.12), « Cross training » revient à la ligne
+   * entre ses deux mots au lieu de déborder.
+   */
+  white-space: normal;
 }
 
 /* Survol : le contour du carré passe au citron (le remplissage reste l'état ouvert). */

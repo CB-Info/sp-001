@@ -24,10 +24,6 @@ import { complexAtR, complexFrom, path, SPAN_RATIO, taperedStart, type Point } f
  * l'écran, avec sa pointe effilée, et se raccorde au pied du C sur la ligne de
  * base du délié, comme dans le logo. La photo remonte sous l'en-tête transparent.
  *
- * Plan B LCP (§7.1), actif sous 48em : le premier écran ne porte que le texte, sur
- * noir, et la photo passe dessous en 4:5, hors de l'écran. Le H1, peint dès la
- * première image, devient l'élément LCP (voir la règle « Plan B LCP » plus bas).
- *
  * Ordre du DOM = ordre visuel = ordre du focus : H1, chapeau, bouton, lien,
  * prochain cours.
  *
@@ -359,8 +355,7 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
  * y 330 à 428 ; « son rythme. » de 433 à 544 ; signature, ligne de base à 592 ;
  * chapeau de 632 à 716 ; action de 740 à 792 ; prochain cours de 816 à 844, soit
  * 56 px au-dessus du bord bas. @390 × 844 : « Chacun » de 470 à 515, action de
- * 695 à 747, prochain cours de 767 à 812, sur noir ; photo 4:5 de 844 à 1332
- * (Plan B LCP).
+ * 695 à 747, prochain cours de 767 à 812.
  */
 .cap-cover {
   /* Partition de l'intro, comptée depuis html.hero-ready ; fin à 1 240 ms (< --seq-max). */
@@ -813,57 +808,23 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
 }
 
 /*
- * ── Mobile : Plan B LCP (brief §7.1) ─────────────────────────────────────────
- * Le simulateur de Lighthouse compte, pour une image LCP, tout ce qui a fini de
- * charger avant elle, JS compris : la photo plein cadre manquait P3 (LCP mobile
- * simulé de 2,8 à 3,1 s). Un texte peint dès la première image n'est compté que
- * jusqu'au FCP (≈ 1,2 s). Le premier écran ne porte donc que le bloc de texte,
- * sur noir, ancré en bas aux mêmes cotes que sur la photo ; la photo vient
- * dessous, en 4:5, et commence au bas de l'écran. Aucun de ses pixels ne doit
- * être visible au chargement : elle redeviendrait l'élément LCP (mesuré : la
- * moindre bande de photo dépasse la surface d'une ligne du H1).
+ * Mobile : la photo (recadrage 1:2, la coach de profil) remplit l'écran sous
+ * l'en-tête ; le bloc de texte est ancré en bas, sur un voile renforcé (zone
+ * 0,54–1 du recadrage).
  */
 @media (max-width: 47.99em) {
-  .cap-cover {
-    justify-content: flex-start;
-    min-block-size: 0;
-  }
-
-  /* Un écran, depuis le bas du bandeau : le texte reste ancré en bas, à 32 px du bord. */
-  .cap-cover__body {
-    align-content: end;
-    min-block-size: calc(100svh - var(--banner-height));
-  }
-
-  /*
-   * La photo suit le texte. Elle est décorative (alt vide) et jamais focalisable :
-   * `order` ne change ni la lecture ni l'ordre du focus. En paysage, un écran au
-   * plus. Sans min-block-size: 0, l'image (1:2) imposerait sa hauteur au 4:5.
-   */
-  .cap-cover__photo {
-    position: relative;
-    inset: auto;
-    z-index: 0;
-    order: 1;
-    aspect-ratio: 4 / 5;
-    min-block-size: 0;
-    max-block-size: 100svh;
-  }
-
-  /* Le recadrage 1:2, vu en 4:5 : de la tête aux hanches. */
-  .cap-cover .cap-cover__photo :deep(.cap-photo__img) {
-    object-position: 50% 0;
-  }
-
-  /* Plus aucun texte sur la photo : ses voiles de contraste n'ont plus d'objet. */
-  .cap-cover__veil--top,
-  .cap-cover__veil--bottom {
-    display: none;
-  }
-
   /* À chasse 100 %, la courbe basse du C rejoint la ligne de base plus tôt. */
   .cap-cover__trace {
     --join: 0.165em;
+  }
+
+  .cap-cover__veil--bottom {
+    background: linear-gradient(
+      to top,
+      rgb(12 12 11 / 0.88) 0,
+      rgb(12 12 11 / 0.88) 30%,
+      rgb(12 12 11 / 0) 58%
+    );
   }
 }
 
@@ -1014,8 +975,8 @@ html.hero-intro .cap-cover__next {
  * arrivent ensemble, dans l'ordre de lecture (un balayage depuis le bas montrait
  * la dernière ligne d'abord). Départ à 0,01 et non 0, invisible sur le noir : un
  * texte d'opacité nulle n'est pas peint, donc pas candidat LCP au premier rendu.
- * Il le deviendrait en apparaissant, vers 1,3 s, et sous 400 px (Plan B) il est
- * plus grand que les lignes du H1 (mesuré : LCP observé de 0,2 à 1,3 s).
+ * Il le deviendrait en apparaissant, vers 1,3 s : sous 400 px, il est plus grand
+ * que chaque ligne du H1.
  */
 @keyframes cap-cover-rise-step {
   from {

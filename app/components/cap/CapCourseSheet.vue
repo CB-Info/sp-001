@@ -106,18 +106,19 @@ const agendaName = (session: Session) =>
  *
  * Quand le prochain créneau retombe sur le jour même, mais la semaine suivante
  * (le dernier du jour a déjà commencé), « mercredi 18 h 00 » se lirait
- * « aujourd'hui, déjà passé » : la ligne reste neutre, comme au rendu serveur.
+ * « aujourd'hui, déjà passé » : la ligne écrit « mercredi prochain 18 h 00 »,
+ * comme la ligne de choix de #reserver (CapBook).
  */
 const next = computed(() => {
   const now = props.now;
   const found = now && prochainCours(props.sessions, now);
-  const nextWeek =
-    found && now && found.session.day === now.day && toMinutes(found.session.start) <= now.minutes;
-  if (found && !nextWeek) {
+  if (found && now) {
     const { session } = found;
+    const nextWeek = session.day === now.day && toMinutes(session.start) <= now.minutes;
+    const prochain = nextWeek ? `${NBSP}${cap.ui.jourProchain}` : '';
     return {
       label: cs.prochain,
-      value: `${jourLong(session.day)}${NBSP}${formatHeure(session.start)}`,
+      value: `${jourLong(session.day)}${prochain}${NBSP}${formatHeure(session.start)}`,
     };
   }
   return {

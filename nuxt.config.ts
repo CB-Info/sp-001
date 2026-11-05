@@ -69,6 +69,16 @@ export default defineNuxtConfig({
         if (/\/node_modules\/(gsap|lenis|ogl)\//.test(resource.src ?? '')) {
           resource.prefetch = false;
         }
+        /*
+         * V2 : les chapitres sous la ligne de flottaison (composants cap/) et les
+         * logos chargés à la demande (assets/brand/cap-*.svg) arrivent à
+         * l'approche, un écran avant (pages/v2.vue). Leur préchargement
+         * spéculatif, avant la photo de la couverture, retardait le LCP mobile.
+         * La V1 n'utilise aucun de ces fichiers. `src` est relatif à app/.
+         */
+        if (/^(components\/cap\/|assets\/brand\/cap-)/.test(resource.src ?? '')) {
+          resource.prefetch = false;
+        }
       }
     },
     // Les pages de laboratoire (prévisualisation d'une section isolée) n'existent qu'en dev.

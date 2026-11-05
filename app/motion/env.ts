@@ -12,3 +12,29 @@ export const motionAllowed = (): boolean =>
   document.documentElement.classList.contains('has-motion');
 
 export const hasFinePointer = (): boolean => matchMedia(FINE_POINTER).matches;
+
+let intro: Promise<void> | undefined;
+
+/**
+ * Fin de l'intro de la couverture de la V2 (keyframes CSS, CapCover.vue). Tant
+ * qu'elle joue, GSAP et Lenis attendent : leur chargement et leur mise en place
+ * gelaient sinon l'écriture du tracé (clip-path animé sur le fil principal).
+ *
+ * Résout tout de suite hors de la V2, ou sans intro (mouvement réduit, arrivée
+ * par ancre, bfcache) : la V1 ne change pas. Filet : 2,6 s après le début de la
+ * navigation (hero-ready au plus à 1,2 s, puis 1,3 s d'intro au plus).
+ */
+export function introDone(): Promise<void> {
+  intro ??= new Promise<void>((resolve) => {
+    const html = document.documentElement;
+    if (html.dataset.site !== 'v2' || !html.classList.contains('hero-intro')) return resolve();
+    // En pause avant hero-ready, finies sans rien retenir (remplissage backwards).
+    const running = document
+      .getAnimations()
+      .filter((a) => 'animationName' in a && String(a.animationName).startsWith('cap-cover-'));
+    if (running.length === 0) return resolve();
+    setTimeout(resolve, Math.max(0, 2600 - performance.now()));
+    Promise.all(running.map((a) => a.finished.catch(() => undefined))).then(() => resolve());
+  });
+  return intro;
+}

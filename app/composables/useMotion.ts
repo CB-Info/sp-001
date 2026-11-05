@@ -1,5 +1,5 @@
 import type { Ref } from 'vue';
-import { motionAllowed } from '~/motion/env';
+import { introDone, motionAllowed } from '~/motion/env';
 import { loadGsap, type Motion } from '~/motion/gsap';
 
 /**
@@ -60,6 +60,8 @@ export function useMotion(scope: Readonly<Ref<HTMLElement | null>>, setup: Setup
       async ([entry]) => {
         if (!entry?.isIntersecting) return;
         observer?.disconnect();
+        // V2 : rien ne se charge pendant l'intro de la couverture (immédiat ailleurs).
+        await introDone();
         const motion = await loadGsap();
         await nextTask();
         if (!scope.value) return;

@@ -416,6 +416,11 @@ export const cap = typesetDeep({
     upcoming: 'à venir',
     agenda: 'agenda',
     /**
+     * « mer. prochain 18 h 00 » : le créneau du jour déjà commencé ne revient que
+     * dans sept jours ; sans ce mot, on lirait « aujourd'hui, déjà passé ».
+     */
+    jourProchain: 'prochain',
+    /**
      * La direction 1 (/) est une autre maquette, pour une salle fictive : le
      * libellé le dit, pour que le club n'y lise pas une première proposition.
      */

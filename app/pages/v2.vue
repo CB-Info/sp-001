@@ -42,6 +42,12 @@ useSeoMeta({
  * premier chargement.
  */
 const EARLY = { rootMargin: '0px 0px 100% 0px' };
+/**
+ * Les cours s'hydratent un écran et demi avant : sur ordinateur, dès le
+ * chargement, comme sur mobile. Sinon leur hydratation tombait sur la première
+ * molette et Lenis figeait le défilement (61 à 129 ms, processeur ×4).
+ */
+const EARLY_COURS = { rootMargin: '0px 0px 150% 0px' };
 
 const cover = cap.photos.couverture;
 
@@ -92,7 +98,7 @@ useHead({
     <main id="contenu" tabindex="-1">
       <CapCover />
       <LazyCapEdito :hydrate-on-visible="EARLY" />
-      <LazyCapCourses :hydrate-on-visible="EARLY" />
+      <LazyCapCourses :hydrate-on-visible="EARLY_COURS" />
       <LazyCapWeek :hydrate-on-visible="EARLY" />
       <LazyCapFamily :hydrate-on-visible="EARLY" />
       <LazyCapPractical hydrate-never />
