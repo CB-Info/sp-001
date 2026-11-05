@@ -83,6 +83,11 @@ class Plate:
     zones: tuple[Zone, ...] = ()
     crops: tuple[Crop, ...] = field(default_factory=tuple)
     burns: tuple[Burn, ...] = ()
+    raw: str | None = None  # nom du PNG brut, s'il diffère du master (art/v2/extend.py)
+
+    @property
+    def raw_name(self) -> str:
+        return f"{self.raw or self.master}.png"
 
     @property
     def target(self) -> Path:
@@ -92,15 +97,21 @@ class Plate:
 SCENE_TEXT = Zone("colonne de texte", 0, 0, 0.57, 1, 0.10, 0.6)
 
 PLATES = [
+    # Brut agrandi par le haut (art/v2/extend.py) : 175 px de plafond, le crâne de
+    # la coach sort de l'en-tête. Le cadre est le brut entier, moins sa marge.
     Plate(
-        "cap-couverture", (2880, 1728), (0.80, 0.45),
+        "cap-couverture", (2880, 1728), (0.5, 0.5),
+        raw="cap-couverture.etendu",
         zones=(
             Zone("en-tête", 0, 0, 1, 0.09, 0.10, 0.3),
             Zone("titre", 0, 0.31, 0.81, 0.66, 0.12, 0.4),
             Zone("texte", 0.10, 0.68, 0.55, 0.98, 0.10, 0.4),
         ),
-        # Haut des fenêtres sous l'en-tête transparent : brûlé, le plafond garde la nuit.
-        burns=(Burn(0.5, 0.0, 1.0, 0.11, 2.6, 0.05),),
+        # Haut des fenêtres et plafond sous l'en-tête transparent : brûlés, la nuit
+        # garde le haut ; le fondu s'arrête au-dessus du crâne (y ≈ 0,126). Puis le
+        # bas des carreaux, entre le bras et le profil : le haut de « CUN » y passe
+        # à 1280 × 800 (contour citron sous 3:1 sur 1,4 % de ses pixels sans lui).
+        burns=(Burn(0.5, 0.0, 1.0, 0.095, 2.6, 0.03), Burn(0.715, 0.27, 0.80, 0.36, 1.3, 0.02)),
         crops=(
             Crop("cap-couverture-mobile", 1 / 2, 0.86, zones=(
                 Zone("en-tête", 0, 0, 1, 0.08, 0.10),
@@ -180,7 +191,7 @@ def xmp_packet_cap(model: str) -> bytes:
 
 
 def produce(plate: Plate, raw: Path) -> dict:
-    src = np.asarray(Image.open(raw / f"{plate.master}.png").convert("RGB"), dtype=np.float64) / 255
+    src = np.asarray(Image.open(raw / plate.raw_name).convert("RGB"), dtype=np.float64) / 255
     h, w = src.shape[:2]
     inset = v1.rounded_corner_inset(src)
     left, top, right, bottom = v1.crop_box(w, h, inset, plate.size[0] / plate.size[1], plate.focal)
@@ -263,7 +274,7 @@ if __name__ == "__main__":
     for plate in PLATES:
         if only and plate.master not in only:
             continue
-        if not (raw / f"{plate.master}.png").exists():
+        if not (raw / plate.raw_name).exists():
             print(f"  ! brut absent : {plate.master}")
             continue
         report = produce(plate, raw)

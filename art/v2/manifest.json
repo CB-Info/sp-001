@@ -79,7 +79,30 @@
       "prompt": "art/v2/prompts/cap-couverture.prompt.txt",
       "target": "art/masters/v2/cap-couverture.jpg",
       "family": "nuit",
-      "status": "retenue"
+      "status": "retenue",
+      "outpaint": [
+        {
+          "job_id": "e5c2ce90-f038-4c85-baf5-a1923247bee8",
+          "model": "outpaint",
+          "source": "art/masters/v2/cap-couverture.jpg (avant agrandissement)",
+          "aspect_ratio": "4:3",
+          "status": "intermédiaire"
+        },
+        {
+          "job_id": "40da30f3-80bb-44c7-a54b-8f9c54105ef0",
+          "model": "outpaint",
+          "source": "passe 4:3",
+          "aspect_ratio": "16:9",
+          "status": "retenue (bande du plafond, art/v2/extend.py)"
+        },
+        {
+          "job_id": "1c0b1fa6-2845-4bbc-ab3a-f421a014f012",
+          "model": "outpaint",
+          "source": "art/masters/v2/cap-couverture.jpg (avant agrandissement)",
+          "aspect_ratio": "4:3 en 2880 × 2160",
+          "status": "refusée par le filtre du service (faux positif)"
+        }
+      ]
     },
     {
       "id": "cap-pound",

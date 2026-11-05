@@ -3,20 +3,20 @@
     "gris_vrai": true,
     "p5": 0.0118,
     "mediane": 0.0235,
-    "p99": 0.7843,
+    "p99": 0.8,
     "zones": {
       "en-tête": {
-        "p95_Y": 0.0887,
+        "p95_Y": 0.0666,
         "max_y": 0.1,
         "ok": true
       },
       "titre": {
-        "p95_Y": 0.1022,
+        "p95_Y": 0.0685,
         "max_y": 0.12,
         "ok": true
       },
       "texte": {
-        "p95_Y": 0.0137,
+        "p95_Y": 0.0103,
         "max_y": 0.1,
         "ok": true
       }
@@ -25,17 +25,17 @@
   },
   "cap-couverture-mobile": {
     "gris_vrai": true,
-    "p5": 0.0118,
+    "p5": 0.0078,
     "mediane": 0.0196,
-    "p99": 0.8627,
+    "p99": 0.8549,
     "zones": {
       "en-tête": {
-        "p95_Y": 0.0953,
+        "p95_Y": 0.0762,
         "max_y": 0.1,
         "ok": true
       },
       "titre et texte": {
-        "p95_Y": 0.0319,
+        "p95_Y": 0.0356,
         "max_y": 0.12,
         "ok": true
       }
