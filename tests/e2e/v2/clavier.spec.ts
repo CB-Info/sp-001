@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { attendreSemaine, deplacerHeure, ouvrirV2 } from './outils';
+import { attendreCours, attendreSemaine, deplacerHeure, ouvrirV2 } from './outils';
 
 test('le lien d’évitement mène au contenu', async ({ page }) => {
   await ouvrirV2(page);
@@ -64,38 +64,58 @@ test.describe('fiches des cours', () => {
   test.beforeEach(async ({ page }) => {
     await ouvrirV2(page);
     await page.locator('#cours').scrollIntoViewIfNeeded();
-    // Hydratée, une fiche fermée porte hidden="until-found" : les en-têtes répondent.
-    await expect(page.locator('#cours-pound-fiche')).toHaveAttribute('hidden', 'until-found');
+    await attendreCours(page, 'cardio-jump');
+  });
+
+  test('le premier cours de chaque groupe est ouvert, les autres fermés', async ({ page }) => {
+    for (const slug of ['pound', 'cross-training', 'pilates']) {
+      await expect(page.locator(`#cours-${slug}-bouton`)).toHaveAttribute('aria-expanded', 'true');
+    }
+    for (const slug of ['cardio-jump', 'step', 'caf', 'yoga', 'stretching']) {
+      await expect(page.locator(`#cours-${slug}-bouton`)).toHaveAttribute('aria-expanded', 'false');
+    }
+    // L'action est écrite : « Voir le cours + » sous un cours fermé, « Fermer − » sous un ouvert.
+    await expect(page.locator('#cours-cardio-jump .cap-course__toggle')).toHaveText(
+      /Voir le cours\s*\+/,
+    );
+    await expect(page.locator('#cours-pound .cap-course__toggle')).toHaveText(/Fermer\s*−/);
+  });
+
+  test('toucher la rangée (nom, horaires, intensité) ouvre la fiche', async ({ page }) => {
+    await page.locator('#cours-step .cap-course__intensity').click();
+    await expect(page.locator('#cours-step-bouton')).toHaveAttribute('aria-expanded', 'true');
+    await page.locator('#cours-step .cap-course__toggle').click();
+    await expect(page.locator('#cours-step-bouton')).toHaveAttribute('aria-expanded', 'false');
   });
 
   test('Entrée et Espace ouvrent la fiche, liée à son en-tête', async ({ page }) => {
-    const pound = page.getByRole('button', { name: /^Pound\s:\sla fiche$/ });
-    await expect(pound).toHaveAttribute('aria-expanded', 'false');
-    await expect(pound).toHaveAttribute('aria-controls', 'cours-pound-fiche');
+    const jump = page.getByRole('button', { name: /^Cardio Jump\s:\sla fiche$/ });
+    await expect(jump).toHaveAttribute('aria-expanded', 'false');
+    await expect(jump).toHaveAttribute('aria-controls', 'cours-cardio-jump-fiche');
     // L'en-tête est un bouton dans un titre (motif APG « accordion »).
-    await expect(page.locator('h4 > #cours-pound-bouton')).toHaveCount(1);
+    await expect(page.locator('h4 > #cours-cardio-jump-bouton')).toHaveCount(1);
 
-    await pound.focus();
+    await jump.focus();
     await page.keyboard.press('Enter');
-    await expect(pound).toHaveAttribute('aria-expanded', 'true');
-    const fiche = page.getByRole('region', { name: /^Pound\s:\sla fiche$/ });
+    await expect(jump).toHaveAttribute('aria-expanded', 'true');
+    const fiche = page.getByRole('region', { name: /^Cardio Jump\s:\sla fiche$/ });
     await expect(fiche).toBeVisible();
-    await expect(fiche).toHaveAttribute('id', 'cours-pound-fiche');
-    await expect(fiche).toHaveAttribute('aria-labelledby', 'cours-pound-bouton');
+    await expect(fiche).toHaveAttribute('id', 'cours-cardio-jump-fiche');
+    await expect(fiche).toHaveAttribute('aria-labelledby', 'cours-cardio-jump-bouton');
 
     // Accordéon non exclusif : Espace ouvre la suivante, la première reste ouverte.
-    const jump = page.getByRole('button', { name: /^Cardio Jump\s:\sla fiche$/ });
-    await jump.focus();
+    const step = page.getByRole('button', { name: /^Step\s:\sla fiche$/ });
+    await step.focus();
     await page.keyboard.press(' ');
+    await expect(step).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.locator('#cours-step-fiche')).toBeVisible();
     await expect(jump).toHaveAttribute('aria-expanded', 'true');
-    await expect(page.locator('#cours-cardio-jump-fiche')).toBeVisible();
-    await expect(pound).toHaveAttribute('aria-expanded', 'true');
 
     // Entrée referme.
-    await pound.focus();
+    await jump.focus();
     await page.keyboard.press('Enter');
-    await expect(pound).toHaveAttribute('aria-expanded', 'false');
-    await expect(page.locator('#cours-pound-fiche')).toBeHidden();
+    await expect(jump).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('#cours-cardio-jump-fiche')).toBeHidden();
   });
 
   test('↑ ↓ Début Fin passent d’un en-tête à l’autre', async ({ page }) => {

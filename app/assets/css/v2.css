@@ -412,19 +412,22 @@
   }
 
   /*
-   * Donnée que le club doit encore fournir (CapPending) : texte visible souligné
-   * en pointillé, la couleur n'est jamais le seul signal (WCAG 1.4.1). Ici et non
-   * dans le composant : partagé entre la page et les chapitres chargés à
-   * l'approche, il sortait en feuille à part, bloquante, en plus de sa copie en
-   * ligne. En couche : une surcharge d'un chapitre (hors couche) l'emporte.
+   * Donnée que le club doit encore fournir (CapPending) : discrète, en gris, et
+   * jamais soulignée (un soulignement signale un lien sur cette page). Le texte
+   * reste écrit (WCAG 1.4.1) ; une valeur seule s'écrit « — ». Ici et non dans
+   * le composant : partagé entre la page et les chapitres chargés à l'approche,
+   * il sortait en feuille à part, bloquante, en plus de sa copie en ligne. En
+   * couche : une surcharge d'un chapitre (hors couche) l'emporte.
    */
   [data-site='v2'] .cap-pending {
-    color: var(--ink);
+    color: var(--ink-muted);
     font-family: var(--font-body);
-    font-weight: 500;
-    text-decoration: underline dashed var(--cf-pointille);
-    text-decoration-thickness: 1px;
-    text-underline-offset: 4px;
+    font-weight: 400;
+    text-decoration: none;
+  }
+
+  [data-site='v2'] .cap-pending--dash {
+    color: var(--ink-muted);
   }
 
   /* ── Liens : soulignés citron ───────────────────────────────────────────── */

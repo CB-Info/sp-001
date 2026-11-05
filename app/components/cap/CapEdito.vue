@@ -63,18 +63,6 @@ const bodyStyle = {
   '--em-lignes-m': lignes.mobile.toFixed(4),
 };
 
-/*
- * La source se termine par « à confirmer » : ce bout passe par CapPending
- * (pointillé), le code d'état de toute la page pour ce qui attend le club.
- */
-const source = (() => {
-  const text = cap.edito.source;
-  const pending = cap.ui.pending;
-  return text.endsWith(pending)
-    ? { lead: text.slice(0, -pending.length), pending }
-    : { lead: text, pending: '' };
-})();
-
 /* ── La frappe des trois lignes ──────────────────────────────────────────────
  * Chaque ligne porte deux couches : le texte réel et, par-dessus, une copie
  * pleine en aria-hidden, masquée par défaut. Armée, la ligne montre le texte réel
@@ -184,19 +172,7 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
         </span>
       </h2>
 
-      <div class="cap-edito__faits">
-        <p class="cap-edito__faits-ligne cap-data">{{ cap.edito.faits }}</p>
-        <p class="cap-edito__source">
-          {{ source.lead }}<CapPending v-if="source.pending" :text="source.pending" />
-        </p>
-      </div>
-
-      <p class="cap-edito__texte">
-        <template v-for="(segment, index) in cap.edito.texte" :key="index">
-          <strong v-if="segment.strong">{{ segment.t }}</strong>
-          <template v-else>{{ segment.t }}</template>
-        </template>
-      </p>
+      <p class="cap-edito__texte">{{ cap.edito.texte }}</p>
     </div>
   </section>
 </template>
@@ -206,7 +182,7 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
  * Cotes @1440 (brief §4.3) : « Bouge ! » sur 1320 px (x 60 à 1380), 208 px ;
  * trois lignes ferrées à droite sur x 1380, à 114 px, « Atteins tes objectifs. »
  * sur 1188 px (dès x 192) ; 148 px de la ligne de base de « Bouge ! » à celle de
- * la ligne 2, puis 0,92 em ; faits et paragraphe 64 px sous la dernière ligne de
+ * la ligne 2, puis 0,92 em ; le paragraphe (une colonne, ferré à droite) 64 px sous la dernière ligne de
  * base. @390 : « Bouge ! » sur 350 px (83 px), lignes à 36 px.
  */
 .cap-edito {
@@ -315,46 +291,15 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
 }
 
 /* ── Faits et paragraphe : 64 px sous la dernière ligne de base ─────────────── */
-.cap-edito__faits,
 .cap-edito__texte {
-  margin-block-start: calc(var(--pad-s) - var(--fs-lignes) * 0.1825);
-}
-
-.cap-edito__faits-ligne {
-  margin: 0;
-  color: var(--cf-craie);
-  font-size: var(--text-data); /* 20 → 32 */
-  line-height: 1.05;
-  text-wrap: balance;
-}
-
-.cap-edito__source {
-  margin: 0.75rem 0 0;
-  color: var(--cf-gris);
-  font-family: var(--font-body);
-  font-size: var(--text-small); /* 14 → 15 */
-  font-style: italic;
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-.cap-edito__texte {
-  margin-block-end: 0;
+  max-inline-size: 36ch;
+  margin-block: calc(var(--pad-s) - var(--fs-lignes) * 0.1825) 0;
   color: var(--cf-craie);
   font-family: var(--font-body);
   font-size: var(--text-lead); /* 18 → 22 */
   font-weight: 400;
   line-height: clamp(1.6875rem, 1.571rem + 0.476vw, 2rem); /* 27 → 32 */
   text-wrap: pretty;
-}
-
-.cap-edito__texte strong {
-  font-weight: 600;
-}
-
-/* Mobile : le paragraphe suit les faits. */
-.cap-edito__faits + .cap-edito__texte {
-  margin-block-start: 2rem;
 }
 
 /* ── Tablette et ordinateur ───────────────────────────────────────────────── */
@@ -364,26 +309,10 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
     --fs-lignes: max(1.5rem, 0.9 * var(--measure) / var(--em-lignes-d));
   }
 
-  .cap-edito__body > .cap-edito__faits {
-    grid-column: 1 / 7;
-  }
-
-  /* Tablette : le paragraphe, décalé de deux colonnes, reprend la pente du titre. */
+  /* Le paragraphe, une seule colonne sous les lignes ferrées à droite. */
   .cap-edito__body > .cap-edito__texte {
-    grid-column: 3 / -1;
-  }
-}
-
-/* Ordinateur : faits en colonnes 1 à 5, paragraphe en 7 à 11, sur la même ligne de base. */
-@media (min-width: 64em) {
-  .cap-edito__body > .cap-edito__faits {
-    grid-column: 1 / 6;
-  }
-
-  .cap-edito__body > .cap-edito__texte {
-    grid-row: 2;
-    grid-column: 7 / 12;
-    margin-block-start: calc(var(--pad-s) - var(--fs-lignes) * 0.1825);
+    grid-column: 6 / -1;
+    justify-self: end;
   }
 }
 

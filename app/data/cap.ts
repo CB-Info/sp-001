@@ -169,6 +169,13 @@ const sessions: Session[] = [
 const field = (label: string, valeur: string, statut?: Course['champs'][number]['statut']) =>
   statut ? { label, valeur, statut } : { label, valeur };
 
+/*
+ * Contenu d'un cours (fiche) : l'accroche, une seule description (ce que c'est),
+ * puis quatre repères au plus, dans l'ordre des questions d'un premier visiteur :
+ * pour qui, ce qu'on y gagne, le matériel, les précautions. Les inconnues (durée,
+ * nombre de places, style de yoga) ne sont pas écrites dans la fiche : elles
+ * sont listées au pied de page (« Ce qui reste à confirmer par le club »).
+ */
 const courses: Course[] = [
   {
     slug: 'pound',
@@ -177,22 +184,14 @@ const courses: Course[] = [
     intensite: { valeur: 4, mot: 'soutenue', statut: 'repere' },
     accroche: 'Tape le rythme, baguettes en main.',
     texte:
-      'Tu tiens le rythme baguettes en main, sur des morceaux qui envoient. Cardio, gainage et coordination : le défouloir de la pause de midi.',
+      'Du cardio et du renforcement en musique : tu frappes le sol et l’air en rythme, comme un batteur, pendant que squats, fentes et gainage s’enchaînent.',
     champs: [
-      field(
-        'Ce que c’est',
-        'Un cours de cardio et de renforcement en musique : tu frappes le sol et l’air en rythme, comme un batteur. Squats, fentes et gainage s’enchaînent. Durée à confirmer.',
-        'a-confirmer',
-      ),
-      field('Matériel', 'Baguettes et tapis.'),
       field(
         'Pour qui',
         'Tous niveaux, surtout si le cardio classique t’ennuie. Les sauts sont facultatifs.',
       ),
-      field(
-        'Ce que tu y gagnes',
-        'Cardio, coordination, épaules, bras, gainage. Et un vrai défouloir.',
-      ),
+      field('Tu y gagnes', 'Cardio, coordination, épaules, bras, gainage. Et un vrai défouloir.'),
+      field('Matériel', 'Baguettes et tapis, fournis.'),
     ],
   },
   {
@@ -202,20 +201,11 @@ const courses: Course[] = [
     intensite: { valeur: 5, mot: 'intense', statut: 'repere' },
     accroche: 'Rebondis jusqu’au dernier refrain.',
     texte:
-      'Tu rebondis en musique sur ton propre trampoline. Ça monte vite dans le cœur, ça rit beaucoup, et les jambes s’en souviennent.',
+      'Des chorégraphies de rebonds en musique, chacun sur son mini-trampoline. Ça monte vite dans le cœur, et ça rit beaucoup.',
     champs: [
-      field(
-        'Ce que c’est',
-        'Des chorégraphies de rebonds en musique, sur un mini-trampoline individuel. Durée à confirmer.',
-        'a-confirmer',
-      ),
-      field(
-        'Matériel',
-        'Un trampoline par personne (nombre de places à confirmer).',
-        'a-confirmer',
-      ),
       field('Pour qui', 'Dès le niveau débutant motivé : le trampoline amortit les chocs.'),
-      field('Ce que tu y gagnes', 'Cardio, endurance, jambes et fessiers, gainage profond.'),
+      field('Tu y gagnes', 'Cardio, endurance, jambes et fessiers, gainage profond.'),
+      field('Matériel', 'Un trampoline par personne.'),
       field(
         'Précautions',
         'Grossesse, fuites urinaires, vertiges ou entorse récente : parles-en au coach avant le cours, et à ton médecin si besoin.',
@@ -229,19 +219,11 @@ const courses: Course[] = [
     intensite: { valeur: 3, mot: 'modérée', statut: 'repere' },
     accroche: 'Monte, descends, recommence.',
     texte:
-      'Une chorégraphie qui se construit pas à pas, jusqu’au moment où tout s’enchaîne en musique.',
+      'De l’aérobic sur une marche réglable : on apprend les pas par blocs, puis tout s’enchaîne en musique.',
     champs: [
-      field(
-        'Ce que c’est',
-        'De l’aérobic sur une plateforme de step réglable : on apprend les pas par blocs, puis on les enchaîne. Durée à confirmer.',
-        'a-confirmer',
-      ),
-      field('Matériel', 'Step réglable.'),
       field('Pour qui', 'Tous niveaux : l’intensité se règle avec la hauteur du step.'),
-      field(
-        'Ce que tu y gagnes',
-        'Cardio, coordination, mémoire, jambes et fessiers, avec peu d’impact.',
-      ),
+      field('Tu y gagnes', 'Cardio, coordination, mémoire, jambes et fessiers, avec peu d’impact.'),
+      field('Matériel', 'Step réglable.'),
     ],
   },
   {
@@ -251,16 +233,11 @@ const courses: Course[] = [
     intensite: { valeur: 5, mot: 'intense', statut: 'repere' },
     accroche: 'Court, intense, jamais pareil.',
     texte:
-      'Chaque séance a son défi, ta charge reste la tienne, et c’est le groupe qui t’emmène jusqu’au bout.',
+      'Un entraînement en circuit : échauffement, technique, puis le défi du jour, chronométré. Ta charge reste la tienne, le groupe t’emmène jusqu’au bout.',
     champs: [
-      field(
-        'Ce que c’est',
-        'Un entraînement fonctionnel en circuit : échauffement, technique, puis l’entraînement du jour, chronométré. Durée à confirmer.',
-        'a-confirmer',
-      ),
-      field('Matériel', 'Kettlebells ; le reste du matériel est à confirmer.', 'a-confirmer'),
       field('Pour qui', 'Tous niveaux : charges et mouvements sont adaptés à chacun.'),
-      field('Ce que tu y gagnes', 'Force, cardio, explosivité, polyvalence.'),
+      field('Tu y gagnes', 'Force, cardio, explosivité, polyvalence.'),
+      field('Matériel', 'Kettlebells et matériel du club.'),
     ],
   },
   {
@@ -271,19 +248,11 @@ const courses: Course[] = [
     intensite: { valeur: 3, mot: 'modérée', statut: 'repere' },
     accroche: 'Le trio qui tient tout.',
     texte:
-      'Squats, fentes, ponts, gainage : le trio cuisses, abdos, fessiers, travaillé en séries qui brûlent juste ce qu’il faut. Le socle de tout le reste.',
+      'Du renforcement ciblé du bas du corps et de la sangle abdominale : squats, fentes, ponts et gainage, en séries.',
     champs: [
-      field(
-        'Ce que c’est',
-        'Du renforcement ciblé du bas du corps et de la sangle abdominale, en séries. Durée à confirmer.',
-        'a-confirmer',
-      ),
-      field('Matériel', 'Poids du corps, élastiques, lests, tapis.'),
       field('Pour qui', 'Tous niveaux.'),
-      field(
-        'Ce que tu y gagnes',
-        'Jambes et fessiers toniques, gainage, stabilité du bassin, posture.',
-      ),
+      field('Tu y gagnes', 'Jambes et fessiers toniques, gainage, stabilité du bassin, posture.'),
+      field('Matériel', 'Poids du corps, élastiques, lests, tapis.'),
       field('Précautions', 'Après une grossesse, demande au coach d’adapter le travail des abdos.'),
     ],
   },
@@ -292,18 +261,14 @@ const courses: Course[] = [
     nom: 'Pilates',
     groupe: 'calme',
     intensite: { valeur: 2, mot: 'douce', statut: 'repere' },
-    accroche: 'Renforce, tonifie, redresse-toi.',
+    accroche: 'Lent, précis, et pourtant tout travaille.',
     texte:
-      'Des mouvements lents, précis, guidés par le souffle. Rien de spectaculaire, et pourtant tout travaille.',
+      'La méthode Pilates : renforcer les muscles profonds du centre du corps, en mouvements lents guidés par la respiration.',
     phrase: 'Renforce, tonifie et améliore ta posture.',
     champs: [
-      field(
-        'Ce que c’est',
-        'La méthode Pilates : renforcer les muscles profonds du centre du corps, en mouvements lents synchronisés avec la respiration.',
-      ),
-      field('Matériel', 'Tapis ; petit matériel possible.'),
       field('Pour qui', 'Tous niveaux, et un bon complément aux cours intenses.'),
-      field('Ce que tu y gagnes', 'Posture, dos, gainage profond, contrôle.'),
+      field('Tu y gagnes', 'Posture, dos, gainage profond, contrôle.'),
+      field('Matériel', 'Tapis, petit matériel possible.'),
     ],
   },
   {
@@ -311,18 +276,13 @@ const courses: Course[] = [
     nom: 'Yoga',
     groupe: 'calme',
     intensite: { valeur: 1, mot: 'calme', statut: 'repere' },
-    accroche: 'Respire et retrouve ton équilibre.',
-    texte: 'Respire, relâche les tensions et retrouve ton équilibre.',
+    accroche: 'Un moment rien que pour toi.',
+    texte: 'Des postures, de la respiration, et une relaxation pour finir.',
     phrase: 'Respire, relâche les tensions et retrouve ton équilibre.',
     champs: [
-      field(
-        'Ce que c’est',
-        'Postures, respiration et relaxation finale. Style de yoga à confirmer.',
-        'a-confirmer',
-      ),
-      field('Matériel', 'Tapis.'),
       field('Pour qui', 'Tous niveaux.'),
-      field('Ce que tu y gagnes', 'Souplesse, équilibre, apaisement.'),
+      field('Tu y gagnes', 'Souplesse, équilibre, apaisement.'),
+      field('Matériel', 'Tapis.'),
     ],
   },
   {
@@ -330,17 +290,16 @@ const courses: Course[] = [
     nom: 'Stretching',
     groupe: 'calme',
     intensite: { valeur: 1, mot: 'calme', statut: 'repere' },
-    accroche: 'Gagne en souplesse, récupère mieux.',
+    accroche: 'Le complément de tes cours intenses.',
     texte: 'Des étirements et de la mobilité, au calme, en respirant : pour bouger plus librement.',
     phrase: 'Gagne en souplesse, récupère mieux.',
     champs: [
-      field('Ce que c’est', 'Étirements et mobilité articulaire.'),
-      field('Matériel', 'Tapis.'),
       field('Pour qui', 'Tous niveaux.'),
       field(
-        'Ce que tu y gagnes',
-        'Souplesse, récupération. Le complément naturel du Cross training et du Cardio Jump.',
+        'Tu y gagnes',
+        'Souplesse et récupération, surtout après le Cross training ou le Cardio Jump.',
       ),
+      field('Matériel', 'Tapis.'),
     ],
   },
 ];
@@ -394,7 +353,7 @@ const nav: NavLink[] = [
 
 export const cap = typesetDeep({
   meta: {
-    title: 'CAP Fitness by EBC Sport : cours collectifs à [Commune] (maquette)',
+    title: 'CAP Fitness by EBC Sport : cours collectifs, planning et réservation (maquette)',
     description:
       'Maquette non officielle de site pour CAP Fitness by EBC Sport : cours collectifs, planning de la saison d’après le flyer du club, réservation dans l’appli ou à l’accueil.',
     /** Texte de remplacement de l'image de partage (public/v2/og.png). */
@@ -419,7 +378,8 @@ export const cap = typesetDeep({
     firstLabel: 'Premier cours de la semaine',
     pending: 'à confirmer',
     upcoming: 'à venir',
-    agenda: 'agenda',
+    /** Lien vers le fichier .ics d'un créneau (nom complet en aria-label). */
+    agenda: '＋ Agenda',
     /**
      * « mer. prochain 18 h 00 » : le créneau du jour déjà commencé ne revient que
      * dans sept jours ; sans ce mot, on lirait « aujourd'hui, déjà passé ».
@@ -455,19 +415,9 @@ export const cap = typesetDeep({
   edito: {
     bouge: 'Bouge !',
     lignes: ['Dépasse-toi.', 'Prends du plaisir.', 'Atteins tes objectifs.'],
-    faits: '8 créneaux sur 4 jours, dont 2 à la pause de midi.',
-    source: 'd’après le flyer de rentrée du club, à confirmer',
-    texte: [
-      {
-        t: 'Ici, on vient pour bouger, et on revient pour les gens. Que tu débutes ou que tu t’entraînes depuis des années, tu trouves ta place dès le premier cours. Des ',
-      },
-      { t: 'coachs diplômés', strong: true },
-      { t: ' t’accompagnent et te motivent, l’' },
-      { t: 'ambiance', strong: true },
-      { t: ' te porte, et ton corps comme ton mental nous tiennent à cœur : ' },
-      { t: 'sport santé et bien-être', strong: true },
-      { t: '.' },
-    ],
+    /** Une seule idée sous les slogans : pas de chiffres (ils sont dans « Ta semaine »). */
+    texte:
+      'Ici, on vient pour bouger, et on revient pour les gens. Que tu débutes ou non, tu trouves ta place dès le premier cours, avec des coachs diplômés pour t’accompagner.',
   },
 
   courseSection: {
@@ -479,23 +429,20 @@ export const cap = typesetDeep({
       force: 'force et intensité',
       calme: 'retour au calme',
     },
-    intensite: 'Intensité indicative',
+    intensite: 'Intensité',
     surCinq: 'sur 5',
-    repere: 'repère à valider avec les coachs',
     fiche: ' : la fiche',
+    /** Ligne d'action visible sous chaque cours : la fiche s'ouvre et se ferme. */
+    voir: 'Voir le cours',
+    fermer: 'Fermer',
     creneaux: 'Créneaux',
     prochain: 'Prochain créneau',
     creneau: 'Créneau',
     aConfirmer: 'Créneaux à confirmer',
     reserver: 'Réserver ce cours',
+    agenda: 'Ajouter à mon agenda',
     ajouter: 'Ajouter le {cours} du {jour}, {heure} à mon agenda',
-    enchainement: {
-      titre: 'l’enchaînement du mercredi',
-      lignes: [
-        { heure: '18:00', cours: 'CAF' },
-        { heure: '19:00', cours: 'Cross training' },
-      ],
-    },
+    enchainement: 'Le mercredi soir, enchaîne CAF puis Cross training.',
   },
 
   week: {
@@ -509,14 +456,14 @@ export const cap = typesetDeep({
       premier: 'Premier cours de la semaine',
     },
     focus: {
-      legende: 'Mettre en avant',
+      legende: 'Filtrer les cours',
       options: [
         { id: 'tout', label: 'Toute la semaine' },
         { id: 'cardio', label: 'Cardio en musique' },
         { id: 'force', label: 'Force et intensité' },
         { id: 'midi', label: 'Pause de midi' },
       ],
-      idees: 'Idées de semaine, pas un programme du club',
+      idees: 'Plus d’idées',
       ideesOptions: [
         { id: 'reprends', label: 'Tu reprends' },
         { id: 'defouler', label: 'Tu veux te défouler' },
@@ -532,21 +479,38 @@ export const cap = typesetDeep({
     aujourdhui: '(aujourd’hui)',
     prochainCours: 'prochain cours',
     commenceA: 'commencé à {heure}',
-    reserverSuffixe: ' — réserver, {jour}',
+    reserverSuffixe: ' — choisir, {jour}',
+    /** Ce que fait un créneau quand on le touche (visible au-dessus du planning). */
+    astuce: 'Touche un créneau pour le choisir, puis réserve-le.',
+    choisir: 'Choisir',
+    choisi: 'Choisi',
     jeudi: 'Pas de cours collectif au planning ce jour-là.',
     bienEtre: 'Pilates, Yoga, Stretching : créneaux à confirmer',
-    bienEtreJour: 'Bien-être',
+    bienEtreJour: 'Retour au calme',
     weekend: 'Samedi et dimanche : pas de cours collectif au planning.',
-    mentions:
-      'Planning de la saison, en place depuis la rentrée, d’après le flyer du club : à confirmer. Susceptible d’évoluer pendant les vacances.',
+    mentions: 'Planning de la saison, susceptible d’évoluer pendant les vacances.',
     jours: ['Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.'],
   },
 
   book: {
-    titre: 'Ta place t’attend.',
+    /**
+     * « Réserve ta place » mène ici : la section dit comment réserver, en trois
+     * étapes. La réservation elle-même se fait dans l'appli ou à l'accueil ;
+     * l'agenda n'est qu'un rappel.
+     */
+    titre: 'Comment réserver',
+    etapes: ['Choisis ton cours', 'Réserve ta place', 'Ajoute-le à ton agenda'],
     choisi: 'Tu as choisi :',
     prochain: 'Prochain cours :',
     premier: 'Premier cours de la semaine :',
+    changer: { label: 'Changer de cours', href: '#semaine' },
+    reserver: 'Dans l’appli CAP Fitness, ou à l’accueil : on s’en occupe avec toi.',
+    appli: { titre: 'Appli CAP Fitness', pending: 'liens App Store et Google Play à venir' },
+    accueil: {
+      titre: 'À l’accueil',
+      adresse: 'adresse à confirmer',
+      lien: { label: 'Voir les infos pratiques', href: '#infos' },
+    },
     bouton: 'Ajouter ce cours à mon agenda',
     /**
      * Suite du nom du bouton, en texte masqué. Elle commence par une espace et un
@@ -554,18 +518,24 @@ export const cap = typesetDeep({
      * d'un élément hors flux, ce qui donnerait « agenda , Pound ».
      */
     boutonSuite: ' pour {cours}, {quand}',
-    semaine: { label: 'ou les huit créneaux de la semaine', href: '/v2/agenda/semaine.ics' },
-    note: 'Fichier .ics : durée provisoire d’une heure, à confirmer.',
-    appli: {
-      titre: 'Dans l’appli CAP Fitness',
-      texte: 'Ouvre l’appli, choisis ton cours, viens comme tu es.',
-      stores: ['App Store · lien à venir', 'Google Play · lien à venir'],
-    },
-    accueil: {
-      titre: 'À l’accueil',
-      texte: 'Tu préfères en parler ? Passe à l’accueil, on s’en occupe avec toi.',
-      adresse: 'Adresse à confirmer',
-      lien: { label: 'Voir les infos pratiques', href: '#infos' },
+    semaine: { label: 'ou toute la semaine (8 créneaux)', href: '/v2/agenda/semaine.ics' },
+    /** Les trois questions d'un premier visiteur, sans attendre la FAQ du bas de page. */
+    premiereFois: {
+      titre: 'Première fois ?',
+      items: [
+        {
+          question: 'Je débute, c’est pour moi ?',
+          reponse: 'Oui : tous les cours sont ouverts à tous les niveaux, le coach adapte.',
+        },
+        {
+          question: 'Qu’est-ce que j’apporte ?',
+          reponse: 'Une tenue confortable, des baskets propres, une gourde et une serviette.',
+        },
+        {
+          question: 'Un cours d’essai ?',
+          reponse: 'Passe à l’accueil : on en parle avec toi.',
+        },
+      ],
     },
   },
 
@@ -574,34 +544,32 @@ export const cap = typesetDeep({
     plein: 'une famille.',
     chapeau:
       'On se dépasse ensemble, dans la bonne humeur. Ceux qui reprennent, ceux qui s’y mettent, ceux qui ne ratent pas un mercredi soir : tout le monde a sa place.',
-    avis: 'Avis Google à intégrer : lien vers la fiche à confirmer',
+    avis: 'Avis Google : à venir',
     coachs: {
       titre: 'Tes coachs.',
       texte: 'Diplômés, pour t’accompagner et te motiver.',
-      cadre: 'Portraits, prénoms et diplômes de l’équipe : à fournir par le club',
+      cadre: 'Portraits et diplômes de l’équipe : à venir',
     },
   },
 
   practical: {
-    plein: 'Viens nous voir',
-    delie: 'à [Commune].',
-    commune: 'commune à confirmer',
+    plein: 'Viens nous',
+    delie: 'voir.',
+    /** Une seule note pour le chapitre : ce que signifie le tiret. */
+    note: 'Les infos marquées « — » sont à confirmer par le club.',
     acces: {
       titre: 'Accès et contact',
       lignes: [
-        { label: 'Adresse', valeur: 'adresse à confirmer, [Commune]' },
+        { label: 'Adresse', valeur: 'adresse à confirmer' },
         { label: 'Parking et accès PMR', valeur: 'à confirmer' },
-        { label: 'Plan d’accès', valeur: 'à venir' },
         { label: 'Téléphone', valeur: 'à confirmer' },
         { label: 'E-mail', valeur: 'à confirmer' },
         { label: 'Instagram, Facebook', valeur: 'liens à confirmer' },
-        { label: 'Avis Google', valeur: 'fiche à confirmer' },
       ],
     },
     accueil: {
       titre: 'Accueil',
-      vide: `—${NBSP}h${NBSP}— à —${NBSP}h${NBSP}—`,
-      note: 'Horaires de la salle et de l’accueil : à confirmer. Accès en libre-service : à confirmer.',
+      vide: 'horaires à confirmer',
     },
     formules: {
       titre: 'Formules',
@@ -609,12 +577,11 @@ export const cap = typesetDeep({
       colonnes: ['Formule', 'Prix'],
       lignes: [
         { nom: 'Cours collectifs', detail: 'les cours du planning' },
-        { nom: 'Salle et cours', detail: 'si un plateau existe' },
+        { nom: 'Salle et cours', detail: '' },
         { nom: 'Séance à l’unité', detail: '' },
       ],
-      prix: `—${NBSP}€`,
       pending: 'tarif à confirmer',
-      note: 'Frais d’inscription, engagement et réductions : à confirmer. Demande les tarifs à l’accueil.',
+      note: 'Demande les tarifs à l’accueil.',
     },
     faqTitre: ['Avant ton', 'premier', 'cours.'],
   },
@@ -633,10 +600,10 @@ export const cap = typesetDeep({
       titre: 'Ce qui reste à confirmer par le club',
       intro: 'Ces informations attendent le club :',
       liste: [
-        'Commune, adresse, parking et accès PMR',
+        'Commune, adresse, parking et accès PMR, plan d’accès',
         'Téléphone, e-mail, Instagram, Facebook, fiche Google',
         'Horaires de la salle et de l’accueil, libre-service',
-        'Durée de chaque cours',
+        'Durée de chaque cours, nombre de places, matériel fourni',
         'Créneaux de Pilates, Yoga et Stretching ; style de yoga',
         'Planning pendant les vacances ; année de la saison',
         'Formules, tarifs, frais d’inscription, engagement, réductions',

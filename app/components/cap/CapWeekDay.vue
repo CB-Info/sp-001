@@ -358,14 +358,23 @@ const choose = (slot: WeekSlot) => {
                 :data-next="slot.id === nextId || undefined"
                 :style="{ '--y': `${at}px` }"
               >
-                <a class="cap-wd__book" href="#reserver" @click="choose(slot)">
+                <a
+                  class="cap-wd__book"
+                  href="#reserver"
+                  :data-chosen="slot.id === choice || undefined"
+                  @click="choose(slot)"
+                >
                   <span v-if="slot.id === nextId" class="cap-wd__next">{{ w.prochainCours }}</span>
                   <time class="cap-wd__time cap-data" :datetime="slot.start">{{ slot.heure }}</time>
                   <span class="cap-wd__sep" aria-hidden="true">{{ SEP }}</span>
-                  <span class="cap-wd__name">{{ slot.nom }}</span>
-                  <span class="cap-wd__cta"
-                    ><span class="cap-wd__sep" aria-hidden="true">{{ SEP }}</span
-                    >{{ cap.ui.reserveShort }}</span
+                  <span class="cap-wd__line"
+                    ><span class="cap-wd__name">{{ slot.nom }}</span
+                    ><span class="cap-wd__cta" aria-hidden="true"
+                      ><span class="cap-wd__cta-sep">{{ SEP }}</span
+                      ><span class="cap-wd__cta-text">{{
+                        slot.id === choice ? `✓ ${w.choisi}` : w.choisir
+                      }}</span></span
+                    ></span
                   >
                   <span class="cap-wd__suffix visually-hidden"
                     >{{ slot.suffixe
@@ -490,24 +499,25 @@ const choose = (slot: WeekSlot) => {
 .cap-wd__cta {
   color: var(--cf-craie);
   font-weight: 600;
+}
+
+.cap-wd__cta-text {
   text-decoration: underline;
   text-decoration-color: var(--cf-citron);
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
 }
 
-.cap-wd__cta .cap-wd__sep {
+.cap-wd__cta-sep {
   display: inline-block;
   color: var(--cf-gris);
+  text-decoration: none;
+  white-space: pre;
 }
 
 .cap-wd__sep {
   color: var(--cf-gris);
   white-space: pre;
-}
-
-.cap-wd__suffix {
-  display: none;
 }
 
 .cap-wd__hors {
@@ -849,25 +859,40 @@ html.js .cap-wd__time {
 html.js .cap-wd__name {
   font-size: 1rem;
   line-height: 16px;
-  text-decoration: underline;
-  text-decoration-color: var(--cf-citron);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
 }
 
-html.js .cap-wd__sep,
-html.js .cap-wd__cta {
+html.js .cap-wd__sep {
   display: none;
+}
+
+/*
+ * Avec JS, « · Choisir » suit le nom sur la même ligne : toucher le créneau le
+ * choisit pour « Comment réserver ». Le créneau choisi dit « ✓ Choisi ».
+ */
+html.js .cap-wd__line {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+html.js .cap-wd__cta {
+  font-size: 0.9375rem;
+  line-height: 16px;
+}
+
+html.js .cap-wd__book[data-chosen] .cap-wd__cta-text {
+  color: var(--cf-citron);
+  text-decoration: none;
 }
 
 html.js .cap-wd__suffix {
   display: inline;
 }
 
-/* « agenda » sur la ligne de base du nom, dans une boîte de 24 px. */
+/* « ＋ Agenda » sur la ligne de base du nom, dans une cible de 44 px. */
 html.js .cap-wd__agenda {
-  padding-block: 0;
+  padding-block: 14px;
   font-size: 0.875rem;
+  line-height: 16px;
 }
 
 html.js .cap-wd__none {

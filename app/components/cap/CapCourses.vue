@@ -3,7 +3,7 @@ import { cap } from '~/data/cap';
 import { ENTRY, reached } from '~/motion/sequence';
 import { duration } from '~/motion/tokens';
 import type { Groupe, Photo } from '~/types/cap';
-import { formatHeure, sortSessions, useParisClock } from '~/utils/cap-time';
+import { sortSessions, useParisClock } from '~/utils/cap-time';
 
 /**
  * Chapitre 3, les cours (#cours) : choisir son cours par l'intensité. Les huit
@@ -247,12 +247,13 @@ useMotion(section, ({ gsap }, root) => {
           {{ cs.groupes.cardio }}
         </h3>
         <CapCourseItem
-          v-for="{ course, sessions } in cardio"
+          v-for="({ course, sessions }, index) in cardio"
           :key="course.slug"
           class="cardio__item"
           :course="course"
           :sessions="sessions"
           :now="clock"
+          :initial-open="index === 0"
           :data-active="active === course.slug || undefined"
         >
           <template v-if="cardioPhotos[course.slug]" #media>
@@ -296,26 +297,16 @@ useMotion(section, ({ gsap }, root) => {
             {{ cs.groupes.force }}
           </h3>
           <CapCourseItem
-            v-for="{ course, sessions } in force"
+            v-for="({ course, sessions }, index) in force"
             :key="course.slug"
             class="force__item"
             :course="course"
             :sessions="sessions"
             :now="clock"
+            :initial-open="index === 0"
           />
 
-          <div class="chain">
-            <p :id="`${titleId}-enchainement`" class="chain__title cap-signature">
-              {{ cs.enchainement.titre }}
-            </p>
-            <ol class="chain__list" role="list" :aria-labelledby="`${titleId}-enchainement`">
-              <li v-for="step in cs.enchainement.lignes" :key="step.heure" class="chain__step">
-                <span class="chain__time cap-data">{{ formatHeure(step.heure) }}</span>
-                {{ ' ' }}
-                <span class="chain__course">{{ step.cours }}</span>
-              </li>
-            </ol>
-          </div>
+          <p class="chain cap-signature">{{ cs.enchainement }}</p>
         </div>
       </div>
     </div>
@@ -340,6 +331,7 @@ useMotion(section, ({ gsap }, root) => {
             :course="course"
             :sessions="sessions"
             :now="clock"
+            :initial-open="index === 0"
           >
             <!-- La ligne plate porte le dernier mot : la respiration de la page. -->
             <template v-if="index === calme.length - 1" #baseline>
@@ -591,6 +583,16 @@ html.js .cardio__figure:not([data-near]) :deep(.cap-photo__img) {
   html.has-motion .cardio__figure {
     display: none;
   }
+
+  /*
+   * Sur la scène, la fiche ouverte ne se lit pas sur la photo : elle a son fond
+   * plein (carbone), comme une carte posée sur l'image.
+   */
+  html.has-motion .cardio__list :deep(.cap-sheet__body) {
+    margin-block-start: 16px;
+    padding: clamp(1.25rem, 0.971rem + 1.143vw, 2rem);
+    background: var(--cf-carbone);
+  }
 }
 
 /*
@@ -687,59 +689,13 @@ html.js .cardio__figure:not([data-near]) :deep(.cap-photo__img) {
   }
 }
 
-/* L'enchaînement du mercredi : deux lignes reliées par un filet citron de 2 × 64 px. */
+/*
+ * L'enchaînement du mercredi : une phrase, en signature. Les horaires sont déjà
+ * écrits à côté des noms : la répéter en gros chargeait le bloc.
+ */
 .chain {
-  --pitch: clamp(2.75rem, 2.286rem + 1.905vw, 4rem);
-}
-
-.chain__title {
-  margin: 0 0 16px;
-  font-size: 1.25rem;
-}
-
-.chain__list {
-  position: relative;
-  display: grid;
   margin: 0;
-  padding: 0 0 0 22px;
-  list-style: none;
-}
-
-.chain__list::before {
-  position: absolute;
-  inset-block-start: calc(var(--pitch) / 2);
-  inset-inline-start: 0;
-  inline-size: 2px;
-  block-size: var(--pitch);
-  background: var(--cf-citron);
-  content: '';
-}
-
-.chain__step {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  column-gap: 16px;
-  min-block-size: var(--pitch);
-  align-content: center;
-}
-
-.chain__time {
-  font-size: var(--text-data-l);
-  white-space: nowrap;
-}
-
-.chain__course {
-  font-family: var(--font-body);
-  font-size: clamp(1.125rem, 1.032rem + 0.381vw, 1.375rem);
-  font-weight: 600;
-  line-height: 1.2;
-}
-
-@media (forced-colors: active) {
-  .chain__list::before {
-    background: CanvasText;
-  }
+  font-size: 1.25rem;
 }
 
 /* ── 3c. Retour au calme ───────────────────────────────────────────────────── */

@@ -330,6 +330,9 @@ useMotion(section, ({ gsap }, root, contextSafe) => {
 
       <CapWeekFocus class="cap-week__focus" />
 
+      <!-- Ce que fait un créneau quand on le touche : il est choisi pour « Comment réserver ». -->
+      <p class="cap-week__astuce">{{ w.astuce }}</p>
+
       <CapWeekStrip
         class="cap-week__strip"
         :days="days"
@@ -518,9 +521,19 @@ useMotion(section, ({ gsap }, root, contextSafe) => {
   margin-block-start: 48px;
 }
 
+/* La ligne d'aide : ce que fait un créneau quand on le touche. */
+.cap-week__astuce {
+  margin: 24px 0 0;
+  color: var(--cf-craie);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
 .cap-week__strip,
 .cap-week__days {
-  margin-block-start: 40px;
+  margin-block-start: 24px;
 }
 
 @media (min-width: 64em) {
@@ -529,7 +542,7 @@ useMotion(section, ({ gsap }, root, contextSafe) => {
   }
 
   .cap-week__strip {
-    margin-block-start: 48px;
+    margin-block-start: 32px;
   }
 }
 

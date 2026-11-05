@@ -58,39 +58,7 @@ const NBSP = '\u00a0';
 /** Séparateur des créneaux : le point médian reste lié à ce qui le précède. */
 const SEP = `${NBSP}· `;
 
-/** Intitulé de la rangée : singulier pour un seul créneau, pluriel sinon (« Créneaux à confirmer »). */
-const slotsLabel = props.sessions.length === 1 ? cs.creneau : cs.creneaux;
-
 const when = (session: Session) => `${jourCourt(session.day)}${NBSP}${formatHeure(session.start)}`;
-
-/** « Intensité indicative : calme · 1 sur 5 », suivie du repère (§6). */
-const intensity = `${cs.intensite}${NBSP}: ${props.course.intensite.mot}${SEP}${props.course.intensite.valeur}${NBSP}${cs.surCinq.replaceAll(' ', NBSP)}`;
-
-/**
- * Une valeur « à confirmer » : le segment inconnu (« Durée à confirmer »,
- * « nombre de places à confirmer ») passe dans CapPending, souligné en
- * pointillé ; le reste de la phrase garde son style.
- */
-const PENDING = new RegExp(`[^.;:()]*${cap.ui.pending}`);
-function parts(value: string) {
-  const match = PENDING.exec(value);
-  if (!match) return { before: value, pending: '', after: '' };
-  const lead = match[0].length - match[0].trimStart().length;
-  const start = match.index + lead;
-  const end = match.index + match[0].length;
-  return {
-    before: value.slice(0, start),
-    pending: value.slice(start, end),
-    after: value.slice(end),
-  };
-}
-
-const fields = computed(() =>
-  props.course.champs.map((field) => ({
-    ...field,
-    parts: field.statut === 'a-confirmer' ? parts(field.valeur) : undefined,
-  })),
-);
 
 /** « Ajouter le Step du mardi, 17 h 15 à mon agenda » : le nom accessible complet du lien. */
 const agendaName = (session: Session) =>
@@ -102,7 +70,8 @@ const agendaName = (session: Session) =>
 /**
  * Prochain créneau, à l'heure de Paris : « Prochain créneau : mardi 17 h 15 ».
  * Au rendu serveur : « Créneau : mar. 17 h 15 » (ou tous les créneaux, s'il y en
- * a plusieurs).
+ * a plusieurs). Les créneaux sont déjà écrits à côté du nom : la fiche ne les
+ * répète pas, elle donne le prochain et de quoi l'ajouter à l'agenda.
  *
  * Quand le prochain créneau retombe sur le jour même, mais la semaine suivante
  * (le dernier du jour a déjà commencé), « mercredi 18 h 00 » se lirait
@@ -125,6 +94,11 @@ const next = computed(() => {
     value: props.sessions.map(when).join(SEP),
   };
 });
+
+/** Le créneau visé par « Ajouter à mon agenda » : le prochain, sinon le premier de la semaine. */
+const agendaSession = computed(
+  () => (props.now && prochainCours(props.sessions, props.now)?.session) ?? props.sessions[0],
+);
 
 /*
  * « Réserver ce cours » enregistre le choix pour #reserver (CapBook) : la
@@ -158,48 +132,34 @@ function choose() {
         <p class="cap-sheet__texte cap-sheet__el" style="--i: 1">{{ course.texte }}</p>
 
         <dl class="cap-sheet__fields cap-sheet__el" style="--i: 2">
-          <div v-for="field in fields" :key="field.label" class="cap-sheet__field">
+          <div v-for="field in course.champs" :key="field.label" class="cap-sheet__field">
             <dt class="cap-sheet__label">{{ field.label }}</dt>
-            <dd v-if="field.parts" class="cap-sheet__value">
-              {{ field.parts.before }}<CapPending :text="field.parts.pending" />{{
-                field.parts.after
-              }}
-            </dd>
-            <dd v-else class="cap-sheet__value">{{ field.valeur }}</dd>
-          </div>
-          <div class="cap-sheet__field">
-            <dt class="cap-sheet__label">{{ slotsLabel }}</dt>
-            <dd class="cap-sheet__value">
-              <ul v-if="sessions.length" role="list" class="cap-sheet__slots">
-                <li v-for="session in sessions" :key="session.id" class="cap-sheet__slot">
-                  <span class="cap-sheet__when cap-data">{{ when(session) }}</span>
-                  <a
-                    class="cap-sheet__agenda cap-link"
-                    :href="`/v2/agenda/${session.id}.ics`"
-                    download
-                    :aria-label="agendaName(session)"
-                    >{{ cap.ui.agenda }}</a
-                  >
-                </li>
-              </ul>
-              <CapPending v-else :text="cap.ui.pending" />
-            </dd>
+            <dd class="cap-sheet__value">{{ field.valeur }}</dd>
           </div>
         </dl>
 
-        <p class="cap-sheet__intensite cap-sheet__el" style="--i: 3">
-          {{ intensity }}{{ SEP }}<CapPending :text="cs.repere" />
-        </p>
-
-        <div v-if="sessions.length" class="cap-sheet__actions cap-sheet__el" style="--i: 4">
+        <div v-if="sessions.length" class="cap-sheet__actions cap-sheet__el" style="--i: 3">
           <p class="cap-sheet__next">
             <span class="cap-sheet__next-label">{{ next.label }}{{ NBSP }}:</span>
             {{ ' ' }}
             <span class="cap-sheet__next-value cap-data">{{ next.value }}</span>
           </p>
-          <a class="cap-sheet__reserve cap-link" href="#reserver" @click="choose"
-            >{{ cs.reserver }}<span class="visually-hidden">, {{ course.nom }}</span></a
-          >
+          <div class="cap-sheet__buttons">
+            <a
+              class="cap-sheet__reserve cap-button cap-button--secondaire"
+              href="#reserver"
+              @click="choose"
+              >{{ cs.reserver }}<span class="visually-hidden">, {{ course.nom }}</span></a
+            >
+            <a
+              v-if="agendaSession"
+              class="cap-sheet__agenda cap-link"
+              :href="`/v2/agenda/${agendaSession.id}.ics`"
+              download
+              :aria-label="agendaName(agendaSession)"
+              ><span aria-hidden="true">＋ </span>{{ cs.agenda }}</a
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -306,52 +266,11 @@ html.js .cap-sheet:not([data-open], [data-closing]) > .cap-sheet__panel:not([hid
   }
 }
 
-/* ── Créneaux : la donnée, puis le lien « agenda » (cible de 24 px au moins) ── */
-.cap-sheet__slots {
-  display: grid;
-  gap: 2px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.cap-sheet__slot {
-  display: flex;
-  gap: 16px;
-  align-items: baseline;
-}
-
-.cap-sheet__when {
-  min-inline-size: 7.5em;
-  font-size: 1.125rem;
-  white-space: nowrap;
-}
-
-.cap-sheet__agenda {
-  display: inline-block;
-  padding-block: 4px;
-  font-family: var(--font-body);
-  font-size: 0.9375rem;
-  font-weight: 500;
-  line-height: 1.2;
-}
-
-/* Intensité : la valeur, puis la mention du repère (soulignée en pointillé, §6). */
-.cap-sheet__intensite {
-  margin: 0;
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-size: 0.9375rem;
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-/* ── Prochain créneau et action ────────────────────────────────────────────── */
+/* ── Prochain créneau, puis les deux actions ───────────────────────────────── */
 .cap-sheet__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 32px;
-  align-items: baseline;
+  display: grid;
+  gap: 12px;
+  justify-items: start;
 }
 
 .cap-sheet__next {
@@ -370,14 +289,21 @@ html.js .cap-sheet:not([data-open], [data-closing]) > .cap-sheet__panel:not([hid
   font-size: 1.25rem;
 }
 
-/* Cible de 44 px : commande principale de la fiche. */
-.cap-sheet__reserve {
+.cap-sheet__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  align-items: center;
+}
+
+/* « Ajouter à mon agenda » : lien explicite, cible de 44 px. */
+.cap-sheet__agenda {
   display: inline-flex;
   align-items: center;
   min-block-size: 44px;
   font-family: var(--font-body);
-  font-size: var(--text-ui);
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 500;
 }
 
 /* ── Mouvement (html.has-motion seulement : sinon, tout change sur place) ──── */

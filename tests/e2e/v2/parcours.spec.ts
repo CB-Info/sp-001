@@ -64,7 +64,7 @@ test('« Réserve ta place » de la couverture mène à #reserver', async ({ pag
   await page.locator('#haut').getByRole('link', { name: 'Réserve ta place' }).click();
   await attendreArrivee(page, 'reserver');
   await expect(
-    page.locator('#reserver').getByRole('heading', { name: 'Ta place t’attend.' }),
+    page.locator('#reserver').getByRole('heading', { name: 'Comment réserver' }),
   ).toBeVisible();
 });
 

@@ -112,7 +112,7 @@ test.describe('choix d’un cours, mercredi 18 h 20 à Paris', () => {
 
     const reserver = page.locator('#reserver');
     await expect(reserver.locator('.cap-book__choix')).toHaveText(
-      /^Tu as choisi\s+:\s+CAF,\s+mer\.\s+prochain\s+18\s+h\s+00$/,
+      /^Tu as choisi\s+:\s+CAF · cuisses, abdos, fessiers,\s+mer\.\s+prochain\s+18\s+h\s+00$/,
     );
     const bouton = reserver.getByRole('link', { name: /^Ajouter ce cours à mon agenda/ });
     await expect(bouton).toHaveAttribute('href', '/v2/agenda/mer-1800-caf.ics');

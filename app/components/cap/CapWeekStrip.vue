@@ -297,7 +297,13 @@ const choose = (slot: WeekSlot) => {
                 <span v-if="slot.id === nextId" class="cap-slot__next">{{ w.prochainCours }}</span>
                 <time class="cap-slot__time cap-data" :datetime="slot.start">{{ slot.heure }}</time>
                 {{ ' ' }}
-                <span class="cap-slot__name">{{ slot.nom }}</span>
+                <span class="cap-slot__name"
+                  >{{ slot.nom
+                  }}<template v-if="slot.id === choice"
+                    ><span class="cap-slot__check" aria-hidden="true">{{ ' ' }}✓</span
+                    ><span class="visually-hidden">, {{ w.choisi }}</span></template
+                  ></span
+                >
                 <span class="visually-hidden"
                   >{{ slot.suffixe
                   }}<template v-if="slot.id === startedId">{{ startedText(slot) }}</template></span

@@ -10,10 +10,10 @@ import { cap } from '~/data/cap';
  * rythmes du club ; rangée 2, trois idées de semaine, annoncées comme telles
  * (« Idées de semaine, pas un programme du club »), dans leur propre groupe.
  *
- * Option cochée : graisse 700 et soulignement citron de 3 px, qui se remplit
- * depuis la gauche (« un changement d'état est un remplissage », §5.1). La
- * largeur de chaque option est réservée pour sa graisse 700 : cocher ne décale
- * pas les voisines. La couleur n'est jamais le seul signal.
+ * Chaque option est une pastille : contour au repos, fond citron et graisse 700
+ * une fois cochée (« un changement d'état est un remplissage », §5.1). La
+ * largeur est réservée pour la graisse 700 : cocher ne décale pas les voisines.
+ * La couleur n'est jamais le seul signal (fond plein, graisse).
  *
  * Avec JS, une zone aria-live polie annonce « 3 créneaux mis en avant », après
  * une action seulement (elle est vide au chargement).
@@ -139,7 +139,7 @@ onBeforeUnmount(() => clearTimeout(pending));
   flex-wrap: wrap;
   grid-column: 1 / -1;
   align-items: center;
-  column-gap: 24px;
+  gap: 8px;
 }
 
 .cap-focus__idees {
@@ -152,18 +152,29 @@ onBeforeUnmount(() => clearTimeout(pending));
   line-height: 1.4;
 }
 
-/* ── Une option : rangée de 44 px, la radio native couvre toute l'étiquette ── */
+/*
+ * ── Une option : une pastille de 44 px ─────────────────────────────────────
+ * Bord au contour = non cochée, fond citron = cochée (le code du carré et des
+ * cours) : la rangée se lit comme un filtre, pas comme du texte. La radio native
+ * couvre toute la pastille. La largeur est réservée pour la graisse 700.
+ */
 .cap-focus__option {
   position: relative;
   display: inline-flex;
   align-items: center;
   min-block-size: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--cf-filet);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.2;
   cursor: pointer;
+  transition:
+    background-color var(--dur-feedback) var(--ease-out-soft),
+    border-color var(--dur-feedback) var(--ease-out-soft),
+    color var(--dur-feedback) var(--ease-out-soft);
 }
 
 .cap-focus__input {
@@ -197,30 +208,20 @@ onBeforeUnmount(() => clearTimeout(pending));
   content: attr(data-label);
 }
 
-/* Le soulignement : un filet de 3 px qui se remplit depuis la gauche. */
-.cap-focus__text::after {
-  position: absolute;
-  inset-inline: 0;
-  inset-block-end: -8px;
-  border-block-end: 3px solid var(--cf-citron);
-  content: '';
-  scale: 0 1;
-  transform-origin: left;
-  transition: scale var(--dur-state) var(--ease-out-soft);
+@media (hover: hover) and (pointer: fine) {
+  .cap-focus__option:hover:not(:has(:checked)) {
+    border-color: var(--cf-citron);
+  }
 }
 
-.cap-focus__option:hover .cap-focus__text::after {
-  border-block-end-color: var(--cf-filet);
-  scale: 1 1;
+.cap-focus__option:has(:checked) {
+  border-color: var(--cf-citron);
+  background: var(--cf-citron);
+  color: var(--cf-noir);
 }
 
 .cap-focus__option:has(:checked) .cap-focus__text {
   font-weight: 700;
-}
-
-.cap-focus__option:has(:checked) .cap-focus__text::after {
-  border-block-end-color: var(--cf-citron);
-  scale: 1 1;
 }
 
 .cap-focus__option:has(:focus-visible) {
@@ -228,7 +229,7 @@ onBeforeUnmount(() => clearTimeout(pending));
   outline-offset: 2px;
 }
 
-html:not(.has-motion) .cap-focus__text::after {
+html:not(.has-motion) .cap-focus__option {
   transition: none;
 }
 
@@ -240,7 +241,6 @@ html:not(.has-motion) .cap-focus__text::after {
 
   .cap-focus__row {
     grid-column: 3 / -1;
-    column-gap: 32px;
   }
 }
 
@@ -253,13 +253,14 @@ html:not(.has-motion) .cap-focus__text::after {
 }
 
 @media (forced-colors: active) {
-  .cap-focus__text::after,
-  .cap-focus__option:has(:checked) .cap-focus__text::after {
-    border-block-end-color: CanvasText;
+  .cap-focus__option {
+    border-color: CanvasText;
   }
 
-  .cap-focus__option:hover:not(:has(:checked)) .cap-focus__text::after {
-    scale: 0 1;
+  .cap-focus__option:has(:checked) {
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
   }
 
   .cap-focus__option:has(:focus-visible) {

@@ -107,16 +107,26 @@ export async function deplacerHeure(page: Page, instant: string) {
 }
 
 /**
- * Ouvre la fiche d'un cours (accordéon de #cours). La section s'hydrate à
- * l'approche : une fiche fermée et hydratée porte `hidden="until-found"`, son
- * bouton répond alors.
+ * La section des cours s'hydrate à l'approche : une fois montée, chaque fiche
+ * perd `data-instant` (CapCourseItem), et ses commandes répondent.
+ */
+export async function attendreCours(page: Page, slug: string) {
+  await page.locator(`#cours-${slug}-bouton`).scrollIntoViewIfNeeded();
+  await expect(page.locator(`#cours-${slug} .cap-sheet:not([data-instant])`)).toHaveCount(1);
+}
+
+/**
+ * Ouvre la fiche d'un cours (accordéon de #cours). Le premier cours de chaque
+ * groupe (Pound, Cross training, Pilates) est déjà ouvert : rien à cliquer.
  */
 export async function ouvrirFiche(page: Page, slug: string) {
   const bouton = page.locator(`#cours-${slug}-bouton`);
   const fiche = page.locator(`#cours-${slug}-fiche`);
-  await bouton.scrollIntoViewIfNeeded();
-  await expect(fiche).toHaveAttribute('hidden', 'until-found');
-  await bouton.click();
+  await attendreCours(page, slug);
+  if ((await bouton.getAttribute('aria-expanded')) !== 'true') {
+    await expect(fiche).toHaveAttribute('hidden', 'until-found');
+    await bouton.click();
+  }
   await expect(bouton).toHaveAttribute('aria-expanded', 'true');
   await expect(fiche).toBeVisible();
   // La fiche a fini de s'ouvrir (rangée de grille 0fr → 1fr, puis fondus) : la
