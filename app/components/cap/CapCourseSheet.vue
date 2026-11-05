@@ -7,6 +7,7 @@ import {
   jourLong,
   parisNow,
   prochainCours,
+  toMinutes,
   type ParisNow,
 } from '~/utils/cap-time';
 
@@ -28,6 +29,10 @@ import {
  * Données temps réel : le prochain créneau est calculé à l'heure de Paris
  * (`now`, posé après le montage). Au rendu serveur, la ligne est neutre
  * (« Créneau : mar. 17 h 15 »), identique au premier rendu client.
+ *
+ * Accessibilité : fermée (`hidden="until-found"`), la fiche n'a ni rôle ni nom.
+ * Chromium garde la boîte d'un panneau `until-found` dans l'arbre : avec son
+ * rôle, chaque fiche fermée resterait un repère « region » vide.
  */
 const props = defineProps<{
   course: Course;
@@ -53,7 +58,13 @@ const NBSP = '\u00a0';
 /** Séparateur des créneaux : le point médian reste lié à ce qui le précède. */
 const SEP = `${NBSP}· `;
 
+/** Intitulé de la rangée : singulier pour un seul créneau, pluriel sinon (« Créneaux à confirmer »). */
+const slotsLabel = props.sessions.length === 1 ? cs.creneau : cs.creneaux;
+
 const when = (session: Session) => `${jourCourt(session.day)}${NBSP}${formatHeure(session.start)}`;
+
+/** « Intensité indicative : calme · 1 sur 5 », suivie du repère (§6). */
+const intensity = `${cs.intensite}${NBSP}: ${props.course.intensite.mot}${SEP}${props.course.intensite.valeur}${NBSP}${cs.surCinq.replaceAll(' ', NBSP)}`;
 
 /**
  * Une valeur « à confirmer » : le segment inconnu (« Durée à confirmer »,
@@ -92,10 +103,17 @@ const agendaName = (session: Session) =>
  * Prochain créneau, à l'heure de Paris : « Prochain créneau : mardi 17 h 15 ».
  * Au rendu serveur : « Créneau : mar. 17 h 15 » (ou tous les créneaux, s'il y en
  * a plusieurs).
+ *
+ * Quand le prochain créneau retombe sur le jour même, mais la semaine suivante
+ * (le dernier du jour a déjà commencé), « mercredi 18 h 00 » se lirait
+ * « aujourd'hui, déjà passé » : la ligne reste neutre, comme au rendu serveur.
  */
 const next = computed(() => {
-  const found = props.now && prochainCours(props.sessions, props.now);
-  if (found) {
+  const now = props.now;
+  const found = now && prochainCours(props.sessions, now);
+  const nextWeek =
+    found && now && found.session.day === now.day && toMinutes(found.session.start) <= now.minutes;
+  if (found && !nextWeek) {
     const { session } = found;
     return {
       label: cs.prochain,
@@ -130,8 +148,8 @@ function choose() {
     <div
       :id="panelId"
       class="cap-sheet__panel"
-      role="region"
-      :aria-labelledby="headId"
+      :role="concealed ? undefined : 'region'"
+      :aria-labelledby="concealed ? undefined : headId"
       :hidden.attr="concealed ? 'until-found' : undefined"
       @beforematch="emit('reveal')"
     >
@@ -150,7 +168,7 @@ function choose() {
             <dd v-else class="cap-sheet__value">{{ field.valeur }}</dd>
           </div>
           <div class="cap-sheet__field">
-            <dt class="cap-sheet__label">{{ cs.creneaux }}</dt>
+            <dt class="cap-sheet__label">{{ slotsLabel }}</dt>
             <dd class="cap-sheet__value">
               <ul v-if="sessions.length" role="list" class="cap-sheet__slots">
                 <li v-for="session in sessions" :key="session.id" class="cap-sheet__slot">
@@ -170,7 +188,7 @@ function choose() {
         </dl>
 
         <p class="cap-sheet__intensite cap-sheet__el" style="--i: 3">
-          {{ cs.intensite }}{{ NBSP }}: <CapPending :text="cs.repere" />
+          {{ intensity }}{{ SEP }}<CapPending :text="cs.repere" />
         </p>
 
         <div v-if="sessions.length" class="cap-sheet__actions cap-sheet__el" style="--i: 4">
@@ -318,7 +336,7 @@ html.js .cap-sheet:not([data-open], [data-closing]) > .cap-sheet__panel:not([hid
   line-height: 1.2;
 }
 
-/* Intensité : un repère, pas une donnée du club (souligné en pointillé). */
+/* Intensité : la valeur, puis la mention du repère (soulignée en pointillé, §6). */
 .cap-sheet__intensite {
   margin: 0;
   color: var(--ink);

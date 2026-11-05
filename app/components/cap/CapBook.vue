@@ -47,12 +47,19 @@ const courseName = (slug: string) => cap.courses.find((course) => course.slug ==
 /** Le cours affiché : de quoi écrire la ligne de choix et viser son .ics. */
 function shown(label: string, session: Session) {
   const heure = formatHeure(session.start);
+  const name = courseName(session.course);
   return {
     label,
-    name: courseName(session.course),
+    name,
     when: `${jourCourt(session.day)}${NBSP}${heure}`,
-    /** Pour le nom accessible du bouton : « mercredi 19 h 00 ». */
-    whenLong: `${jourLong(session.day)}${NBSP}${heure}`,
+    /**
+     * Suite masquée du nom du bouton : « Ajouter ce cours à mon agenda pour Cross
+     * training, mercredi 19 h 00 ». Elle s'ouvre sur une espace et un mot
+     * (cap.book.boutonSuite), jamais sur une virgule.
+     */
+    suite: cap.book.boutonSuite
+      .replace('{cours}', name)
+      .replace('{quand}', `${jourLong(session.day)}${NBSP}${heure}`),
     href: `/v2/agenda/${session.id}.ics`,
   };
 }
@@ -89,7 +96,8 @@ const note = (() => {
 /*
  * Mini-complexe du bouton (20 × 14, style « instrument »), comme ceux de la
  * couverture et de la fin : il s'écrit au survol et au focus dans la fente
- * réservée à gauche du libellé (v2.css). Au repos, la fente porte la ligne plate.
+ * réservée à gauche du libellé (.cap-button--fente, v2.css). Au repos, la fente
+ * est vide.
  */
 const PULSE_BASELINE = 7.2;
 const pulse = path([
@@ -97,7 +105,6 @@ const pulse = path([
   ...complexAtR(10, PULSE_BASELINE, 6.2),
   [20, PULSE_BASELINE],
 ]);
-const pulseRest = `M0 ${PULSE_BASELINE}H20`;
 
 /* ── Mouvement : les colonnes Appli et Accueil ─────────────────────────────── */
 const section = useTemplateRef<HTMLElement>('section');
@@ -163,8 +170,12 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
         </p>
 
         <div v-if="current" class="cap-book__actions">
-          <a class="cap-book__cta cap-button cap-button--l" :href="current.href" download>
-            <span class="cap-book__cta-slot">
+          <a
+            class="cap-book__cta cap-button cap-button--l cap-button--fente"
+            :href="current.href"
+            download
+          >
+            <span class="cap-button__libelle">
               <svg
                 class="cap-button__pulse"
                 viewBox="0 0 20 14"
@@ -173,17 +184,9 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
               >
                 <path :d="pulse" />
               </svg>
-              <svg
-                class="cap-book__cta-rest"
-                viewBox="0 0 20 14"
-                aria-hidden="true"
-                focusable="false"
-              >
-                <path :d="pulseRest" />
-              </svg>
+              {{ cap.book.bouton }}
             </span>
-            {{ cap.book.bouton
-            }}<span class="visually-hidden">, {{ current.name }}, {{ current.whenLong }}</span>
+            <span class="visually-hidden">{{ current.suite }}</span>
           </a>
           <a class="cap-book__semaine cap-link" :href="cap.book.semaine.href" download>
             {{ cap.book.semaine.label }}
@@ -299,40 +302,6 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
 /* Mobile : le bouton prend toute la largeur. */
 .cap-book__cta {
   inline-size: 100%;
-}
-
-/* La fente du mini-complexe : la ligne plate au repos, le complexe au survol. */
-.cap-book__cta-slot {
-  position: relative;
-  display: block;
-  flex: none;
-  inline-size: 20px;
-  block-size: 14px;
-}
-
-.cap-book__cta-slot .cap-button__pulse {
-  display: block;
-}
-
-.cap-book__cta-rest {
-  position: absolute;
-  inset: 0;
-  inline-size: 20px;
-  block-size: 14px;
-  fill: none;
-  stroke: currentcolor;
-  stroke-width: 1.5;
-  clip-path: inset(0);
-  transition: clip-path 160ms var(--ease-in);
-}
-
-.cap-book__cta:is(:hover, :focus-visible) .cap-book__cta-rest {
-  clip-path: inset(0 0 0 100%);
-  transition: clip-path var(--dur-state) var(--ease-trace);
-}
-
-html:not(.has-motion) .cap-book__cta-rest {
-  transition: none;
 }
 
 /* Lien secondaire : une cible de 44 px, alignée sur le bouton. */
@@ -491,10 +460,6 @@ html:not(.has-motion) .cap-book__cta-rest {
 
   .cap-book__col--accueil::before {
     background: CanvasText;
-  }
-
-  .cap-book__cta-rest {
-    stroke: ButtonText;
   }
 }
 </style>

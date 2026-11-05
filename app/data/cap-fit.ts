@@ -6,6 +6,7 @@ export const capFit = {
   'cover.delie': {
     sha1: '13a2a0777a4c',
     em: {
+      '75': 3.446,
       '100': 4.558,
       '150': 6.787,
     },
@@ -20,6 +21,7 @@ export const capFit = {
   'edito.bouge': {
     sha1: '1bc23d8857b8',
     em: {
+      '75': 3.113,
       '100': 4.167,
       '150': 6.279,
     },

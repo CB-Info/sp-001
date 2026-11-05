@@ -79,15 +79,19 @@ const source = (() => {
  * Chaque ligne porte deux couches : le texte réel et, par-dessus, une copie
  * pleine en aria-hidden, masquée par défaut. Armée, la ligne montre le texte réel
  * au contour, rogné au-dessus d'une ligne de partage, et la copie pleine en
- * dessous. La frappe fait monter cette ligne de partage (--frappe) de la ligne de
- * base jusqu'au-dessus des accents : le mot s'imprime par le bas, sans jamais
- * doubler son contour. À la fin, le texte réel redevient plein et la copie
- * s'efface : les deux états sont identiques au pixel.
+ * dessous. La frappe fait monter cette ligne de partage de la ligne de base
+ * jusqu'au haut du contour : le mot s'imprime par le bas, sans jamais doubler son
+ * contour. À la fin, le texte réel redevient plein et la copie s'efface : les
+ * deux états sont identiques au pixel.
+ *
+ * Le JS ne pousse que l'avancée de la frappe (--frappe, de 0 à 1) ; le CSS en
+ * tire la ligne de partage, ligne par ligne et à toutes les tailles. La course
+ * s'arrête au haut réel du contour, accents compris, et pas plus haut : les
+ * 230 ms de --ease-strike se passent sur le mot, qui ralentit et se pose
+ * (§5.1), au lieu de finir à mi-courbe, coupé net, et de balayer du vide.
  */
-/** Ligne de base à 80,16 % de la hauteur de ligne (0,7375 / 0,92 ; CAP Display). */
-const BASELINE = '80.16%';
-/** Au-dessus de la ligne, assez haut pour l'accent du É. */
-const ABOVE = '-40%';
+/** Une ligne qui porte un accent (au-dessus des capitales) frappe plus haut. */
+const ACCENT = /[àâäéèêëîïôöùûüÿ]/i;
 /** Le haut du groupe frappe en passant à 70 % de la hauteur de l'écran. */
 const STRIKE_LINE = 0.7;
 
@@ -122,7 +126,7 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
   };
 
   group.dataset.frappe = '';
-  gsap.set(lines, { '--frappe': BASELINE });
+  gsap.set(lines, { '--frappe': 0 });
 
   const strike = gsap.timeline({
     paused: true,
@@ -134,7 +138,7 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
   lines.forEach((line, index) =>
     strike.to(
       line,
-      { '--frappe': ABOVE, duration: duration('--dur-strike'), ease: 'strike' },
+      { '--frappe': 1, duration: duration('--dur-strike'), ease: 'strike' },
       index * stagger('--stagger-lines'),
     ),
   );
@@ -165,7 +169,11 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
         <span class="cap-edito__lignes" data-motion="edito-lignes">
           <template v-for="ligne in cap.edito.lignes" :key="ligne">
             {{ ' ' }}
-            <span class="cap-edito__ligne" data-motion="edito-ligne">
+            <span
+              class="cap-edito__ligne"
+              :data-accent="ACCENT.test(ligne) ? '' : undefined"
+              data-motion="edito-ligne"
+            >
               <span class="cap-edito__ligne-texte cap-display is-plein">{{ ligne }}</span>
               <!-- Copie pleine de la frappe : elle s'imprime depuis la ligne de base. -->
               <span class="cap-edito__ligne-frappe cap-display is-plein" aria-hidden="true">
@@ -243,9 +251,28 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
   text-align: end;
 }
 
+/*
+ * Course de la frappe, en em pour valoir à toutes les tailles (pleins de CAP
+ * Display en 75–80 %, interligne 0,92) :
+ * - départ : la ligne de base, 0,1825 em au-dessus du bas de la boîte (celle de
+ *   la dernière ligne si le texte revient à la ligne) ;
+ * - arrivée : le haut du contour. Les capitales montent, rondes comprises,
+ *   jusqu'à 0,055 em sous le haut de la boîte, les accents jusqu'à 0,08 em
+ *   au-dessus. Le contour en déborde d'un demi-trait (max(1px, 0.02em)), plus
+ *   2 px d'anticrénelage.
+ * Finir plus haut (l'ancien −40 %) faisait balayer du vide à la moitié lente de
+ * la courbe : le mot était plein en 120 ms, coupé net, sans se poser.
+ */
 .cap-edito__ligne {
+  --frappe-depart: calc(100% - 0.1825em);
+  --frappe-arrivee: calc(0.055em - max(1px, 0.02em) - 2px);
+
   position: relative;
   display: block;
+}
+
+.cap-edito__ligne[data-accent] {
+  --frappe-arrivee: calc(-0.08em - max(1px, 0.02em) - 2px);
 }
 
 .cap-edito__ligne-texte,
@@ -266,17 +293,25 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
 
 /*
  * Frappe armée (posée par le JS, hors écran seulement) : au-dessus de la ligne
- * de partage, le texte réel au contour craie ; en dessous, la copie pleine.
+ * de partage, le texte réel au contour craie ; en dessous, la copie pleine. La
+ * ligne de partage va du départ à l'arrivée selon l'avancée --frappe (0 → 1) ;
+ * ses % et ses em se résolvent sur chaque couche, qui a la boîte de la ligne.
  */
+.cap-edito__lignes[data-frappe] .cap-edito__ligne {
+  --partage: calc(
+    var(--frappe-depart) + (var(--frappe-arrivee) - var(--frappe-depart)) * var(--frappe, 0)
+  );
+}
+
 .cap-edito__lignes[data-frappe] .cap-edito__ligne-texte {
   -webkit-text-fill-color: transparent;
   -webkit-text-stroke: max(2px, 0.04em) currentcolor;
-  clip-path: inset(-40% -0.2em calc(100% - var(--frappe)) -0.2em);
+  clip-path: inset(-40% -0.2em calc(100% - var(--partage)) -0.2em);
 }
 
 .cap-edito__lignes[data-frappe] .cap-edito__ligne-frappe {
   display: block;
-  clip-path: inset(var(--frappe) -0.2em 0 -0.2em);
+  clip-path: inset(var(--partage) -0.2em 0 -0.2em);
 }
 
 /* ── Faits et paragraphe : 64 px sous la dernière ligne de base ─────────────── */

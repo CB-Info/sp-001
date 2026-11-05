@@ -36,15 +36,13 @@ const MENU_ID = 'menu';
 /** Au-delà, l'en-tête montre ses chapitres : un menu resté ouvert se referme. */
 const DESKTOP = '(min-width: 64em)';
 const NBSP = ' ';
-/** Mini-complexe du bouton principal (20 × 14), comme dans l'en-tête. */
+/** Mini-complexe du bouton principal (20 × 14), comme dans l'en-tête ; au repos, la fente est vide. */
 const PULSE_BASELINE = 7.2;
 const PULSE = path([
   [0, PULSE_BASELINE],
   ...complexAtR(10, PULSE_BASELINE, 6.2),
   [20, PULSE_BASELINE],
 ]);
-/** Au repos, la fente porte la ligne plate (« se poser ») : même dessin que la couverture. */
-const PULSE_REST = `M0 ${PULSE_BASELINE}H20`;
 
 const open = useState<boolean>('cap-menu', () => false);
 const current = useState<string | null>('cap-section', () => null);
@@ -209,14 +207,18 @@ onBeforeUnmount(() => {
 
       <div class="cap-menu__end">
         <p class="cap-menu__line cap-menu__action" :style="{ '--i': cap.nav.length }">
-          <a class="cap-button cap-button--l cap-menu__cta" href="#reserver">
-            <svg class="cap-button__pulse" viewBox="0 0 20 14" aria-hidden="true" focusable="false">
-              <path :d="PULSE" />
-            </svg>
-            <svg class="cap-menu__rest" viewBox="0 0 20 14" aria-hidden="true" focusable="false">
-              <path :d="PULSE_REST" />
-            </svg>
-            {{ cap.ui.reserve }}
+          <a class="cap-button cap-button--l cap-button--fente cap-menu__cta" href="#reserver">
+            <span class="cap-button__libelle">
+              <svg
+                class="cap-button__pulse"
+                viewBox="0 0 20 14"
+                aria-hidden="true"
+                focusable="false"
+              >
+                <path :d="PULSE" />
+              </svg>
+              {{ cap.ui.reserve }}
+            </span>
           </a>
         </p>
 
@@ -398,31 +400,9 @@ onBeforeUnmount(() => {
   margin: 0;
 }
 
-/* Fente du mini-complexe : la ligne plate au repos, effacée quand le complexe s'écrit. */
+/* Bouton à fente (v2.css), marges de 20 px comme dans l'en-tête. */
 .cap-menu__cta {
-  padding-inline: 20px;
-}
-
-.cap-menu__rest {
-  position: absolute;
-  inset-block-start: calc(50% - 7px);
-  inset-inline-start: 20px;
-  inline-size: 20px;
-  block-size: 14px;
-  fill: none;
-  stroke: currentcolor;
-  stroke-width: 1.5;
-  clip-path: inset(0);
-  transition: clip-path 160ms var(--ease-in);
-}
-
-.cap-menu__cta:is(:hover, :focus-visible) .cap-menu__rest {
-  clip-path: inset(0 0 0 100%);
-  transition: clip-path var(--dur-state) var(--ease-trace);
-}
-
-html:not(.has-motion) .cap-menu__rest {
-  transition: none;
+  --button-pad: 20px;
 }
 
 /* Prochain cours : deux lignes sur mobile, une seule dès 48em. */

@@ -17,12 +17,14 @@ export async function loadCap() {
 
 /**
  * key : identifiant utilisé par <CapFitWord fit-key="…"> ; get : où lire le texte ;
- * widths : chasses mesurées (font-stretch, en %), dans l'ordre ordinateur puis mobile.
+ * widths : chasses mesurées (font-stretch, en %), dans l'ordre ordinateur puis mobile ;
+ * un délié mobile y ajoute 75, son plein de repli quand la ligne est trop étroite
+ * pour son plancher de 64 px (brief §2.5 R2, CapFitWord.vue).
  */
 export const FIT = [
-  { key: 'cover.delie', get: (c) => c.cover.delie, widths: [150, 100] },
+  { key: 'cover.delie', get: (c) => c.cover.delie, widths: [150, 100, 75] },
   { key: 'cover.plein', get: (c) => c.cover.plein, widths: [80, 75] },
-  { key: 'edito.bouge', get: (c) => c.edito.bouge, widths: [150, 100] },
+  { key: 'edito.bouge', get: (c) => c.edito.bouge, widths: [150, 100, 75] },
   {
     key: 'edito.lignes',
     get: (c) => c.edito.lignes.reduce((a, b) => (b.length > a.length ? b : a)),

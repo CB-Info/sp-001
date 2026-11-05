@@ -9,7 +9,9 @@ import { capFit, type CapFitKey } from '~/data/cap-fit';
  *
  * Le mot est délié (au contour) ou plein ; la chasse et le style peuvent changer
  * sous 48em (un délié de moins de 64 px y devient plein). Sous 30em (zoom à
- * 400 %), la ligne peut revenir à la ligne.
+ * 400 %), une ligne de plusieurs mots peut revenir à la ligne, jamais au milieu
+ * d'un mot : un délié qui ne tient plus à son plancher passe plein (R2), mesuré
+ * en chasse 75 % (`cap-fit--repli`).
  */
 type Style = 'delie' | 'plein';
 const props = withDefaults(
@@ -36,19 +38,24 @@ const props = withDefaults(
 );
 
 const TRACKING: Record<Style, number> = { delie: 0.01, plein: -0.005 };
+/** Chasse du plein de repli d'un délié trop étroit (R3 : 75 % sous 48em). */
+const REPLI_WDTH = 75;
 
 const metrics = computed(() => {
   const entry = capFit[props.fitKey];
-  // Chasse d'ordinateur ≥ chasse mobile pour chaque mot mesuré (scripts/fit-words.mjs).
+  // Chasse d'ordinateur ≥ chasse mobile pour chaque mot mesuré (scripts/fit-words.mjs) ;
+  // un délié mobile a en plus sa mesure en plein 75 %, pour le repli.
   const [desktopWdth = 80, mobileWdth = desktopWdth] = Object.keys(entry.em)
     .map(Number)
     .sort((a, b) => b - a);
   const em = entry.em as Record<string, number>;
   const length = [...props.text].length;
   const [desktopStyle, mobileStyle] = props.styles;
+  const repli = mobileStyle === 'delie' && mobileWdth !== REPLI_WDTH ? em[REPLI_WDTH] : undefined;
   return {
     desktop: { wdth: desktopWdth, em: (em[desktopWdth] ?? 1) + length * TRACKING[desktopStyle] },
     mobile: { wdth: mobileWdth, em: (em[mobileWdth] ?? 1) + length * TRACKING[mobileStyle] },
+    repli: repli === undefined ? undefined : repli + length * TRACKING.plein,
   };
 });
 
@@ -59,6 +66,7 @@ const classes = computed(() => [
   `cap-fit--m-${props.styles[1]}`,
   `cap-fit--c-${props.color}`,
   `cap-fit--cm-${props.colorMobile ?? props.color}`,
+  { 'cap-fit--repli': metrics.value.repli !== undefined },
 ]);
 </script>
 
@@ -74,6 +82,7 @@ const classes = computed(() => [
       '--part-d': part[0],
       '--part-m': part[1],
       '--floor': `${floor}rem`,
+      '--em-r': metrics.repli,
     }"
   >
     <span class="cap-fit__word cap-display">{{ text }}</span>
@@ -93,9 +102,12 @@ const classes = computed(() => [
   font-size: max(var(--floor), calc(var(--part-m) * 100cqi / var(--em-m)));
   font-stretch: var(--w-m);
   line-height: 0.86;
+  /*
+   * Une ligne : la taille vient de la largeur mesurée. Rien n'est rogné : si
+   * l'utilisateur élargit l'espacement du texte (WCAG 1.4.12), le mot déborde de
+   * sa ligne au lieu d'être coupé.
+   */
   white-space: nowrap;
-  overflow-x: clip;
-  overflow-clip-margin: 0.06em;
 }
 
 /* Styles : délié (contour) ou plein ; couleur citron ou craie. */
@@ -142,11 +154,33 @@ const classes = computed(() => [
   }
 }
 
-/* Zoom à 400 % : la ligne peut revenir à la ligne plutôt que déborder. */
+/*
+ * R2 : sous 64 px, un délié devient plein dans sa couleur. Quand la ligne est
+ * plus étroite que le délié à son plancher (zoom à 400 %, police agrandie), le
+ * mot passe plein, en chasse 75 %, à la taille qui remplit la ligne. Le seuil
+ * est posé en font-size sur le conteneur : une requête de conteneur lit ses
+ * unités relatives sur le conteneur lui-même, « 1em » y vaut donc le seuil.
+ */
+@media (max-width: 47.99em) {
+  .cap-fit--repli {
+    font-size: calc(var(--floor) * var(--em-m) / var(--part-m));
+  }
+
+  @container (width < 1em) {
+    .cap-fit--repli .cap-fit__word {
+      font-size: max(2.75rem, calc(var(--part-m) * 100cqi / var(--em-r)));
+      font-stretch: 75%;
+      letter-spacing: -0.005em;
+      -webkit-text-fill-color: currentcolor;
+      -webkit-text-stroke: 0;
+    }
+  }
+}
+
+/* Zoom à 400 % : une ligne de plusieurs mots revient à la ligne, entre deux mots. */
 @media (max-width: 30em) {
   .cap-fit__word {
     white-space: normal;
-    overflow-wrap: anywhere;
   }
 }
 

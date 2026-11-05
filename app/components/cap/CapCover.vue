@@ -24,6 +24,10 @@ import { complexAtR, complexFrom, path, SPAN_RATIO, taperedStart, type Point } f
  * l'écran, avec sa pointe effilée, et se raccorde au pied du C sur la ligne de
  * base du délié, comme dans le logo. La photo remonte sous l'en-tête transparent.
  *
+ * Plan B LCP (§7.1), actif sous 48em : le premier écran ne porte que le texte, sur
+ * noir, et la photo passe dessous en 4:5, hors de l'écran. Le H1, peint dès la
+ * première image, devient l'élément LCP (voir la règle « Plan B LCP » plus bas).
+ *
  * Ordre du DOM = ordre visuel = ordre du focus : H1, chapeau, bouton, lien,
  * prochain cours.
  *
@@ -65,9 +69,23 @@ const plein = fitEm('cover.plein', cap.cover.plein, 'plein');
 /** Plancher du délié (CapFitWord) : en dessous, il deviendrait plein (R2). */
 const DELIE_FLOOR_REM = 4;
 
+/*
+ * Repli du délié (CapFitWord, `cap-fit--repli`) : quand la ligne est plus étroite
+ * que « Chacun » à son plancher (zoom à 400 %, police agrandie), le mot passe
+ * plein en chasse 75 %, mesurée à part dans cap-fit.ts. Sa largeur en em sert à
+ * recaler --fs-delie, qui place le plein sous lui.
+ */
+const REPLI_WDTH = 75;
+const delieRepli = (capFit['cover.delie'].em as Record<string, number>)[REPLI_WDTH];
+const repliEm =
+  delieRepli === undefined
+    ? delie.mobile
+    : delieRepli + [...cap.cover.delie].length * TRACKING.plein;
+
 const titleStyle = {
   '--em-delie-d': delie.desktop.toFixed(4),
   '--em-delie-m': delie.mobile.toFixed(4),
+  '--em-delie-r': repliEm.toFixed(4),
   '--em-plein-d': plein.desktop.toFixed(4),
   '--em-plein-m': plein.mobile.toFixed(4),
 };
@@ -104,8 +122,8 @@ const trace = {
 
 /*
  * Mini-complexe du bouton (20 × 14, style « instrument ») : il s'écrit au survol
- * et au focus dans la fente réservée à gauche du libellé (v2.css). Au repos, la
- * fente porte la ligne plate : le bouton est « posé ».
+ * et au focus dans la fente réservée à gauche du libellé (.cap-button--fente,
+ * v2.css). Au repos, la fente est vide.
  */
 const PULSE_BASELINE = 7.2;
 const pulse = path([
@@ -113,7 +131,6 @@ const pulse = path([
   ...complexAtR(10, PULSE_BASELINE, 6.2),
   [20, PULSE_BASELINE],
 ]);
-const pulseRest = `M0 ${PULSE_BASELINE}H20`;
 
 /* ── Prochain cours, à l'heure de Paris ──────────────────────────────────────
  * Rendu serveur et premier rendu client : `now` vaut undefined, d'où le libellé
@@ -123,7 +140,11 @@ const pulseRest = `M0 ${PULSE_BASELINE}H20`;
  */
 /** Espace insécable (U+00A0) : « mer. 19 h 00 » ne se coupe pas. */
 const NBSP = '\u00a0';
-/** Séparateur typographique de la ligne (point médian, lié au mot qui précède). */
+/**
+ * Séparateur typographique de la ligne (point médian, lié au mot qui précède).
+ * Il reste dans l'arbre d'accessibilité : c'est la seule espace entre les mots
+ * (Vue condense les blancs du gabarit), sans lui la ligne se lirait soudée.
+ */
 const SEP = `${NBSP}· `;
 
 const courseName = (slug: string) => cap.courses.find((course) => course.slug === slug)?.nom ?? '';
@@ -271,14 +292,17 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
       </div>
 
       <div class="cap-cover__actions">
-        <a class="cap-cover__cta cap-button cap-button--l" href="#reserver" data-cover-cta>
-          <svg class="cap-button__pulse" viewBox="0 0 20 14" aria-hidden="true" focusable="false">
-            <path :d="pulse" />
-          </svg>
-          <svg class="cap-cover__cta-rest" viewBox="0 0 20 14" aria-hidden="true" focusable="false">
-            <path :d="pulseRest" />
-          </svg>
-          {{ cap.ui.reserve }}
+        <a
+          class="cap-cover__cta cap-button cap-button--l cap-button--fente"
+          href="#reserver"
+          data-cover-cta
+        >
+          <span class="cap-button__libelle">
+            <svg class="cap-button__pulse" viewBox="0 0 20 14" aria-hidden="true" focusable="false">
+              <path :d="pulse" />
+            </svg>
+            {{ cap.ui.reserve }}
+          </span>
         </a>
         <a class="cap-cover__planning cap-link" :href="cap.cover.planning.href">
           {{ cap.cover.planning.label }}
@@ -289,14 +313,14 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
         <template v-if="next">
           <span class="cap-cover__next-row">
             <span class="cap-cover__next-label">{{ cap.ui.nextLabel }}</span>
-            <span class="cap-cover__sep" aria-hidden="true">{{ SEP }}</span>
+            <span class="cap-cover__sep">{{ SEP }}</span>
             <span class="cap-cover__next-when cap-data">{{ next.when }}</span>
           </span>
-          <span class="cap-cover__sep cap-cover__sep--rows" aria-hidden="true">{{ SEP }}</span>
+          <span class="cap-cover__sep cap-cover__sep--rows">{{ SEP }}</span>
           <span class="cap-cover__next-row">
             <span class="cap-cover__next-name">{{ next.name }}</span>
             <template v-if="next.countdown">
-              <span class="cap-cover__sep" aria-hidden="true">{{ SEP }}</span>
+              <span class="cap-cover__sep">{{ SEP }}</span>
               <span class="cap-cover__next-countdown">{{ next.countdown }}</span>
             </template>
           </span>
@@ -305,10 +329,10 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
           <span class="cap-cover__next-row">
             <span class="cap-cover__next-label">{{ cap.ui.firstLabel }}</span>
           </span>
-          <span class="cap-cover__sep cap-cover__sep--rows" aria-hidden="true">{{ SEP }}</span>
+          <span class="cap-cover__sep cap-cover__sep--rows">{{ SEP }}</span>
           <span class="cap-cover__next-row">
             <span class="cap-cover__next-when cap-data">{{ firstLine.when }}</span>
-            <span class="cap-cover__sep" aria-hidden="true">{{ SEP }}</span>
+            <span class="cap-cover__sep">{{ SEP }}</span>
             <span class="cap-cover__next-name">{{ firstLine.name }}</span>
           </span>
         </template>
@@ -335,7 +359,8 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
  * y 330 à 428 ; « son rythme. » de 433 à 544 ; signature, ligne de base à 592 ;
  * chapeau de 632 à 716 ; action de 740 à 792 ; prochain cours de 816 à 844, soit
  * 56 px au-dessus du bord bas. @390 × 844 : « Chacun » de 470 à 515, action de
- * 695 à 747, prochain cours de 767 à 812.
+ * 695 à 747, prochain cours de 767 à 812, sur noir ; photo 4:5 de 844 à 1332
+ * (Plan B LCP).
  */
 .cap-cover {
   /* Partition de l'intro, comptée depuis html.hero-ready ; fin à 1 240 ms (< --seq-max). */
@@ -363,7 +388,12 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
   justify-content: flex-end;
   min-block-size: max(100svh - var(--banner-height), 40rem);
   margin-block-start: calc(var(--cover-under) * -1);
-  overflow: clip;
+  /*
+   * Rien ne déborde en largeur au rendu normal (vérifié de 320 à 1920 px) : la
+   * section ne rogne qu'en hauteur. Avec un espacement du texte élargi (WCAG
+   * 1.4.12), « son rythme. » peut dépasser le bord droit : il reste lisible.
+   */
+  overflow: visible clip;
   background: var(--cf-noir);
   color: var(--cf-craie);
 }
@@ -428,8 +458,13 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
   --cap-cover-edge: clamp(var(--page-gutter), 100cqi - var(--fit-min) - var(--cover-end), 4rem);
 
   align-items: start;
+  /*
+   * Le bloc est ancré en bas ; s'il grandit (espacement du texte élargi, WCAG
+   * 1.4.12, police agrandie), il pousse la couverture au lieu de remonter sous
+   * l'en-tête. Au rendu normal, il n'atteint jamais cette marge.
+   */
+  padding-block: calc(var(--header-height) + 1rem) var(--cover-pad-bottom);
   padding-inline: var(--pad);
-  padding-block-end: var(--cover-pad-bottom);
 }
 
 .cap-cover__body > * {
@@ -449,6 +484,27 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
     );
   container-type: inline-size;
   margin-block: 0;
+}
+
+/*
+ * Repli du délié (sous 48em) : quand le H1 est plus étroit que « Chacun » à son
+ * plancher (--repli-at), CapFitWord le passe plein en chasse 75 %, à la taille
+ * qui remplit la ligne ; --fs-delie suit, pour que le plein reste calé 0,05
+ * capitale sous sa ligne de base. round(down, …) vaut 0 sous le seuil et le seuil
+ * lui-même au-delà : il y annule le terme du repli. Même seuil que CapFitWord
+ * (largeur < plancher × em), sans calcul côté client.
+ */
+@supports (inline-size: round(down, 1px, 1px)) {
+  @media (max-width: 47.99em) {
+    .cap-cover__title {
+      --repli-at: calc(4rem * var(--em-delie-m));
+      --fs-delie: max(
+        100cqi / var(--em-delie-m),
+        max(2.75rem, 100cqi / var(--em-delie-r)) - 10 *
+          round(down, min(100cqi, var(--repli-at)), var(--repli-at))
+      );
+    }
+  }
 }
 
 .cap-cover__line {
@@ -592,31 +648,9 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
   margin-block-start: 1.5rem;
 }
 
-/* La fente du mini-complexe porte la ligne plate au repos. */
+/* Marges de 20 px sur mobile (bouton à fente, v2.css) : la ligne du lien tient à 375 px. */
 .cap-cover__cta {
-  padding-inline: 20px;
-}
-
-.cap-cover__cta-rest {
-  position: absolute;
-  inset-block-start: calc(50% - 7px);
-  inset-inline-start: 20px;
-  inline-size: 20px;
-  block-size: 14px;
-  fill: none;
-  stroke: currentcolor;
-  stroke-width: 1.5;
-  clip-path: inset(0);
-  transition: clip-path 160ms var(--ease-in);
-}
-
-.cap-cover__cta:is(:hover, :focus-visible) .cap-cover__cta-rest {
-  clip-path: inset(0 0 0 100%);
-  transition: clip-path var(--dur-state) var(--ease-trace);
-}
-
-html:not(.has-motion) .cap-cover__cta-rest {
-  transition: none;
+  --button-pad: 20px;
 }
 
 .cap-cover__planning {
@@ -644,8 +678,17 @@ html:not(.has-motion) .cap-cover__cta-rest {
   white-space: nowrap;
 }
 
+/*
+ * Sur deux rangées, le point médian entre elles n'est pas affiché, mais il reste
+ * lu : la ligne s'entend « mer. 19 h 00 · Cross training » à toutes les largeurs.
+ */
 .cap-cover__sep--rows {
-  display: none;
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .cap-cover__next-label {
@@ -705,11 +748,7 @@ html:not(.has-motion) .cap-cover__cta-rest {
   }
 
   .cap-cover__cta {
-    padding-inline: 24px;
-  }
-
-  .cap-cover__cta-rest {
-    inset-inline-start: 24px;
+    --button-pad: 24px;
   }
 
   /* Une seule ligne de 28 px : « Prochain cours · mer. 19 h 00 · Cross training · dans 40 min ». */
@@ -721,7 +760,11 @@ html:not(.has-motion) .cap-cover__cta-rest {
   }
 
   .cap-cover__sep--rows {
-    display: inline;
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    overflow: visible;
+    clip-path: none;
   }
 
   .cap-cover__next-when {
@@ -769,20 +812,58 @@ html:not(.has-motion) .cap-cover__cta-rest {
   }
 }
 
-/* Mobile : voile renforcé sous le bloc de texte (zone 0,54–1 du recadrage). */
+/*
+ * ── Mobile : Plan B LCP (brief §7.1) ─────────────────────────────────────────
+ * Le simulateur de Lighthouse compte, pour une image LCP, tout ce qui a fini de
+ * charger avant elle, JS compris : la photo plein cadre manquait P3 (LCP mobile
+ * simulé de 2,8 à 3,1 s). Un texte peint dès la première image n'est compté que
+ * jusqu'au FCP (≈ 1,2 s). Le premier écran ne porte donc que le bloc de texte,
+ * sur noir, ancré en bas aux mêmes cotes que sur la photo ; la photo vient
+ * dessous, en 4:5, et commence au bas de l'écran. Aucun de ses pixels ne doit
+ * être visible au chargement : elle redeviendrait l'élément LCP (mesuré : la
+ * moindre bande de photo dépasse la surface d'une ligne du H1).
+ */
 @media (max-width: 47.99em) {
+  .cap-cover {
+    justify-content: flex-start;
+    min-block-size: 0;
+  }
+
+  /* Un écran, depuis le bas du bandeau : le texte reste ancré en bas, à 32 px du bord. */
+  .cap-cover__body {
+    align-content: end;
+    min-block-size: calc(100svh - var(--banner-height));
+  }
+
+  /*
+   * La photo suit le texte. Elle est décorative (alt vide) et jamais focalisable :
+   * `order` ne change ni la lecture ni l'ordre du focus. En paysage, un écran au
+   * plus. Sans min-block-size: 0, l'image (1:2) imposerait sa hauteur au 4:5.
+   */
+  .cap-cover__photo {
+    position: relative;
+    inset: auto;
+    z-index: 0;
+    order: 1;
+    aspect-ratio: 4 / 5;
+    min-block-size: 0;
+    max-block-size: 100svh;
+  }
+
+  /* Le recadrage 1:2, vu en 4:5 : de la tête aux hanches. */
+  .cap-cover .cap-cover__photo :deep(.cap-photo__img) {
+    object-position: 50% 0;
+  }
+
+  /* Plus aucun texte sur la photo : ses voiles de contraste n'ont plus d'objet. */
+  .cap-cover__veil--top,
+  .cap-cover__veil--bottom {
+    display: none;
+  }
+
   /* À chasse 100 %, la courbe basse du C rejoint la ligne de base plus tôt. */
   .cap-cover__trace {
     --join: 0.165em;
-  }
-
-  .cap-cover__veil--bottom {
-    background: linear-gradient(
-      to top,
-      rgb(12 12 11 / 0.88) 0,
-      rgb(12 12 11 / 0.88) 30%,
-      rgb(12 12 11 / 0) 58%
-    );
   }
 }
 
@@ -848,6 +929,10 @@ html.hero-intro .cap-cover__strike :deep(.cap-fit__word) {
 }
 
 /* Se poser : chapeau et signature montent dans leur masque, le prochain cours apparaît. */
+html.hero-intro .cap-cover__chapeau {
+  overflow-y: clip;
+}
+
 html.hero-intro .cap-cover__chapeau-text {
   animation: cap-cover-rise-step var(--dur-layout) var(--ease-out) var(--intro-chapeau) backwards
     var(--intro-state);
@@ -905,7 +990,13 @@ html.hero-intro .cap-cover__next {
   }
 }
 
-/* Ligne de base à 82,3 % de la hauteur de ligne (0,7075 / 0,86). */
+/*
+ * De la ligne de base, à 82,3 % de la hauteur de ligne (0,7075 / 0,86), au haut
+ * de la boîte (§4.2 : inset(0)) : juste au-dessus du contour fantôme, dont le
+ * trait dépasse de 0,02 em le haut des capitales. Finir plus haut balaierait du
+ * vide : le remplissage visible s'arrêterait net vers 127 ms, à pleine vitesse,
+ * au lieu de se poser sur les 230 ms de --ease-strike.
+ */
 @keyframes cap-cover-strike {
   from {
     visibility: visible;
@@ -914,20 +1005,22 @@ html.hero-intro .cap-cover__next {
 
   to {
     visibility: visible;
-    clip-path: inset(-0.2em);
+    clip-path: inset(0 -0.2em 0 -0.2em);
   }
 }
 
-/* Le texte monte d'un pas (--move-s), découvert depuis le bas de sa boîte : son sol est fixe. */
+/*
+ * Le texte monte d'un pas (--move-s) dans son masque, en fondu : les trois lignes
+ * arrivent ensemble, dans l'ordre de lecture (un balayage depuis le bas montrait
+ * la dernière ligne d'abord). Départ à 0,01 et non 0, invisible sur le noir : un
+ * texte d'opacité nulle n'est pas peint, donc pas candidat LCP au premier rendu.
+ * Il le deviendrait en apparaissant, vers 1,3 s, et sous 400 px (Plan B) il est
+ * plus grand que les lignes du H1 (mesuré : LCP observé de 0,2 à 1,3 s).
+ */
 @keyframes cap-cover-rise-step {
   from {
-    clip-path: inset(100% 0 var(--move-s) 0);
+    opacity: 0.01;
     transform: translateY(var(--move-s));
-  }
-
-  to {
-    clip-path: inset(0);
-    transform: none;
   }
 }
 

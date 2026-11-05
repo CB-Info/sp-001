@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import '~/assets/css/v2.css';
+import { capSrcset } from '~/components/cap/CapPhoto.vue';
 import { cap } from '~/data/cap';
-import variants from '~/data/image-variants.json';
 
 /**
  * V2 : maquette non officielle de site pour CAP Fitness by EBC Sport, direction
@@ -15,14 +15,25 @@ import variants from '~/data/image-variants.json';
  * pour les infos pratiques, tout en HTML natif) : le JS du premier chargement
  * reste léger.
  */
+/*
+ * Aperçu de partage. og:image reste relative (brief §4.0) : le domaine de
+ * production n'est pas connu du dépôt. Les robots stricts (LinkedIn, X,
+ * WhatsApp) veulent une URL absolue et un og:url ; à poser quand le domaine
+ * sera fixé, par une URL de site lue au build (runtimeConfig).
+ */
 useSeoMeta({
   title: cap.meta.title,
   description: cap.meta.description,
   ogTitle: cap.meta.title,
   ogDescription: cap.meta.description,
   ogImage: '/v2/og.png',
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
+  ogImageType: 'image/png',
+  ogImageAlt: cap.meta.imageAlt,
   ogLocale: 'fr_FR',
   ogType: 'website',
+  twitterCard: 'summary_large_image',
 });
 
 /**
@@ -32,11 +43,6 @@ useSeoMeta({
  */
 const EARLY = { rootMargin: '0px 0px 100% 0px' };
 
-const $img = useImage();
-const srcset = (src: string) =>
-  ((variants as Record<string, { widths: number[] }>)[src]?.widths ?? [])
-    .map((width) => `${$img(src, { width, format: 'avif' })} ${width}w`)
-    .join(', ');
 const cover = cap.photos.couverture;
 
 useHead({
@@ -70,7 +76,7 @@ useHead({
       type: 'image/avif',
       fetchpriority: 'high' as const,
       media,
-      imagesrcset: srcset(src),
+      imagesrcset: capSrcset(src, 'avif'),
       imagesizes: '100vw',
     })),
   ],

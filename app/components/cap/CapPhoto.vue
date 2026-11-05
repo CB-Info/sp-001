@@ -1,7 +1,38 @@
-<script setup lang="ts">
+<script lang="ts">
 import type { Photo } from '~/types/cap';
 import variants from '~/data/image-variants.json';
 
+type Entry = {
+  width: number;
+  height: number;
+  widths: number[];
+  hash: string;
+  placeholder?: string;
+};
+const manifest = variants as Record<string, Entry>;
+
+/**
+ * URL d'une variante pré-générée (scripts/build-images.mjs) : la plus petite au
+ * moins aussi large que demandé, plafonnée à la largeur du master. Même règle que
+ * le provider de la V1 (app/providers/variants.ts), sans le runtime de
+ * @nuxt/image (environ 3 Ko gzip au premier chargement), qui ne servait ici qu'à
+ * composer ces URL. Partagée avec le préchargement de pages/v2.vue.
+ */
+export function capImage(src: string, width: number, format: 'avif' | 'webp' | 'jpg'): string {
+  const entry = manifest[src];
+  if (!entry) throw new Error(`Image sans variantes : ${src} (lancer scripts/build-images.mjs)`);
+  const chosen = entry.widths.find((w) => w >= width) ?? entry.width;
+  const base = src.replace(/^\/images\//, '/img/').replace(/\.jpg$/, '');
+  return `${base}-${chosen}.${entry.hash}.${format}`;
+}
+
+/** Liste srcset de toutes les variantes d'une image, dans un format. */
+export function capSrcset(src: string, format: 'avif' | 'webp' | 'jpg'): string {
+  return (manifest[src]?.widths ?? []).map((w) => `${capImage(src, w, format)} ${w}w`).join(', ');
+}
+</script>
+
+<script setup lang="ts">
 /**
  * Une photo de la série « nuit » : <picture> avec ses variantes pré-générées
  * (AVIF, WebP, JPEG ; scripts/build-images.mjs), le recadrage dirigé sous 48em
@@ -34,21 +65,7 @@ const props = withDefaults(
   },
 );
 
-type Entry = {
-  width: number;
-  height: number;
-  widths: number[];
-  hash: string;
-  placeholder?: string;
-};
-const manifest = variants as Record<string, Entry>;
-const $img = useImage();
 const MOBILE = '(max-width: 47.99em)';
-
-function srcset(src: string, format: 'avif' | 'webp' | 'jpg') {
-  const widths = manifest[src]?.widths ?? [];
-  return widths.map((width) => `${$img(src, { width, format })} ${width}w`).join(', ');
-}
 
 const crop = computed(() => (props.mobileCrop ? props.photo.mobile : undefined));
 
@@ -59,13 +76,13 @@ const sources = computed(() => {
       list.push({
         media: MOBILE,
         type: `image/${format}`,
-        srcset: srcset(crop.value.src, format),
+        srcset: capSrcset(crop.value.src, format),
         sizes: props.sizesMobile,
       });
     }
     list.push({
       type: `image/${format}`,
-      srcset: srcset(props.photo.src, format),
+      srcset: capSrcset(props.photo.src, format),
       sizes: props.sizes,
     });
   }
@@ -97,8 +114,8 @@ const style = computed(() => ({
       />
       <img
         class="cap-photo__img"
-        :src="$img(photo.src, { width: 1280, format: 'jpg' })"
-        :srcset="srcset(photo.src, 'jpg')"
+        :src="capImage(photo.src, 1280, 'jpg')"
+        :srcset="capSrcset(photo.src, 'jpg')"
         :sizes="sizes"
         :width="photo.width"
         :height="photo.height"

@@ -28,7 +28,11 @@ export interface WeekSlot {
   /** Étiquettes de mise en avant, séparées par des espaces (`[data-tags~=…]`). */
   tags: string;
   ics: string;
-  /** Suffixe masqué du lien de réservation : « , réserver, lundi ». */
+  /**
+   * Suffixe masqué du lien de réservation : « — réserver, lundi », précédé d'une
+   * espace. Jamais de virgule en tête : Chromium entoure d'un séparateur le texte
+   * d'un élément hors flux, ce qui donnerait « Pound , réserver ».
+   */
   suffixe: string;
   /** Nom accessible du lien agenda : « Ajouter le Cardio Jump du lundi, 18 h 15 à mon agenda ». */
   agenda: string;
@@ -79,8 +83,9 @@ export interface WeekDay {
  * la bande, pilote la découpe des cinq pistes et la position du curseur. À 1, le
  * scrub est tué et la bande reste écrite ; le curseur rejoint « maintenant »
  * (--dur-layout, --ease-in-out) ou s'efface hors des plages horaires. Un focus
- * clavier dans la section pousse aussitôt la progression à 1. L'état initial
- * n'est posé que si la bande est hors de l'écran à l'arrivée de GSAP ; sans JS
+ * clavier dans la section, ou un lien d'ancre vers elle, pousse aussitôt la
+ * progression à 1. L'état initial n'est posé que si la bande est hors de l'écran
+ * à l'arrivée de GSAP et qu'aucun trajet d'ancre ne mène à la section ; sans JS
  * et en mouvement réduit, la bande est entièrement tracée.
  */
 const w = cap.week;
@@ -175,11 +180,41 @@ const mentions = (() => {
 const BAND_MEDIA = '(min-width: 64em)';
 const section = useTemplateRef<HTMLElement>('section');
 
+/** Le fragment (« #semaine », « #reserver ») vise la section ou l'un de ses blocs. */
+function vise(root: HTMLElement, hash: string): boolean {
+  let id = '';
+  try {
+    id = decodeURIComponent(hash.slice(1));
+  } catch {
+    return false; // fragment mal formé, tapé à la main : il ne vise rien
+  }
+  const target = id ? document.getElementById(id) : null;
+  return target !== null && root.contains(target);
+}
+
 useMotion(section, ({ gsap }, root, contextSafe) => {
   const band = root.querySelector<HTMLElement>('[data-motion="semaine-bande"]');
   const cursor = root.querySelector<HTMLElement>('[data-motion="semaine-curseur"]');
-  // Déjà à l'écran à l'arrivée de GSAP (ancre, rechargement) : la bande reste écrite.
-  if (!band || !cursor || !matchMedia(BAND_MEDIA).matches || reached(band)) return undefined;
+  /*
+   * La bande reste écrite :
+   * - déjà à l'écran à l'arrivée de GSAP (rechargement, saut d'ancre natif) ;
+   * - ou pendant le trajet de Lenis vers une ancre de la section (« Semaine »,
+   *   « Voir le planning », « Réserve ta place ») : la section s'hydrate un écran
+   *   avant (v2.vue), donc en route, bande encore hors de l'écran, et l'adresse
+   *   porte déjà le fragment. Armée, la bande s'arrêterait dans la plage du
+   *   scrub (à 1440 × 900, l'ancre #semaine pose son haut à 580 px, 64 % de
+   *   l'écran) et y resterait à moitié écrite : rien n'y prend le focus.
+   *   Un fragment resté dans l'adresse (trajet interrompu, puis retour à la
+   *   molette) laisse au pire la bande écrite : l'état final.
+   */
+  if (
+    !band ||
+    !cursor ||
+    !matchMedia(BAND_MEDIA).matches ||
+    reached(band) ||
+    vise(root, location.hash)
+  )
+    return undefined;
 
   // État initial : le curseur à 11 h 30, les pistes découvertes jusqu'à lui seulement.
   band.dataset.ecriture = 'scrub';
@@ -236,8 +271,22 @@ useMotion(section, ({ gsap }, root, contextSafe) => {
   // Clavier : un focus dans la section montre aussitôt la bande entière.
   root.addEventListener('focusin', settle);
 
+  /*
+   * Bande déjà armée (on s'était arrêté juste au-dessus) puis lien d'ancre vers
+   * la section : l'écriture finit au clic, pendant le trajet. Entrée sur un lien
+   * produit aussi un clic. En capture : rien en aval ne peut l'arrêter.
+   */
+  const onAnchorClick = (event: MouseEvent) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+      return;
+    const link = (event.target as Element | null)?.closest('a');
+    if (link?.hash && link.pathname === location.pathname && vise(root, link.hash)) settle();
+  };
+  document.addEventListener('click', onAnchorClick, true);
+
   return () => {
     root.removeEventListener('focusin', settle);
+    document.removeEventListener('click', onAnchorClick, true);
     scrub.scrollTrigger?.kill();
     scrub.kill();
     landing?.kill();

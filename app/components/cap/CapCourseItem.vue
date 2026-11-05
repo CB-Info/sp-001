@@ -3,7 +3,7 @@ import { cap } from '~/data/cap';
 import { motionAllowed } from '~/motion/env';
 import { duration } from '~/motion/tokens';
 import type { Course, Session } from '~/types/cap';
-import { formatHeure, jourCourt, type ParisNow } from '~/utils/cap-time';
+import { formatHeure, jourCourt, toMinutes, type ParisNow } from '~/utils/cap-time';
 
 /**
  * Un cours (brief §4.4) : `<article id="cours-{slug}">`, en-tête d'accordéon et
@@ -15,11 +15,14 @@ import { formatHeure, jourCourt, type ParisNow } from '~/utils/cap-time';
  * moins de 64 px est interdit). C'est un renfort visuel : l'intensité est
  * toujours écrite en texte, sous le nom.
  *
- * Le carré de 10 px qui suit le nom, posé sur sa ligne de base comme un point,
+ * Le carré de 10 px qui suit le nom, centré sur la hauteur de ses capitales,
  * porte le code d'état du logo : contour = fiche fermée, plein citron = ouverte.
  *
  * Accordéon non exclusif : chaque fiche s'ouvre et se ferme seule.
- * - Sans JS : toutes les fiches ouvertes (CapCourseSheet).
+ * - Sans JS : toutes les fiches ouvertes (CapCourseSheet) ; le HTML servi le dit
+ *   (`aria-expanded="true"`, carré plein). Avec JS, un script en ligne de
+ *   CapCourses repasse l'attribut à `false` avant l'hydratation, différée : le
+ *   serveur ne peut pas savoir si le JS est actif.
  * - Avec JS : fermées dès le premier rendu ; à l'hydratation, une fiche fermée
  *   reçoit `hidden="until-found"` (recherche dans la page), sans transition.
  * - Fermeture : la fiche reste rendue le temps de sa transition (0,65 ×
@@ -48,15 +51,21 @@ const headId = `cours-${props.course.slug}-bouton`;
 const panelId = `cours-${props.course.slug}-fiche`;
 const calme = props.course.groupe === 'calme';
 
+/** Écart au plus, en minutes, entre deux créneaux qui s'enchaînent (Cardio Jump : 45 min). */
+const CHAINED = 120;
+
 /**
- * Créneaux à droite du nom, en donnée : « lun. 18 h 15 · 19 h 00 » (le jour
- * n'est pas répété pour deux créneaux qui se suivent le même jour).
+ * Créneaux à droite du nom, en donnée : « lun. 18 h 15 · 19 h 00 ». Le jour
+ * n'est pas répété pour deux créneaux qui s'enchaînent, à 2 h au plus ; midi et
+ * soir le répètent : « mer. 12 h 15 · mer. 19 h 00 · ven. 19 h 00 » (§4.4 3b).
  */
 const slots = props.sessions
   .map((session, index) => {
     const time = formatHeure(session.start);
-    const sameDay = props.sessions[index - 1]?.day === session.day;
-    return sameDay ? time : `${jourCourt(session.day)}${NBSP}${time}`;
+    const prev = props.sessions[index - 1];
+    const follows =
+      prev?.day === session.day && toMinutes(session.start) - toMinutes(prev.start) <= CHAINED;
+    return follows ? time : `${jourCourt(session.day)}${NBSP}${time}`;
   })
   .join(SEP);
 
@@ -71,6 +80,13 @@ const closing = ref(false);
 /** Coupe les transitions le temps d'un changement immédiat (montage, recherche). */
 const instant = ref(true);
 const concealed = computed(() => enhanced.value && !open.value && !closing.value);
+/**
+ * État annoncé par le bouton. Avant le montage, la fiche est ouverte sans JS
+ * (rien ne la ferme) : `true`. Avec JS, le script en ligne l'a déjà ramené à
+ * `false` dans le DOM ; l'écart avec ce premier rendu est attendu
+ * (`data-allow-mismatch`), et `enhanced` le résorbe au montage.
+ */
+const expanded = computed(() => open.value || !enhanced.value);
 let closeTimer: ReturnType<typeof setTimeout> | undefined;
 
 /** Le changement suivant se fait sans transition, puis elles reviennent. */
@@ -130,9 +146,10 @@ onBeforeUnmount(() => clearTimeout(closeTimer));
           :id="headId"
           type="button"
           class="cap-course__button"
-          :aria-expanded="open"
+          :aria-expanded="expanded"
           :aria-controls="panelId"
           data-accordion-head
+          data-allow-mismatch="attribute"
           @click="toggle"
         >
           <span class="cap-course__name cap-display">{{ course.nom }}</span>
@@ -227,8 +244,20 @@ onBeforeUnmount(() => clearTimeout(closeTimer));
   }
 }
 
+/*
+ * Centré sur la hauteur de capitale (0,68 em) : la boîte du bouton est plus
+ * haute que les capitales, d'où la remontée de 0,06 em (calée sur --name-size,
+ * dont le carré hérite). Posé sur la ligne de base, il se lisait comme un point.
+ */
 .cap-course__square {
-  align-self: baseline;
+  align-self: center;
+  translate: 0 -0.06em;
+}
+
+/* Sans JS, toutes les fiches sont ouvertes : le carré le dit (plein citron). */
+html:not(.js) .cap-course__square {
+  border-color: var(--cf-citron);
+  background: var(--cf-citron);
 }
 
 /* Ancre de ligne de base : un point sans taille, aligné sur celle du nom. */
@@ -343,6 +372,8 @@ onBeforeUnmount(() => clearTimeout(closeTimer));
  */
 @media (min-width: 48em) {
   .cap-course--calme .cap-course__button {
+    /* La borne rend les 16 px des marges négatives : le fond couvre aussi le carré. */
+    max-inline-size: calc(100% + 16px);
     margin-inline: -8px;
     padding-inline: 8px;
     background: var(--bg);
@@ -353,6 +384,11 @@ onBeforeUnmount(() => clearTimeout(closeTimer));
   .cap-course--calme .cap-course__name {
     -webkit-text-fill-color: CanvasText;
     -webkit-text-stroke: 0;
+  }
+
+  html:not(.js) .cap-course__square {
+    border-color: CanvasText;
+    background: CanvasText;
   }
 }
 </style>

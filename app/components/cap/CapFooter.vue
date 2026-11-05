@@ -126,7 +126,7 @@ useMotion(footer, ({ gsap, ScrollTrigger }, root) => {
             <a class="cap-footer__link cap-link" :href="link.href">{{ link.label }}</a>
           </li>
         </ul>
-        <ul class="cap-footer__list" role="list">
+        <ul class="cap-footer__list cap-footer__list--page" role="list">
           <li>
             <a class="cap-footer__link cap-link" :href="cap.ui.otherDirection.href">{{
               cap.ui.otherDirection.label
@@ -224,11 +224,27 @@ useMotion(footer, ({ gsap, ScrollTrigger }, root) => {
   margin: 0;
 }
 
-/* Cibles de 44 px : chaque lien occupe sa rangée. */
+/*
+ * Les liens de la page prennent la place qui reste à droite (8rem au moins),
+ * quitte à passer sur deux ou trois lignes : à sa largeur naturelle, le libellé
+ * du lien vers l'autre projet renverrait la liste sous celle du chapitre, et le
+ * pied de page grandirait de 117 px à 1440 (de 112 px à 390).
+ */
+.cap-footer__list--page {
+  flex: 1 1 8rem;
+  text-wrap: balance;
+}
+
+/*
+ * Cibles de 44 px : chaque lien occupe sa rangée. Le retrait haut et bas, pris
+ * sur ces 44 px, garde la première ligne d'un libellé sur deux ou trois lignes
+ * alignée sur celle d'un lien d'une ligne.
+ */
 .cap-footer__link {
   display: inline-flex;
   align-items: center;
   min-block-size: 44px;
+  padding-block: max(0px, (44px - 1lh) / 2);
   font-family: var(--font-body);
   font-size: clamp(1rem, 0.954rem + 0.19vw, 1.125rem); /* 16 → 18 */
   font-weight: 500;
@@ -236,10 +252,14 @@ useMotion(footer, ({ gsap, ScrollTrigger }, root) => {
 }
 
 /* ── Ce qui reste à confirmer, mentions ───────────────────────────────────── */
+/*
+ * 32 px du bas du logo et des liens jusqu'au filet, à toutes les largeurs : cet
+ * écart n'est pas coté au §4.9, et la page doit tenir sous 13 000 px (V9).
+ */
 .cap-footer__rows {
   row-gap: clamp(2.5rem, 2.214rem + 1.172vw, 3rem); /* 40 → 48 */
   align-items: start;
-  margin: var(--pad-s) var(--pad) 0;
+  margin: 2rem var(--pad) 0;
   padding-block: clamp(2.5rem, 2.214rem + 1.172vw, 3rem); /* 40 → 48 */
   border-block-start: 1px solid var(--cf-graphite);
 }

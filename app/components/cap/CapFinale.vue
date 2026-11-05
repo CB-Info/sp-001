@@ -100,7 +100,7 @@ const maskId = useId();
 /*
  * Mini-complexe du bouton (20 × 14, style « instrument »), comme celui de la
  * couverture : il s'écrit au survol et au focus dans la fente réservée à gauche
- * du libellé (v2.css). Au repos, la fente porte la ligne plate.
+ * du libellé (.cap-button--fente, v2.css). Au repos, la fente est vide.
  */
 const PULSE_BASELINE = 7.2;
 const pulse = path([
@@ -108,7 +108,6 @@ const pulse = path([
   ...complexAtR(10, PULSE_BASELINE, 6.2),
   [20, PULSE_BASELINE],
 ]);
-const pulseRest = `M0 ${PULSE_BASELINE}H20`;
 
 /* ── La donnée posée sur le tube, à l'heure de Paris ──────────────────────────
  * Rendu serveur et premier rendu client : l'horloge vaut undefined, d'où la
@@ -264,21 +263,13 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
         </div>
       </div>
 
-      <a class="cap-finale__cta cap-button cap-button--l" href="#reserver">
-        <span class="cap-finale__cta-slot">
+      <a class="cap-finale__cta cap-button cap-button--l cap-button--fente" href="#reserver">
+        <span class="cap-button__libelle">
           <svg class="cap-button__pulse" viewBox="0 0 20 14" aria-hidden="true" focusable="false">
             <path :d="pulse" />
           </svg>
-          <svg
-            class="cap-finale__cta-rest"
-            viewBox="0 0 20 14"
-            aria-hidden="true"
-            focusable="false"
-          >
-            <path :d="pulseRest" />
-          </svg>
+          {{ cap.ui.reserve }}
         </span>
-        {{ cap.ui.reserve }}
       </a>
     </div>
   </section>
@@ -434,40 +425,6 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
   display: flex;
   inline-size: 100%;
   margin-block-start: calc(var(--cap) * 1.01 + var(--pad-s));
-}
-
-/* La fente du mini-complexe : la ligne plate au repos, le complexe au survol. */
-.cap-finale__cta-slot {
-  position: relative;
-  display: block;
-  flex: none;
-  inline-size: 20px;
-  block-size: 14px;
-}
-
-.cap-finale__cta-slot .cap-button__pulse {
-  display: block;
-}
-
-.cap-finale__cta-rest {
-  position: absolute;
-  inset: 0;
-  inline-size: 20px;
-  block-size: 14px;
-  fill: none;
-  stroke: currentcolor;
-  stroke-width: 1.5;
-  clip-path: inset(0);
-  transition: clip-path 160ms var(--ease-in);
-}
-
-.cap-finale__cta:is(:hover, :focus-visible) .cap-finale__cta-rest {
-  clip-path: inset(0 0 0 100%);
-  transition: clip-path var(--dur-state) var(--ease-trace);
-}
-
-html:not(.has-motion) .cap-finale__cta-rest {
-  transition: none;
 }
 
 /* ── Tablette : le plein sur les colonnes 1 à 6, signature ferrée à droite ── */

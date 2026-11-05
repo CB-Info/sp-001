@@ -23,8 +23,9 @@
 
 /*
  * Police d'affiche « CAP Display » : Anybody (OFL) instanciée en 900, chasse
- * 75–150 %, sous-ensemble du français (scripts/fonts/build-cap-display.py).
- * Déclarée ici et non dans fonts.css : la V1 ne la voit pas.
+ * 75–150 %, sous-ensemble du français, contours fusionnés à toutes les chasses
+ * (scripts/fonts/build-cap-display.py) : un délié au contour n'y trace aucun
+ * trait parasite. Déclarée ici et non dans fonts.css : la V1 ne la voit pas.
  */
 @font-face {
   font-family: 'CAP Display';
@@ -362,11 +363,34 @@
     --button-edge: var(--cf-citron);
   }
 
-  /* Fente de 20 px réservée à gauche du libellé : un mini-complexe s'y écrit. */
+  /*
+   * Bouton à fente (brief §5.3) : une fente de 20 px à gauche du libellé, où un
+   * mini-complexe s'écrit au survol et au focus. Balisage commun :
+   *   <a class="cap-button cap-button--fente">
+   *     <span class="cap-button__libelle"><svg class="cap-button__pulse">…</svg>Libellé</span>
+   *   </a>
+   * La fente est posée hors du flux, 8 px avant le libellé : le libellé reste au
+   * centre du bouton, même étiré sur toute la largeur. Les marges intègrent la
+   * fente (24 + 20 + 8 px d'un côté, 24 de l'autre, répartis à parts égales) :
+   * la largeur ne change pas. Au repos, la fente est vide : une ligne plate s'y
+   * lisait comme un tiret de dialogue (« — Réserve ta place »).
+   */
+  [data-site='v2'] .cap-button--fente {
+    --button-pad: 24px;
+
+    padding-inline: calc(var(--button-pad) + 14px);
+  }
+
+  [data-site='v2'] .cap-button__libelle {
+    position: relative;
+  }
+
   [data-site='v2'] .cap-button__pulse {
+    position: absolute;
+    inset-block-start: calc(50% - 7px);
+    inset-inline-end: calc(100% + 8px);
     inline-size: 20px;
     block-size: 14px;
-    flex: none;
     fill: none;
     stroke: currentcolor;
     stroke-width: 1.5;
@@ -384,6 +408,22 @@
     [data-site='v2'] .cap-button {
       border-color: ButtonText;
     }
+  }
+
+  /*
+   * Donnée que le club doit encore fournir (CapPending) : texte visible souligné
+   * en pointillé, la couleur n'est jamais le seul signal (WCAG 1.4.1). Ici et non
+   * dans le composant : partagé entre la page et les chapitres chargés à
+   * l'approche, il sortait en feuille à part, bloquante, en plus de sa copie en
+   * ligne. En couche : une surcharge d'un chapitre (hors couche) l'emporte.
+   */
+  [data-site='v2'] .cap-pending {
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-weight: 500;
+    text-decoration: underline dashed var(--cf-pointille);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
   }
 
   /* ── Liens : soulignés citron ───────────────────────────────────────────── */

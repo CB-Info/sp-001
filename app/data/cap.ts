@@ -12,6 +12,13 @@ import { typesetDeep } from '~/utils/typography';
  * dur dans les composants ; `typesetDeep` pose la typographie française.
  */
 
+/**
+ * Espace insécable, écrite en clair là où `typesetDeep` ne la pose pas seule :
+ * entre un nombre (ou un tiret d'attente) et son unité, « 14 h », « — € »
+ * (brief §2.4 : les heures s'écrivent toujours avec U+00A0).
+ */
+const NBSP = '\u00a0';
+
 const photo = (
   id: string,
   width: number,
@@ -50,7 +57,7 @@ const photos = {
     'cap-step',
     2880,
     1800,
-    'Cours de Step : trois paires de pieds montent ensemble sur les steps.',
+    'Cours de Step : les jambes de quatre personnes qui montent ensemble sur des steps.',
     '66% 60%',
     { width: 1440, height: 1800 },
   ),
@@ -65,14 +72,14 @@ const photos = {
     'cap-calme',
     960,
     1200,
-    'Un homme âgé, assis sur un tapis, en flexion avant, les yeux fermés.',
+    'Un homme âgé, assis jambes tendues sur un tapis, se penche doucement vers ses pieds.',
     '35% 60%',
   ),
   famille: photo(
     'cap-famille',
     2880,
     1620,
-    'Après le cours, six membres de tous âges rient ensemble, assis sur le sol et sur un banc.',
+    'Après un cours, un groupe de tous âges rit ensemble, assis au sol et sur des bancs ; un homme, debout, s’étire.',
     '55% 40%',
     { width: 1296, height: 1620 },
   ),
@@ -80,7 +87,7 @@ const photos = {
     'cap-lieu',
     2880,
     1234,
-    'La salle de biking vide, la nuit, éclairée par la lumière de la rue.',
+    'Une salle de biking vide, la nuit, éclairée par la lumière de la rue.',
     '55% 50%',
     { width: 987, height: 1234 },
   ),
@@ -385,6 +392,8 @@ export const cap = typesetDeep({
     title: 'CAP Fitness by EBC Sport : cours collectifs à [Commune] (maquette)',
     description:
       'Maquette non officielle de site pour CAP Fitness by EBC Sport : cours collectifs, planning de la saison d’après le flyer du club, réservation dans l’appli ou à l’accueil.',
+    /** Texte de remplacement de l'image de partage (public/v2/og.png). */
+    imageAlt: 'Logo CAP Fitness by EBC Sport, avec la mention « Maquette non officielle »',
   },
   brand: 'CAP Fitness by EBC Sport',
   nav,
@@ -406,7 +415,11 @@ export const cap = typesetDeep({
     pending: 'à confirmer',
     upcoming: 'à venir',
     agenda: 'agenda',
-    otherDirection: { label: 'Voir la direction 1', href: '/' },
+    /**
+     * La direction 1 (/) est une autre maquette, pour une salle fictive : le
+     * libellé le dit, pour que le club n'y lise pas une première proposition.
+     */
+    otherDirection: { label: 'Voir un autre projet : CLUSEM, salle fictive', href: '/' },
     top: 'Haut de page',
   },
 
@@ -450,7 +463,7 @@ export const cap = typesetDeep({
   courseSection: {
     delie: 'Fais monter',
     plein: 'le cœur.',
-    signature: 'puis redescends en douceur.',
+    signature: 'Puis redescends en douceur.',
     groupes: {
       cardio: 'cardio en musique',
       force: 'force et intensité',
@@ -504,12 +517,12 @@ export const cap = typesetDeep({
       annonceUn: '{n} créneau mis en avant',
       annoncePlus: ', plus la piste Bien-être',
     },
-    coupure: '14 h → 17 h',
+    coupure: `14${NBSP}h → 17${NBSP}h`,
     maintenant: 'maintenant',
     aujourdhui: '(aujourd’hui)',
     prochainCours: 'prochain cours',
     commenceA: 'commencé à {heure}',
-    reserverSuffixe: ', réserver, {jour}',
+    reserverSuffixe: ' — réserver, {jour}',
     jeudi: 'Pas de cours collectif au planning ce jour-là.',
     bienEtre: 'Pilates, Yoga, Stretching : créneaux à confirmer',
     bienEtreJour: 'Bien-être',
@@ -525,6 +538,12 @@ export const cap = typesetDeep({
     prochain: 'Prochain cours :',
     premier: 'Premier cours de la semaine :',
     bouton: 'Ajouter ce cours à mon agenda',
+    /**
+     * Suite du nom du bouton, en texte masqué. Elle commence par une espace et un
+     * mot, jamais par une virgule : Chromium entoure d'un séparateur le texte
+     * d'un élément hors flux, ce qui donnerait « agenda , Pound ».
+     */
+    boutonSuite: ' pour {cours}, {quand}',
     semaine: { label: 'ou les huit créneaux de la semaine', href: '/v2/agenda/semaine.ics' },
     note: 'Fichier .ics : durée provisoire d’une heure, à confirmer.',
     appli: {
@@ -571,7 +590,7 @@ export const cap = typesetDeep({
     },
     accueil: {
       titre: 'Accueil',
-      vide: '— h — à — h —',
+      vide: `—${NBSP}h${NBSP}— à —${NBSP}h${NBSP}—`,
       note: 'Horaires de la salle et de l’accueil : à confirmer. Accès en libre-service : à confirmer.',
     },
     formules: {
@@ -583,7 +602,7 @@ export const cap = typesetDeep({
         { nom: 'Salle et cours', detail: 'si un plateau existe' },
         { nom: 'Séance à l’unité', detail: '' },
       ],
-      prix: '— €',
+      prix: `—${NBSP}€`,
       pending: 'tarif à confirmer',
       note: 'Frais d’inscription, engagement et réductions : à confirmer. Demande les tarifs à l’accueil.',
     },

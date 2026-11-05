@@ -240,8 +240,15 @@ const faq = cap.faq.map((item) => ({ ...item, parts: parts(item.reponse) }));
 }
 
 /* ── Photo d'ouverture ────────────────────────────────────────────────────── */
+/*
+ * Piste bornée à la largeur de la section : dès 48em, la hauteur minimale de la
+ * photo (24rem), reportée par son 21:9, lui donne une largeur minimale
+ * automatique de 896 px, qui élargissait la piste et toute la page de 768 à
+ * 910 px (barre mobile coupée). La photo et le titre suivent la section.
+ */
 .cap-practical__cover {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .cap-practical__cover > * {

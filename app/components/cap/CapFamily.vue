@@ -79,8 +79,17 @@ const sectionStyle = {
 const BASELINE = 0.7075 / 0.86;
 /** Ligne de partage de la frappe, au repos : la ligne de base. */
 const STRIKE_FROM = `${(BASELINE * 100).toFixed(2)}%`;
-/** Fin de la frappe : au-dessus des capitales (aucun accent dans « une famille. »). */
-const STRIKE_TO = '-20%';
+/**
+ * Fin de la frappe : juste au-dessus du trait du contour (aucun accent dans
+ * « une famille. » ; capitales à 3,4 % de la boîte, trait de 0,04 em centré sur
+ * le dessin). Les 2 % au-dessus de la boîte effacent le bord lissé du trait, à
+ * cheval sur le haut de la boîte : à 0 %, un liseré d'un pixel restait à 390
+ * jusqu'à la fin. Viser plus haut (−20 %) remplissait le mot en 130 ms, à pleine
+ * vitesse, puis balayait du vide jusqu'à 230 ms ; ici, le mot est plein vers
+ * 175 ms (1440) et 195 ms (390), sur la fin de --ease-strike qui décélère : il
+ * se pose (§5.1).
+ */
+const STRIKE_TO = '-2%';
 /** La ligne de base de « une famille. » frappe en passant à 70 % de la hauteur de l'écran. */
 const STRIKE_LINE = 0.7;
 /** Opacité de départ du voile, rendue à 0 par le défilement. */
@@ -226,8 +235,9 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
  * Cotes @1440 × 900 (brief §4.6) : photo de 720 px (max(80svh, 35rem)) ;
  * « Plus qu'une salle, » délié citron 125 %, ≈ 97 px sur 1320 px (x 60 à 1380),
  * ligne de base sur le bord bas de la photo ; « une famille. » plein craie 80 %,
- * ≈ 200 px sur 1138 px, ferré à droite sur x 1380, haut des capitales 7 px sous
- * la rupture ; chapeau 64 px sous sa ligne de base. @390 : photo 4:5 (390 × 488),
+ * ≈ 200 px sur 1138 px, ferré à droite sur x 1380, haut des capitales 23 px sous
+ * la rupture, sous les descentes du délié (écart assumé au « 7 px » du brief) ;
+ * chapeau 64 px sous sa ligne de base. @390 : photo 4:5 (390 × 488),
  * ligne 1 en plein citron 75 % (44 px), « une famille. » plein 75 % (66 px).
  */
 .cap-family {
@@ -280,13 +290,30 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
 }
 
 /*
- * « une famille. » : haut des capitales à 0,035 fois sa taille sous la rupture
- * (7 px pour 200 px). La ligne 1 déborde de 0,1525 fois sa taille sous sa ligne
- * de base ; les capitales de la ligne 2 commencent à 0,0325 em du haut de sa boîte.
+ * « une famille. » : haut des capitales à --descente fois la taille de la ligne
+ * 1, plus 0,035 fois la sienne, sous la rupture. Les descentes de la ligne 1
+ * (queue du Q, virgule de « salle, ») tombent jusqu'à 0,19 em sous sa ligne de
+ * base : à 7 px sous la rupture, le N de « une » coupait la queue du Q et la
+ * virgule se lisait comme un accent de « famille. ». Le plein passe maintenant
+ * dessous, sans contact à aucune largeur. Le délié reste posé sur la rupture
+ * (seul le titre en dépend), le chapeau suit le plein.
+ * - Dès 48em (0,17) : 23 px sous la rupture à 1440, 4 px d'air franc sous la
+ *   queue du Q (7 à 1920, jamais moins de 2 de 768 à 1920 ; 0,16 descendait à
+ *   1 px vers 1120).
+ * - Sous 48em (0,21) : les deux lignes prennent toute la largeur, la virgule
+ *   tombe donc au-dessus du E de « famille. », et non plus du point. 0,16 ne lui
+ *   laissait qu'un filet de 1 px, lu encore comme une apostrophe ; 0,21 en
+ *   laisse 3 à 4 (11 px sous la rupture à 390).
+ * Calcul : la ligne 1 déborde de 0,1525 fois sa taille sous sa ligne de base ;
+ * les capitales de la ligne 2 commencent à 0,0325 em du haut de sa boîte.
  */
 .cap-family__line--plein {
+  --descente: 0.21;
+
   position: relative;
-  margin-block-start: calc(var(--fs-plein) * 0.0025 - var(--fs-delie) * 0.1525);
+  margin-block-start: calc(
+    var(--fs-delie) * (var(--descente) - 0.1525) + var(--fs-plein) * (0.035 - 0.0325)
+  );
   text-align: end;
 }
 
@@ -302,11 +329,15 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
 /*
  * Frappe armée (posée par le JS, hors écran seulement) : au-dessus de la ligne
  * de partage, le texte réel au contour craie ; en dessous, la copie pleine. La
- * ligne de partage monte de la ligne de base au-dessus des capitales : le mot
- * s'imprime par le bas, sans jamais doubler son contour.
+ * ligne de partage monte de la ligne de base au haut de la boîte : le mot
+ * s'imprime par le bas, sans jamais doubler son contour. L'intérieur du contour
+ * est noir, pas transparent : la ligne 2 est tout entière sur le noir, le
+ * contour se lit donc pareil, et une descente de la ligne 1 qui toucherait
+ * encore la ligne 2 (police agrandie, espacement 1.4.12) passe derrière les
+ * lettres, comme dans l'état final, au lieu de croiser leur contour.
  */
 .cap-family__line--plein[data-frappe] .cap-family__plein :deep(.cap-fit__word) {
-  -webkit-text-fill-color: transparent;
+  -webkit-text-fill-color: var(--cf-noir);
   -webkit-text-stroke: max(2px, 0.04em) currentcolor;
   clip-path: inset(-20% -0.2em calc(100% - var(--frappe)) -0.2em);
 }
@@ -403,6 +434,11 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
 
   .cap-family {
     --fs-plein: max(2.75rem, var(--plein-part) * var(--measure) / var(--em-plein-d));
+  }
+
+  /* La ligne 2 est ferrée à droite sur 86 % : la virgule surplombe le point. */
+  .cap-family__line--plein {
+    --descente: 0.17;
   }
 
   /*

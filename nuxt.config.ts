@@ -20,6 +20,18 @@ export default defineNuxtConfig({
 
   css: ['lenis/dist/lenis.css', '~/assets/css/main.css'],
 
+  features: {
+    /*
+     * Styles en ligne dans le HTML rendu (défaut de Nuxt), sauf ceux de la V2 :
+     * ses feuilles étaient recopiées dans la page puis retéléchargées à
+     * l'hydratation, et sa police redemandée par la seconde déclaration de
+     * CAP Display. En <link>, elles ne passent qu'une fois et restent en cache
+     * (/_nuxt immuable). La V1 garde ses styles en ligne.
+     */
+    inlineStyles: (id) =>
+      !/\/app\/(pages\/v2\.vue|components\/cap\/|assets\/css\/v2\.css)/.test(id ?? ''),
+  },
+
   app: {
     head: {
       htmlAttrs: { lang: 'fr' },
@@ -30,7 +42,8 @@ export default defineNuxtConfig({
         { name: 'robots', content: 'noindex' },
       ],
       // Icône déclarée : sans elle, le navigateur demande /favicon.ico (404 en console).
-      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      // La clé laisse une page la remplacer (pages/v2.vue) : un seul rel="icon" servi.
+      link: [{ key: 'icon', rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
       script: [{ innerHTML: motionBoot, tagPriority: 'critical' }],
     },
   },

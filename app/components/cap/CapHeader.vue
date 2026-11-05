@@ -14,8 +14,12 @@ import { complexAtR, path } from '~/utils/ecg';
  * - Passage de témoin : le bouton reste secondaire (filet craie) tant qu'un
  *   bouton citron est déjà à l'écran (couverture, #reserver, #fin), sinon il
  *   devient principal. Jamais deux aplats citron d'action à l'écran.
- * - Le chapitre qui coupe la ligne médiane de l'écran est souligné en citron
- *   (2 px) et porte aria-current ; l'état est partagé avec le menu.
+ * - Le chapitre courant est souligné en citron (2 px) et porte aria-current ;
+ *   l'état est partagé avec le menu. C'est celui qui occupe le haut de la zone de
+ *   lecture, juste sous l'en-tête, là où se posent les ancres : un lien mène
+ *   toujours au chapitre qu'il désigne. Avec la ligne médiane, « Réserve ta
+ *   place » désignait Famille dès 900 px de haut environ : #reserver, court,
+ *   clôt Semaine, et le milieu de l'écran tombait déjà dans le chapitre suivant.
  * - Le focus n'est jamais masqué par l'en-tête (critère 2.4.11) : un élément
  *   focalisé qui passerait dessous est ramené 16 px sous lui. Pas de
  *   scroll-padding sur la racine : Chrome recentre alors tout élément collant
@@ -35,16 +39,25 @@ const RELAYS = '[data-cover-cta], #reserver, #fin';
 const MENU_ID = 'menu';
 /** Marge laissée sous l'en-tête à un élément focalisé qu'il aurait masqué (px). */
 const FOCUS_CLEARANCE = 16;
+/** Débord de l'anneau de focus hors de l'élément : 2 px de trait, 2 px de décalage (v2.css). */
+const FOCUS_RING = 4;
+/**
+ * Haut de la zone de lecture : 2 px sous le scroll-margin-top des ancres (88 px,
+ * v2.css). Le chapitre qui précède une ancre, dont le bas touche alors 88 px,
+ * n'y entre pas.
+ */
+const READING_TOP = 90;
 
-/** Mini-complexe du bouton principal (20 × 14) : le tracé du logo, écrit au survol. */
+/**
+ * Mini-complexe du bouton principal (20 × 14) : le tracé du logo, écrit au survol
+ * dans la fente du bouton (.cap-button--fente, v2.css). Au repos, la fente est vide.
+ */
 const PULSE_BASELINE = 7.2;
 const PULSE = path([
   [0, PULSE_BASELINE],
   ...complexAtR(10, PULSE_BASELINE, 6.2),
   [20, PULSE_BASELINE],
 ]);
-/** Au repos, la fente porte la ligne plate (« se poser ») : même dessin que la couverture. */
-const PULSE_REST = `M0 ${PULSE_BASELINE}H20`;
 
 const open = useState<boolean>('cap-menu', () => false);
 const current = useState<string | null>('cap-section', () => null);
@@ -89,7 +102,7 @@ function onFocusIn(event: FocusEvent) {
   if (!target.matches(':focus-visible')) return;
   if (bar.value?.contains(target) || target.closest('dialog')) return;
   const { top } = target.getBoundingClientRect();
-  if (top >= edge || isFixed(target)) return;
+  if (top - FOCUS_RING >= edge || isFixed(target)) return;
   scrollBy({ top: top - edge - FOCUS_CLEARANCE, behavior: 'instant' });
 }
 
@@ -115,8 +128,10 @@ onMounted(() => {
     relayed.value = onScreen.size > 0;
   });
 
-  // Chapitre courant : celui qui coupe la ligne médiane de l'écran. Les chapitres
-  // se suivent : au plus deux se touchent sur la ligne, le plus bas l'emporte.
+  // Chapitre courant : celui qui occupe le haut de la zone de lecture, une bande
+  // de READING_TOP à la ligne médiane. Un chapitre y entre quand son haut passe
+  // la ligne médiane, et le garde jusqu'à ce que son bas passe sous l'en-tête ;
+  // si deux s'y trouvent, le plus haut l'emporte.
   const sections = cap.nav
     .map((link) => document.getElementById(link.href.slice(1)))
     .filter((section): section is HTMLElement => section !== null);
@@ -129,9 +144,9 @@ onMounted(() => {
         if (entry.isIntersecting) crossing.add(href);
         else crossing.delete(href);
       }
-      current.value = cap.nav.findLast((link) => crossing.has(link.href))?.href ?? null;
+      current.value = cap.nav.find((link) => crossing.has(link.href))?.href ?? null;
     },
-    { rootMargin: '-50% 0px -50% 0px' },
+    { rootMargin: `-${READING_TOP}px 0px -50% 0px` },
   );
 });
 
@@ -164,17 +179,16 @@ onBeforeUnmount(() => {
       </nav>
 
       <a
-        class="cap-button cap-header__cta"
+        class="cap-button cap-button--fente cap-header__cta"
         :class="{ 'cap-button--secondaire': relayed }"
         href="#reserver"
       >
-        <svg class="cap-button__pulse" viewBox="0 0 20 14" aria-hidden="true" focusable="false">
-          <path :d="PULSE" />
-        </svg>
-        <svg class="cap-header__rest" viewBox="0 0 20 14" aria-hidden="true" focusable="false">
-          <path :d="PULSE_REST" />
-        </svg>
-        {{ cap.ui.reserve }}
+        <span class="cap-button__libelle">
+          <svg class="cap-button__pulse" viewBox="0 0 20 14" aria-hidden="true" focusable="false">
+            <path :d="PULSE" />
+          </svg>
+          {{ cap.ui.reserve }}
+        </span>
       </a>
 
       <!-- Les deux libellés partagent une cellule : la largeur ne change pas entre « Menu » et « Fermer ». -->
@@ -268,10 +282,16 @@ html:not(.js) .cap-header {
   position: relative;
 }
 
+/*
+ * Cible de 44 px de haut, comme « Menu » (critère A4) : le logo garde sa taille
+ * et sa place, centré dans le lien (sinon 180 × 23 px sous 64em).
+ */
 .cap-header__home {
-  display: block;
+  display: flex;
   flex: none;
+  align-items: center;
   inline-size: 180px;
+  min-block-size: 44px;
 }
 
 /* ── Chapitres et bouton : ordinateur seulement ─────────────────────────── */
@@ -383,31 +403,9 @@ html.has-motion .cap-header__label::after {
   }
 }
 
-/* Fente du mini-complexe : la ligne plate au repos, effacée quand le complexe s'écrit. */
+/* Bouton à fente (v2.css), marges de 20 px : il tient à côté des chapitres dès 64em. */
 .cap-header__cta {
-  padding-inline: 20px;
-}
-
-.cap-header__rest {
-  position: absolute;
-  inset-block-start: calc(50% - 7px);
-  inset-inline-start: 20px;
-  inline-size: 20px;
-  block-size: 14px;
-  fill: none;
-  stroke: currentcolor;
-  stroke-width: 1.5;
-  clip-path: inset(0);
-  transition: clip-path 160ms var(--ease-in);
-}
-
-.cap-header__cta:is(:hover, :focus-visible) .cap-header__rest {
-  clip-path: inset(0 0 0 100%);
-  transition: clip-path var(--dur-state) var(--ease-trace);
-}
-
-html:not(.has-motion) .cap-header__rest {
-  transition: none;
+  --button-pad: 20px;
 }
 
 /* Passage de témoin en 240 ms ; le survol garde sa réponse de 140 ms. */

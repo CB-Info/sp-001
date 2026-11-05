@@ -11,7 +11,7 @@ import { formatHeure, sortSessions, useParisClock } from '~/utils/cap-time';
  * docs/brief/v2.md, §4.4).
  *
  * Titre, gabarit G3 (la diagonale) : « Fais monter » délié craie pleine largeur,
- * « le cœur. » plein craie ferré à droite une ligne plus bas, « puis redescends
+ * « le cœur. » plein craie ferré à droite une ligne plus bas, « Puis redescends
  * en douceur. » en signature citron (aucun délié ni tube citron dans le lockup).
  * Le H2 ne bouge jamais.
  *
@@ -21,14 +21,15 @@ import { formatHeure, sortSessions, useParisClock } from '~/utils/cap-time';
  *   liste défile ; un IntersectionObserver au milieu de l'écran désigne le cours
  *   actif et sa photo apparaît (transition d'opacité CSS). Seulement sous
  *   html.has-motion et à partir de 64em ; sinon chaque cours a sa propre photo
- *   pleine largeur. Les images masquées (display: none, chargement différé) ne
- *   sont pas téléchargées ;
+ *   pleine largeur, demandée à l'approche seulement. Les images masquées
+ *   (display: none, chargement différé) ne sont pas téléchargées ;
  * - 3b, force et intensité (#cours-force) : la photo déborde à gauche jusqu'au
  *   bord de l'écran, la colonne de droite descend d'un cran ; l'enchaînement du
  *   mercredi (CAF puis Cross training) est relié par un filet vertical citron ;
  * - 3c, retour au calme (#cours-calme) : surface carbone, noms en délié craie,
  *   et la ligne plate (style « plat », §2.8) posée sur la ligne de base de
- *   STRETCHING : la respiration de la page.
+ *   STRETCHING : la respiration de la page. Filet graphite en haut et en bas :
+ *   le carbone touche le noir de #semaine (1,14:1, §2.1).
  *
  * Mouvement (une seule entrée par bloc, états initiaux posés par le JS et
  * seulement hors écran, via reached()) :
@@ -62,8 +63,16 @@ const cardioPhotos: Record<string, Photo> = {
   step: cap.photos.step,
 };
 
-/** « Fais monter » se coupe en deux lignes sur mobile (« Fais / monter »). */
-const delieWords = cs.delie.split(' ');
+/**
+ * « Fais monter » se coupe en deux lignes sur mobile (« Fais / monter »). L'espace
+ * est dans le mot qui la précède : un nœud texte entre deux spans serait entouré
+ * de marqueurs de fragment (`<!--[-->`) par le rendu serveur, et Chromium le
+ * retirerait du nom accessible (« FAISMONTER »). En fin de ligne (mobile), elle
+ * disparaît.
+ */
+const delieWords = cs.delie
+  .split(' ')
+  .map((word, index, words) => (index < words.length - 1 ? `${word} ` : word));
 
 /* ── 3a. Scène collante : le cours qui traverse le milieu de l'écran ───────── */
 const active = ref(cardio[0]?.course.slug);
@@ -87,6 +96,60 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => middle?.disconnect());
+
+/*
+ * ── 3a hors scène : chaque photo n'est demandée qu'à l'approche ─────────────
+ * `loading="lazy"` seul ne suffit pas : le seuil de distance de Chrome (jusqu'à
+ * 2 500 px) fait partir les trois photos au premier chargement, en concurrence
+ * avec la photo de la couverture (LCP mobile, P3). Avec JS, l'image d'une figure
+ * n'a pas de boîte (CSS), donc n'est pas demandée, tant que l'observateur ne l'a
+ * pas vue à moins d'un écran ; il ne commence qu'après `load`. Sans JS : chargement
+ * natif.
+ */
+const near = ref<Record<string, boolean>>({});
+let approach: IntersectionObserver | undefined;
+
+function watchFigures() {
+  const figures = cardioList.value?.querySelectorAll<HTMLElement>('.cardio__figure');
+  if (!figures?.length) return;
+  approach = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const slug = entry.target.closest<HTMLElement>('[data-slug]')?.dataset.slug;
+        if (slug) near.value[slug] = true;
+        approach?.unobserve(entry.target);
+      }
+    },
+    { rootMargin: '100% 0px' },
+  );
+  for (const figure of figures) approach.observe(figure);
+}
+
+onMounted(() => {
+  if (document.readyState === 'complete') watchFigures();
+  else addEventListener('load', watchFigures, { once: true });
+});
+onBeforeUnmount(() => {
+  removeEventListener('load', watchFigures);
+  approach?.disconnect();
+});
+
+/*
+ * ── Sans JS, les fiches sont ouvertes : le HTML servi dit aria-expanded="true" ──
+ * Avec JS, html.js les ferme dès le premier rendu, mais la section ne s'hydrate
+ * qu'à l'approche : ce script en ligne, exécuté pendant l'analyse du HTML (avant
+ * tout bundle), ramène l'attribut à `false` sur chaque en-tête dont la fiche
+ * n'est pas ouverte. Rejoué après l'hydratation, il ne change rien.
+ */
+const ARIA_BOOT = [
+  "document.documentElement.classList.contains('js')&&",
+  "document.querySelectorAll('#cours [data-accordion-head]').forEach(function(b){",
+  "var p=document.getElementById(b.getAttribute('aria-controls'));",
+  "if(!p||!p.closest('[data-open]'))b.setAttribute('aria-expanded','false')})",
+].join('');
+
+useHead({ script: [{ key: 'cap-cours-fiches', tagPosition: 'bodyClose', innerHTML: ARIA_BOOT }] });
 
 /* ── Clavier : ↑ ↓ Début Fin entre les en-têtes des huit fiches (APG) ─────── */
 const section = useTemplateRef<HTMLElement>('section');
@@ -168,10 +231,7 @@ useMotion(section, ({ gsap }, root) => {
     <div class="cours__wrap">
       <h2 :id="titleId" class="cours__title">
         <span class="cours__delie cap-display">
-          <template v-for="(word, index) in delieWords" :key="word">
-            <span class="cours__delie-word">{{ word }}</span>
-            <template v-if="index < delieWords.length - 1">{{ ' ' }}</template>
-          </template>
+          <span v-for="word in delieWords" :key="word" class="cours__delie-word">{{ word }}</span>
         </span>
         {{ ' ' }}
         <span class="cours__plein cap-display">{{ cs.plein }}</span>
@@ -201,6 +261,7 @@ useMotion(section, ({ gsap }, root) => {
               class="cardio__figure"
               :photo="cardioPhotos[course.slug]!"
               sizes="100vw"
+              :data-near="near[course.slug] || undefined"
             />
           </template>
         </CapCourseItem>
@@ -380,7 +441,12 @@ useMotion(section, ({ gsap }, root) => {
   }
 }
 
-/* À partir de 48em : « Fais monter » sur une ligne, 125 % de chasse, puis 150 %. */
+/*
+ * À partir de 48em : « Fais monter » sur une ligne, 125 % de chasse, puis 150 %.
+ * La taille l'y fait tenir ; la coupure reste permise entre les deux mots, pour
+ * qu'un espacement de texte élargi (WCAG 1.4.12) passe « monter » à la ligne
+ * au lieu de le pousser hors de l'écran.
+ */
 @media (min-width: 48em) {
   .cours__title {
     --title-size: min(var(--text-h2), 100cqi / 9.3);
@@ -388,6 +454,7 @@ useMotion(section, ({ gsap }, root) => {
 
   .cours__delie {
     font-stretch: 125%;
+    white-space: normal;
   }
 
   .cours__delie-word {
@@ -438,6 +505,11 @@ useMotion(section, ({ gsap }, root) => {
   margin: 0 calc(-1 * var(--page-gutter)) clamp(1.25rem, 0.971rem + 1.143vw, 2rem);
 }
 
+/* Avec JS, l'image attend l'approche (data-near) ; la figure garde son format et sa plaque. */
+html.js .cardio__figure:not([data-near]) :deep(.cap-photo__img) {
+  display: none;
+}
+
 @media (min-width: 48em) {
   .cardio__figure {
     aspect-ratio: 16 / 10;
@@ -452,6 +524,12 @@ useMotion(section, ({ gsap }, root) => {
 /*
  * Scène collante : une seule zone de grille (« stack ») pour la scène et la
  * liste. Mouvement autorisé et 64em au moins ; sinon, les figures ci-dessus.
+ *
+ * Cotes tenues sous le plafond de hauteur de page (V9, 13 000 px à 1440 × 900) ;
+ * écart au §4.4 consigné : la marge de --pad-s au-dessus de la scène et le titre
+ * « cardio en musique » sont pris dans les 30svh du haut au lieu de s'y ajouter
+ * (le premier article reste à 30svh du bas du H2), et les articles font 42svh au
+ * lieu de 50svh. La scène mesure environ 189svh, titre compris, plus sa marge.
  */
 @media (min-width: 64em) {
   html.has-motion .cardio {
@@ -482,7 +560,12 @@ useMotion(section, ({ gsap }, root) => {
     column-gap: var(--gap);
     row-gap: 0;
     align-content: start;
-    padding-block: 30svh 40svh;
+    /*
+     * Le premier article reste à 30svh sous le H2 : la marge de la scène, le titre
+     * (44 px) et sa marge (64 px) y sont pris. La marge reste au-dessus de la
+     * scène : sans elle, la photo touchait la signature du H2.
+     */
+    padding-block: max(2rem, 30svh - 6.75rem - var(--pad-s)) 40svh;
   }
 
   html.has-motion .cardio__list > * {
@@ -493,8 +576,16 @@ useMotion(section, ({ gsap }, root) => {
     margin-block-end: var(--pad-s);
   }
 
+  /*
+   * Le cours actif est celui dont l'article traverse le milieu de l'écran : son
+   * nom est posé à mi-hauteur de l'article (moins la demi-hauteur du nom), pour
+   * que le nom le plus proche du milieu soit toujours celui de la photo. En tête
+   * d'article, le nom suivant passait au milieu de l'écran sur la photo
+   * précédente. Un décalage fixe : ouvrir la fiche ne déplace pas le nom.
+   */
   html.has-motion .cardio__item {
-    min-block-size: 50svh;
+    min-block-size: 42svh;
+    padding-block-start: calc(21svh - 2rem);
   }
 
   html.has-motion .cardio__figure {
@@ -502,20 +593,30 @@ useMotion(section, ({ gsap }, root) => {
   }
 }
 
+/*
+ * Fondu enchaîné sans creux : la photo entrante (au-dessus) passe de 0 à 1 en
+ * 480 ms ; la sortante reste à 1 dessous, puis s'éteint d'un coup une fois
+ * recouverte. Deux fondus croisés laissaient voir le fond à 25 % à mi-course
+ * (photos grisées, superposées).
+ */
 .cardio__shot {
   position: absolute;
   inset: 0;
   opacity: 0;
-  transition: opacity var(--dur-overlay) var(--ease-in-out);
+  transition: opacity 0s linear var(--dur-overlay);
 }
 
 .cardio__shot.is-on {
+  z-index: 1;
   opacity: 1;
+  transition: opacity var(--dur-overlay) var(--ease-in-out);
 }
 
 /* Voile de scène : la colonne de texte reste lisible (p95 ≤ 0,10 sous le texte, §3.3). */
 .cardio__veil {
   position: absolute;
+  /* Au-dessus de la photo active (z-index 1), sinon le voile passe dessous. */
+  z-index: 2;
   inset: 0;
   background: linear-gradient(
     90deg,
@@ -645,7 +746,7 @@ useMotion(section, ({ gsap }, root) => {
 .calme {
   position: relative;
   padding-block: var(--pad-xl);
-  border-block-start: 1px solid var(--cf-graphite);
+  border-block: 1px solid var(--cf-graphite);
   background: var(--cf-carbone);
   container-type: inline-size;
 }

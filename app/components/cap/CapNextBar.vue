@@ -15,8 +15,13 @@ import {
  *
  * Elle prend le relais du bouton de la couverture : elle monte quand celui-ci est
  * sorti par le haut de l'écran, et redescend quand une autre action citron est
- * là (#reserver, #fin et au-delà) ou que le menu est ouvert. Jamais deux aplats
- * citron d'action à l'écran. Cachée, elle est inerte : rien n'y reçoit le focus.
+ * là (#reserver, #fin, puis le pied qui la suit) ou que le menu est ouvert. Jamais
+ * deux aplats citron d'action à l'écran. Cachée, elle est inerte : rien n'y
+ * reçoit le focus.
+ *
+ * Écran court (max-height: 30em : paysage mobile, zoom à 400 %) : pas de barre.
+ * L'en-tête collant y prend déjà 56 px ; avec elle, la moitié de la fenêtre
+ * resterait couverte. Le menu porte la même action et la ligne « Prochain cours ».
  *
  * Le bouton n'a pas la fente du mini-complexe : la ligne du cours garde ses
  * 18 px dans 390 px de large (mesuré : « mer. 19 h 00 · Cross training »,
@@ -25,6 +30,8 @@ import {
 const NBSP = ' ';
 /** Marge laissée au-dessus de la barre à un élément focalisé qu'elle aurait masqué (px). */
 const FOCUS_CLEARANCE = 16;
+/** Débord de l'anneau de focus hors de l'élément : 2 px de trait, 2 px de décalage (v2.css). */
+const FOCUS_RING = 4;
 /** Place de l'en-tête collant au-dessus d'un élément focalisé (px) : celle des ancres. */
 const HEADER_ROOM = 88;
 
@@ -32,7 +39,7 @@ const open = useState<boolean>('cap-menu', () => false);
 const clock = useParisClock();
 /** Le bouton de la couverture est passé au-dessus de l'écran. */
 const coverPassed = ref(false);
-/** #reserver à l'écran, ou #fin à l'écran ou dépassé. */
+/** #reserver, #fin ou le pied de page à l'écran. */
 const relayed = ref(false);
 const shown = computed(() => coverPassed.value && !relayed.value && !open.value);
 
@@ -58,25 +65,49 @@ const root = useTemplateRef<HTMLElement>('root');
 const observers: IntersectionObserver[] = [];
 
 /**
- * La barre ne masque jamais le focus (critère 2.4.11) : le navigateur a déjà
+ * La barre ne masque jamais le focus, anneau compris : le navigateur a déjà
  * amené l'élément dans la fenêtre ; s'il passe sous la barre, on le remonte.
  */
-function onFocusIn(event: FocusEvent) {
-  const target = event.target;
-  const box = root.value?.getBoundingClientRect();
-  // Barre non rendue (≥ 64em, display: none) : rien ne peut masquer le focus.
-  if (!shown.value || !box || box.height === 0 || !(target instanceof Element)) return;
+function clearFocus(target: Element) {
+  const height = root.value?.getBoundingClientRect().height ?? 0;
+  // Barre non rendue (≥ 64em ou écran court, display: none) : rien ne peut masquer le focus.
+  if (!height) return;
   // Seulement le focus clavier : un clic souris ne doit jamais faire défiler la page
   // entre l'appui et le relâchement (le clic serait perdu).
   if (!target.matches(':focus-visible')) return;
-  const edge = box.top;
   if (root.value?.contains(target) || target.closest('dialog')) return;
+  // Bord haut de la barre une fois montée (fixe, en bas de la fenêtre) : pas son
+  // rectangle, qui glisse encore pendant la montée.
+  const edge = innerHeight - height;
   const { top, bottom } = target.getBoundingClientRect();
-  if (bottom <= edge) return;
+  if (bottom + FOCUS_RING <= edge) return;
   // Un élément plus haut que la place libre garde son haut sous l'en-tête (88 px, comme les ancres).
   const shift = Math.min(bottom - edge + FOCUS_CLEARANCE, top - HEADER_ROOM);
   if (shift > 0) scrollBy({ top: shift, behavior: 'instant' });
 }
+
+function onFocusIn(event: FocusEvent) {
+  if (shown.value && event.target instanceof Element) clearFocus(event.target);
+}
+
+/*
+ * Course entre le focus et la barre : le défilement amené par le focus peut faire
+ * sortir le bouton de la couverture, et la barre monte alors sur l'élément déjà
+ * focalisé. On le dégage à ce moment-là. Sans attendre la fin de la montée : en
+ * mouvement réduit, il n'y a pas de transition (ni de transitionend). Seulement
+ * s'il est à l'écran : un focus laissé hors champ par le défilement ne doit
+ * jamais ramener la page à lui.
+ */
+watch(
+  shown,
+  (isShown) => {
+    const active = document.activeElement;
+    if (!isShown || !(active instanceof Element)) return;
+    const { top, bottom } = active.getBoundingClientRect();
+    if (top < innerHeight && bottom > 0) clearFocus(active);
+  },
+  { flush: 'post' },
+);
 
 onMounted(() => {
   document.addEventListener('focusin', onFocusIn);
@@ -94,16 +125,23 @@ onMounted(() => {
     coverPassed.value = true;
   }
 
-  const zones = ['reserver', 'fin']
-    .map((id) => document.getElementById(id))
-    .filter((zone): zone is HTMLElement => zone !== null);
+  /*
+   * #fin et le pied qui la suit (64 px plus bas) gardent la barre baissée. Chaque
+   * zone n'est comptée qu'à l'écran : un saut d'ancre depuis le pied fait sortir
+   * celui-ci, et l'observateur le signale. Un état « #fin dépassé » ne serait
+   * jamais levé, puisque #fin passe alors de dessus à dessous l'écran sans le
+   * traverser.
+   */
+  const zones = [
+    document.getElementById('reserver'),
+    document.getElementById('fin'),
+    document.querySelector('footer.cap-footer'),
+  ].filter((zone): zone is HTMLElement => zone instanceof HTMLElement);
   if (!zones.length) return;
   const inZone = new Set<Element>();
   const observer = new IntersectionObserver((entries) => {
     for (const entry of entries) {
-      // La fin et le pied de page qui la suit gardent la barre baissée.
-      const past = entry.target.id === 'fin' && entry.boundingClientRect.bottom < 0;
-      if (entry.isIntersecting || past) inZone.add(entry.target);
+      if (entry.isIntersecting) inZone.add(entry.target);
       else inZone.delete(entry.target);
     }
     relayed.value = inZone.size > 0;
@@ -214,7 +252,8 @@ html.has-motion .cap-next.is-shown {
   flex: none;
 }
 
-@media (min-width: 64em) {
+/* Ordinateur, ou écran court (paysage mobile, zoom à 400 %) : pas de barre. */
+@media (min-width: 64em), (max-height: 30em) {
   .cap-next {
     display: none;
   }

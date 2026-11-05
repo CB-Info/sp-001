@@ -12,7 +12,11 @@ import type { Motion } from './gsap';
  * - Un seul rappel par image (gsap.ticker) pilote Lenis, ScrollTrigger, la mesure
  *   et les effets liés à la vitesse (followScroll). Il ne tourne que pendant un
  *   défilement, puis tant qu'un effet n'est pas revenu au repos : page immobile,
- *   le fil principal dort et les animations CSS restent au compositeur.
+ *   le ticker de GSAP dort et les animations CSS restent au compositeur.
+ *   ScrollTrigger, lui, garde un intervalle de synchronisation de 250 ms
+ *   qu'aucune option ne coupe (4 réveils par seconde). Sur la V1, il garde aussi
+ *   sa boucle requestAnimationFrame vide (60 réveils par seconde). La V2 ne la
+ *   lance pas (gsap.ts, withoutIdleLoop).
  * - `scroll.velocity` (px par image, signée) sert au bandeau et aux stries du
  *   hero, avec ou sans Lenis : Lenis fait défiler la fenêtre elle-même. La
  *   position n'est lue qu'aux événements `scroll` : lire scrollY force un calcul
@@ -179,7 +183,8 @@ export function followScroll(follower: () => boolean): () => void {
  * Liens d'ancre de la page, avec Lenis : comme son option `anchors` (la navigation
  * native garde l'URL et le point de départ du focus, Lenis lisse le trajet), mais
  * un clic déjà pris en charge (preventDefault, « Retour en haut ») ou modifié
- * (nouvel onglet) est laissé tel quel.
+ * (nouvel onglet) est laissé tel quel. La V2 fait voyager ses ancres autrement
+ * (travelToAnchor).
  */
 function onAnchorClick(event: MouseEvent) {
   const modified =
@@ -189,8 +194,65 @@ function onAnchorClick(event: MouseEvent) {
   if (!link?.hash || link.pathname !== location.pathname) return;
   const target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
   if (!target) return;
+  if (document.documentElement.dataset.site === 'v2') {
+    travelToAnchor(event, lenis, link, target);
+    return;
+  }
   lenis.scrollTo(target);
   wake();
+}
+
+/**
+ * V2 : une ancre fait la même course que « Haut de page » (brief §4.9) :
+ * --dur-travel en --ease-in-out depuis la position courante. Le logo de l'en-tête
+ * (#haut) et le lien du pied de page partent donc de la même façon. Le lissage
+ * libre de Lenis (lerp) partait d'un bond : 20 % du trajet dès la première image.
+ *
+ * La navigation native est retenue. Son saut vers la cible, puis le scrollTo de
+ * vue-router au popstate, pouvaient être peints avant le premier pas de Lenis :
+ * la destination s'affichait une image, puis la page remontait refaire la course.
+ * Ce que la navigation native apportait est rendu à la main :
+ * - l'URL prend le fragment, sans nouvelle entrée d'historique ; l'état de
+ *   vue-router est gardé ;
+ * - le focus passe à la cible à l'arrivée, d'où part la tabulation suivante
+ *   (focusOnArrival). Si le visiteur reprend la main en route, le focus reste
+ *   où il est : la molette arrête la course, et Tab déplace déjà le focus.
+ *
+ * Lenis arrêté (menu encore ouvert) : la navigation native reste.
+ */
+function travelToAnchor(
+  event: MouseEvent,
+  smooth: Lenis,
+  link: HTMLAnchorElement,
+  target: HTMLElement,
+) {
+  if (smooth.isStopped) return;
+  event.preventDefault();
+  history.replaceState(history.state, '', link.hash);
+  // Avant la course : un lien du menu a déjà rendu le focus au bouton « Menu » en
+  // fermant le dialog.
+  const origin = document.activeElement;
+  smooth.scrollTo(target, {
+    duration: duration('--dur-travel'),
+    easing: travelEase,
+    onComplete: () => focusOnArrival(target, origin),
+  });
+  wake();
+}
+
+/**
+ * Le focus va à la cible, sans défilement, s'il n'a pas bougé pendant la course.
+ * Une cible qui n'est pas focalisable le devient le temps de garder le focus
+ * (tabindex -1, retiré quand elle le perd) : elle n'entre jamais dans l'ordre de
+ * tabulation, et un clic plus tard dans la section ne la focalise pas.
+ */
+function focusOnArrival(target: HTMLElement, origin: Element | null) {
+  if (document.activeElement !== origin) return;
+  if (!target.hasAttribute('tabindex')) {
+    target.setAttribute('tabindex', '-1');
+    target.addEventListener('blur', () => target.removeAttribute('tabindex'), { once: true });
+  }
+  target.focus({ preventScroll: true });
 }
 
 /**
