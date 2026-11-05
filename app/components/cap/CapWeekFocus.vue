@@ -53,13 +53,28 @@ onBeforeUnmount(() => clearTimeout(pending));
 
     <div class="cap-focus__row">
       <label v-for="option in f.options" :key="option.id" class="cap-focus__option">
+        <!--
+          L'option par défaut porte un attribut `checked` statique, jamais lié :
+          dans un v-for, Vue réécrit les props liées à l'hydratation, et un choix
+          fait avant elle (les radios marchent sans JS) serait perdu.
+        -->
         <input
+          v-if="option.id === DEFAULT"
           :id="`focus-${option.id}`"
           class="cap-focus__input"
           type="radio"
           :name="NAME"
           :value="option.id"
-          :checked="option.id === DEFAULT"
+          checked
+          @change="announce"
+        />
+        <input
+          v-else
+          :id="`focus-${option.id}`"
+          class="cap-focus__input"
+          type="radio"
+          :name="NAME"
+          :value="option.id"
           @change="announce"
         />
         <span class="cap-focus__text" :data-label="option.label">

@@ -26,10 +26,6 @@ export async function parcourir(page: Page) {
   });
 }
 
-/** Haut d'un élément dans la fenêtre, en pixels arrondis. */
-export const hautDe = (locator: Locator) =>
-  locator.evaluate((element) => Math.round(element.getBoundingClientRect().top));
-
 /**
  * La cible d'une ancre est arrivée sous l'en-tête, à sa marge (course de Lenis
  * comprise) ; trop près du bas du document pour monter jusque-là, elle est à
@@ -41,13 +37,26 @@ export async function attendreArrivee(page: Page, id: string) {
     .poll(() =>
       page.locator(`[id="${id}"]`).evaluate((element, marge) => {
         const { top } = element.getBoundingClientRect();
-        const butee =
-          Math.ceil(scrollY + innerHeight) >= document.documentElement.scrollHeight - 1;
+        const butee = Math.ceil(scrollY + innerHeight) >= document.documentElement.scrollHeight - 1;
         if (Math.abs(top - marge) <= 2) return 'arrivée';
         return butee && top > marge && top < innerHeight ? 'arrivée' : `haut à ${top} px`;
       }, MARGE_ANCRE),
     )
     .toBe('arrivée');
+}
+
+/**
+ * Clique un lien d'ancre hors de l'écran comme le ferait un visiteur : amené à
+ * l'écran d'abord, puis cliqué une image plus tard. Le clic de Playwright fait
+ * défiler et clique dans la même image, avant l'événement `scroll` : Lenis
+ * partirait alors d'une position périmée.
+ */
+export async function suivreLien(link: Locator) {
+  await link.scrollIntoViewIfNeeded();
+  await link.evaluate(
+    () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+  );
+  await link.click();
 }
 
 /** Plus aucune animation finie (CSS, transition ou Web Animations) ne tourne. */
@@ -110,5 +119,29 @@ export async function ouvrirFiche(page: Page, slug: string) {
   await bouton.click();
   await expect(bouton).toHaveAttribute('aria-expanded', 'true');
   await expect(fiche).toBeVisible();
+  // La fiche a fini de s'ouvrir (rangée de grille 0fr → 1fr, puis fondus) : la
+  // page en dessous ne bouge plus, une ancre suivie depuis elle arrive juste.
+  await expect
+    .poll(() =>
+      page
+        .locator(`#cours-${slug}`)
+        .evaluate(
+          (article) =>
+            article
+              .getAnimations({ subtree: true })
+              .filter((animation) => animation.playState === 'running').length,
+        ),
+    )
+    .toBe(0);
   return fiche;
+}
+
+/**
+ * Amène « Ta semaine » à l'écran et attend son hydratation : les onglets des
+ * jours (CapWeekDay) ne prennent leurs rôles qu'au montage, à toutes les
+ * largeurs (masqués par le CSS dès 64em).
+ */
+export async function attendreSemaine(page: Page) {
+  await page.locator('#semaine').scrollIntoViewIfNeeded();
+  await expect(page.locator('#semaine [role="tablist"]')).toBeAttached();
 }
