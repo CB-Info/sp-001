@@ -36,7 +36,12 @@ const photo = (
 });
 
 const photos = {
-  couverture: photo('cap-couverture', 2880, 1728, '', '80% 45%', { width: 864, height: 1728 }),
+  /*
+   * Point focal haut (10 %) : sur un écran plus large que 5:3 (navigateur avec
+   * ses barres), la photo garde son plafond sous l'en-tête et la tête de la
+   * coach sous le bouton ; sur une tablette en portrait, la coach reste entière.
+   */
+  couverture: photo('cap-couverture', 2880, 1728, '', '90% 10%', { width: 864, height: 1728 }),
   pound: photo(
     'cap-pound',
     2880,

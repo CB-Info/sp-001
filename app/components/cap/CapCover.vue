@@ -419,17 +419,20 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
 /*
  * Sous le titre, à droite (≥ 48em, paysage) : le bas des fenêtres et les têtes
  * du groupe passent derrière « CUN » et « ME. ». Une bande sombre et douce,
- * fondue sur ses quatre bords, garde le délié citron à 3:1 au moins (mesuré :
- * 0,3 % des pixels du contour en dessous à 1440, contre 6,5 % sans elle).
+ * fondue sur ses quatre bords, garde le délié citron à 3:1 au moins. Elle est
+ * comptée depuis le bas, comme le bloc de texte ancré en bas : sur une
+ * couverture basse (portable, 633 à 800 px), ses planchers en rem la gardent
+ * sous le titre et sous la signature (mesuré : « N » de « Chacun » sous 3:1 sur
+ * 29 % de ses pixels à 1366 × 657 avec une bande en %, 0 % avec celle-ci).
  */
 .cap-cover__veil--title {
   display: none;
   background: linear-gradient(
-    to bottom,
-    rgb(12 12 11 / 0) 26%,
-    rgb(12 12 11 / 0.6) 37%,
-    rgb(12 12 11 / 0.6) 56%,
-    rgb(12 12 11 / 0) 70%
+    to top,
+    rgb(12 12 11 / 0) 15rem,
+    rgb(12 12 11 / 0.6) 19rem,
+    rgb(12 12 11 / 0.6) max(63%, 37rem),
+    rgb(12 12 11 / 0) max(74%, 43rem)
   );
   mask-image: linear-gradient(to right, transparent 38%, #000 58%, #000 82%, transparent 96%);
 }
@@ -785,6 +788,23 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
 }
 
 /*
+ * Écran large et bas (1920 × 960, un navigateur et ses barres sur un écran 1080p) :
+ * la photo, calée sur la largeur, descend les fenêtres jusqu'au haut de « Chacun ».
+ * La bande monte jusqu'au haut du titre, à 42rem du bas.
+ */
+@media (min-width: 48em) and (min-aspect-ratio: 19/10) {
+  .cap-cover__veil--title {
+    background: linear-gradient(
+      to top,
+      rgb(12 12 11 / 0) 15rem,
+      rgb(12 12 11 / 0.6) 19rem,
+      rgb(12 12 11 / 0.6) 42rem,
+      rgb(12 12 11 / 0) 47rem
+    );
+  }
+}
+
+/*
  * Tablette en portrait : la photo d'ordinateur, recadrée au centre, met les
  * jambes du groupe sous le chapeau. Le voile monte plus haut et plus dense
  * (mesuré : texte courant à 8:1 au moins, contre 4:1 avec le voile d'ordinateur).
@@ -809,8 +829,10 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
 
 /*
  * Mobile : la photo (recadrage 1:2, la coach de profil) remplit l'écran sous
- * l'en-tête ; le bloc de texte est ancré en bas, sur un voile renforcé (zone
- * 0,54–1 du recadrage).
+ * l'en-tête ; le bloc de texte est ancré en bas, sur un voile renforcé. Le voile
+ * est compté en rem depuis le bas, comme le bloc : dans Safari sur iPhone
+ * (390 × 664 avec ses barres), un voile en % de la couverture restait sous le
+ * titre, et « Chacun » passait sur les carreaux de la fenêtre.
  */
 @media (max-width: 47.99em) {
   /* À chasse 100 %, la courbe basse du C rejoint la ligne de base plus tôt. */
@@ -822,9 +844,32 @@ useMotion(cover, ({ gsap, ScrollTrigger }, root) => {
     background: linear-gradient(
       to top,
       rgb(12 12 11 / 0.88) 0,
-      rgb(12 12 11 / 0.88) 30%,
-      rgb(12 12 11 / 0) 58%
+      rgb(12 12 11 / 0.88) 20rem,
+      rgb(12 12 11 / 0) 38rem
     );
+  }
+
+  /*
+   * Le bloc de texte porte aussi son voile, de 64 px au-dessus du titre jusqu'en
+   * bas : en paysage (667 × 375), et quand l'écran est bas, le titre monte
+   * au-dessus du voile ancré en bas (mesuré : délié sous 3:1 sur 21 % de ses
+   * pixels à 667 × 375 sans lui, 0 % avec).
+   */
+  .cap-cover__body {
+    background: linear-gradient(
+      to bottom,
+      rgb(12 12 11 / 0) calc(var(--header-height) - 3rem),
+      rgb(12 12 11 / 0.55) calc(var(--header-height) + 1rem)
+    );
+  }
+
+  /*
+   * Recadrage 1:2 vu sur un écran moins haut : centré sur le quart haut, il garde
+   * le plafond sous l'en-tête et la tête de la coach sous le logo. Plus fort que
+   * le 50 % 50 % commun des recadrages mobiles (CapPhoto).
+   */
+  .cap-cover .cap-cover__photo :deep(.cap-photo__img) {
+    object-position: 50% 25%;
   }
 }
 

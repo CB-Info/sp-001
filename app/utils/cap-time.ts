@@ -42,6 +42,13 @@ export const toMinutes = (time: string): number => {
   return h * 60 + m;
 };
 
+/**
+ * Créneau du jour déjà commencé : son prochain passage tombe dans sept jours.
+ * Écrit « mer. 18 h 00 » à 18 h 20, il se lirait « aujourd'hui, déjà passé ».
+ */
+export const semaineProchaine = (session: Pick<Session, 'day' | 'start'>, now?: ParisNow) =>
+  now !== undefined && session.day === now.day && toMinutes(session.start) <= now.minutes;
+
 /** « 13:00 » → « 13 h 00 » (espaces insécables, deux chiffres pour les minutes). */
 export function formatHeure(time: string): string {
   const [h = '0', m = '00'] = time.split(':');

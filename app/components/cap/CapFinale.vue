@@ -4,7 +4,13 @@ import { capFit } from '~/data/cap-fit';
 import { followScroll, scroll } from '~/motion/scroll';
 import { approach, intensity } from '~/motion/speed';
 import { duration } from '~/motion/tokens';
-import { formatHeure, jourCourt, prochainCours, useParisClock } from '~/utils/cap-time';
+import {
+  formatHeure,
+  jourCourt,
+  prochainCours,
+  semaineProchaine,
+  useParisClock,
+} from '~/utils/cap-time';
 import { complexAtR, complexFrom, path, SPAN_RATIO, type Point } from '~/utils/ecg';
 
 /**
@@ -114,6 +120,9 @@ const pulse = path([
  * phrase neutre (« On t'attend au prochain cours ? »). Après le montage : le
  * cours choisi dans une fiche (état partagé « cap-choix »), sinon le prochain
  * cours réel. La ligne garde la même boîte dans les deux états : aucun saut.
+ * Un créneau choisi déjà commencé aujourd'hui garde la phrase neutre : « On
+ * t'attend mer. 18 h 00 ? » à 18 h 20 inviterait à un cours en cours, et
+ * « mer. prochain » ne tient pas dans la boîte posée sur le tube.
  */
 const NBSP = ' ';
 const clock = useParisClock();
@@ -123,6 +132,7 @@ const when = computed(() => {
   const chosen = choice.value
     ? cap.sessions.find((session) => session.id === choice.value)
     : undefined;
+  if (chosen && semaineProchaine(chosen, clock.value)) return undefined;
   const session = chosen ?? prochainCours(cap.sessions, clock.value)?.session;
   return session && `${jourCourt(session.day)}${NBSP}${formatHeure(session.start)}`;
 });

@@ -18,9 +18,11 @@ Entrées, dans le dossier des bruts (non versionné, comme les autres bruts) :
 
 Sortie : cap-couverture.etendu.png, que grade.py lit à la place du brut. Les
 pixels du brut sont gardés partout où il en a (y compris ses 300 px réels à gauche
-de l'ancien cadre) ; l'extension ne fournit que la bande du plafond, au-dessus,
-ramenée aux tons du brut (correspondance de quantiles sur la zone commune) et
-fondue sur 96 px. Le cadre final garde la plaque en 5:3 : 175 px de plafond en
+de l'ancien cadre), sauf le plafond : à droite des fenêtres, l'extension ne
+fournit que la bande ajoutée, fondue sur 96 px ; à gauche, tout le plafond vient
+de l'extension, fondu dans le noir sous lui et dans la poutre avant les
+fenêtres. L'extension est ramenée aux tons du brut (correspondance de quantiles
+sur la zone commune). Le cadre final garde la plaque en 5:3 : 175 px de plafond en
 haut, 292 px à gauche (unités de l'ancienne plaque 2880 × 1728), rien coupé en bas.
 """
 from __future__ import annotations
@@ -102,6 +104,16 @@ def compose(raw_dir: Path) -> Path:
     alpha = have.astype(np.float64)
     top_rows = np.clip((np.arange(ch) - (sy0 - y0)) / FEATHER, 0, 1)
     alpha *= top_rows[:, None]
+    # À gauche des fenêtres, l'outpaint a redessiné la grille du plafond à ~20 px
+    # de la vraie, même dans l'ancien cadre : un fondu y doublait les lignes. Tout
+    # le plafond vient donc de l'extension, fondu dans le noir sous le plafond
+    # (plaque y 300, où brut et extension diffèrent de 2/255 au plus), puis dans
+    # la poutre sombre avant les fenêtres (plaque x 2050–2160).
+    yc = margin + 300 * fh / OLD_SIZE[1]
+    xc = margin + 2160 * fw / OLD_SIZE[0]
+    below = np.clip((np.arange(ch) - yc) / 48, 0, 1)
+    left = np.clip((xc - np.arange(cw)) / 110, 0, 1)
+    alpha = left[None, :] * below[:, None] * have + (1 - left[None, :]) * alpha
     alpha = np.asarray(
         Image.fromarray((alpha * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2)),
         dtype=np.float64,

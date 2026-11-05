@@ -57,8 +57,10 @@ export function useMotion(scope: Readonly<Ref<HTMLElement | null>>, setup: Setup
     const root = scope.value;
     if (!root || !motionAllowed()) return;
     observer = new IntersectionObserver(
-      async ([entry]) => {
-        if (!entry?.isIntersecting) return;
+      async (entries) => {
+        // Une seule cible : la dernière entrée d'un lot est son état actuel (un lot
+        // [sortie, entrée] arrive quand l'hydratation tombe au bord de la marge).
+        if (!entries[entries.length - 1]?.isIntersecting) return;
         observer?.disconnect();
         // V2 : rien ne se charge pendant l'intro de la couverture (immédiat ailleurs).
         await introDone();

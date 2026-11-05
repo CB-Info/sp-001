@@ -243,7 +243,10 @@ const choose = (slot: WeekSlot) => {
         @keydown="onKeydown($event, index)"
       >
         {{ day.short
-        }}<span v-if="isToday(day.day)" class="visually-hidden">{{ ' ' }}{{ w.aujourdhui }}</span>
+        }}<template v-if="isToday(day.day)"
+          ><span class="cap-wd__tab-auj" aria-hidden="true">{{ todayVisible }}</span
+          ><span class="visually-hidden">{{ ' ' }}{{ w.aujourdhui }}</span></template
+        >
       </button>
     </div>
 
@@ -598,6 +601,28 @@ html.js .cap-wd__tabs {
 
 .cap-wd__tab[data-today] {
   color: var(--cf-citron);
+}
+
+/*
+ * Le jour courant est aussi écrit, sous son onglet, dans la marge au-dessus du
+ * papier : la couleur n'est jamais le seul signal (A7). Le jeudi, l'onglet
+ * ouvert est le vendredi ; le panneau du jour, lui, l'écrit déjà en haut.
+ */
+.cap-wd__tab-auj {
+  position: absolute;
+  inset-block-start: calc(100% + 5px);
+  inset-inline: -12px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.cap-wd__tab.is-selected .cap-wd__tab-auj {
+  visibility: hidden;
 }
 
 /* Onglet actif : un filet citron de 3 px qui se remplit (le code « plein = actif »). */

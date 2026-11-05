@@ -9,7 +9,7 @@ import {
   jourLong,
   prochainCours,
   sortSessions,
-  toMinutes,
+  semaineProchaine,
   useParisClock,
   type ParisNow,
 } from '~/utils/cap-time';
@@ -45,13 +45,6 @@ const titleId = 'reserver-titre';
 const NBSP = ' ';
 
 const courseName = (slug: string) => cap.courses.find((course) => course.slug === slug)?.nom ?? '';
-
-/**
- * Créneau du jour déjà commencé : son prochain passage tombe dans sept jours.
- * Écrit « mer. 18 h 00 » à 18 h 20, il se lirait « aujourd'hui, déjà passé ».
- */
-const semaineProchaine = (session: Session, now?: ParisNow) =>
-  now !== undefined && session.day === now.day && toMinutes(session.start) <= now.minutes;
 
 /**
  * Le cours affiché : de quoi écrire la ligne de choix et viser son .ics. `now`

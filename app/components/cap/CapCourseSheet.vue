@@ -7,7 +7,7 @@ import {
   jourLong,
   parisNow,
   prochainCours,
-  toMinutes,
+  semaineProchaine,
   type ParisNow,
 } from '~/utils/cap-time';
 
@@ -114,8 +114,7 @@ const next = computed(() => {
   const found = now && prochainCours(props.sessions, now);
   if (found && now) {
     const { session } = found;
-    const nextWeek = session.day === now.day && toMinutes(session.start) <= now.minutes;
-    const prochain = nextWeek ? `${NBSP}${cap.ui.jourProchain}` : '';
+    const prochain = semaineProchaine(session, now) ? `${NBSP}${cap.ui.jourProchain}` : '';
     return {
       label: cs.prochain,
       value: `${jourLong(session.day)}${prochain}${NBSP}${formatHeure(session.start)}`,
