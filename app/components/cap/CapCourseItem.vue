@@ -47,11 +47,6 @@ const props = defineProps<{
   sessions: Session[];
   /** Heure de Paris, partagée par la section ; undefined au rendu serveur. */
   now?: ParisNow;
-  /**
-   * Ouvert au premier rendu : le premier cours de chaque groupe, pour montrer
-   * d'emblée qu'une fiche existe et ce qu'elle contient.
-   */
-  initialOpen?: boolean;
 }>();
 
 const cs = cap.courseSection;
@@ -87,7 +82,7 @@ const { valeur, mot } = props.course.intensite;
 const GAUGE = [1, 2, 3, 4, 5] as const;
 
 /* ── État de l'accordéon ─────────────────────────────────────────────────── */
-const open = ref(props.initialOpen ?? false);
+const open = ref(false);
 const enhanced = ref(false);
 const closing = ref(false);
 /** Coupe les transitions le temps d'un changement immédiat (montage, recherche). */

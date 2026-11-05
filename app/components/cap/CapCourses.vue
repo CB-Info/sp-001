@@ -247,13 +247,12 @@ useMotion(section, ({ gsap }, root) => {
           {{ cs.groupes.cardio }}
         </h3>
         <CapCourseItem
-          v-for="({ course, sessions }, index) in cardio"
+          v-for="{ course, sessions } in cardio"
           :key="course.slug"
           class="cardio__item"
           :course="course"
           :sessions="sessions"
           :now="clock"
-          :initial-open="index === 0"
           :data-active="active === course.slug || undefined"
         >
           <template v-if="cardioPhotos[course.slug]" #media>
@@ -297,13 +296,12 @@ useMotion(section, ({ gsap }, root) => {
             {{ cs.groupes.force }}
           </h3>
           <CapCourseItem
-            v-for="({ course, sessions }, index) in force"
+            v-for="{ course, sessions } in force"
             :key="course.slug"
             class="force__item"
             :course="course"
             :sessions="sessions"
             :now="clock"
-            :initial-open="index === 0"
           />
 
           <p class="chain cap-signature">{{ cs.enchainement }}</p>
@@ -331,7 +329,6 @@ useMotion(section, ({ gsap }, root) => {
             :course="course"
             :sessions="sessions"
             :now="clock"
-            :initial-open="index === 0"
           >
             <!-- La ligne plate porte le dernier mot : la respiration de la page. -->
             <template v-if="index === calme.length - 1" #baseline>

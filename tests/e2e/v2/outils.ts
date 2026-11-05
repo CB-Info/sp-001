@@ -115,10 +115,7 @@ export async function attendreCours(page: Page, slug: string) {
   await expect(page.locator(`#cours-${slug} .cap-sheet:not([data-instant])`)).toHaveCount(1);
 }
 
-/**
- * Ouvre la fiche d'un cours (accordéon de #cours). Le premier cours de chaque
- * groupe (Pound, Cross training, Pilates) est déjà ouvert : rien à cliquer.
- */
+/** Ouvre la fiche d'un cours (accordéon de #cours) ; rien à cliquer si elle l'est déjà. */
 export async function ouvrirFiche(page: Page, slug: string) {
   const bouton = page.locator(`#cours-${slug}-bouton`);
   const fiche = page.locator(`#cours-${slug}-fiche`);

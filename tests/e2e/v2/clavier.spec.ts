@@ -67,18 +67,16 @@ test.describe('fiches des cours', () => {
     await attendreCours(page, 'cardio-jump');
   });
 
-  test('le premier cours de chaque groupe est ouvert, les autres fermés', async ({ page }) => {
-    for (const slug of ['pound', 'cross-training', 'pilates']) {
-      await expect(page.locator(`#cours-${slug}-bouton`)).toHaveAttribute('aria-expanded', 'true');
-    }
-    for (const slug of ['cardio-jump', 'step', 'caf', 'yoga', 'stretching']) {
-      await expect(page.locator(`#cours-${slug}-bouton`)).toHaveAttribute('aria-expanded', 'false');
-    }
-    // L'action est écrite : « Voir le cours + » sous un cours fermé, « Fermer − » sous un ouvert.
-    await expect(page.locator('#cours-cardio-jump .cap-course__toggle')).toHaveText(
-      /Voir le cours\s*\+/,
-    );
-    await expect(page.locator('#cours-pound .cap-course__toggle')).toHaveText(/Fermer\s*−/);
+  test('toutes les fiches sont fermées au départ, l’action est écrite', async ({ page }) => {
+    const heads = page.locator('#cours [data-accordion-head]');
+    await expect(heads).toHaveCount(8);
+    for (const head of await heads.all())
+      await expect(head).toHaveAttribute('aria-expanded', 'false');
+    // « Voir le cours + » sous un cours fermé, « Fermer − » une fois ouvert.
+    const toggle = page.locator('#cours-pound .cap-course__toggle');
+    await expect(toggle).toHaveText(/Voir le cours\s*\+/);
+    await toggle.click();
+    await expect(toggle).toHaveText(/Fermer\s*−/);
   });
 
   test('toucher la rangée (nom, horaires, intensité) ouvre la fiche', async ({ page }) => {
