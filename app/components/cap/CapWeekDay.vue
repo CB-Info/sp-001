@@ -10,7 +10,8 @@ import type { WeekDay, WeekSlot } from './CapWeek.vue';
  *
  * Avec JS : onglets (motif APG, activation manuelle). Cinq onglets « Lun. … Ven. »
  * de 48 px ; flèches gauche et droite, Début, Fin déplacent le focus, Entrée ou
- * Espace activent. Le jour courant est choisi au montage (lundi le week-end).
+ * Espace activent. Le jour courant est choisi au montage (lundi le week-end ; le
+ * jour de cours suivant si le jour courant n'en a pas).
  * Les panneaux partagent une même cellule de grille, à hauteur fixe de 560 px,
  * et changent par `visibility` : aucun saut. La mise en page en onglets suit
  * html.js dès le premier rendu ; les rôles ARIA n'arrivent qu'au montage, quand
@@ -173,9 +174,19 @@ const panelId = (day: Day) => `semaine-jour-${day}`;
 const beforeId = (day: Day) => `semaine-jour-avant-${day}`;
 
 onMounted(() => {
-  // Le jour courant à Paris ; le week-end, lundi.
+  // Le jour courant à Paris ; le week-end, lundi. Un jour sans cours (jeudi)
+  // ouvrirait un panneau vide : on montre le jour de cours suivant, l'onglet du
+  // jour garde sa marque « aujourd'hui ».
   const { day } = parisNow();
-  selected.value = day <= 4 ? day : 0;
+  const start = Math.max(
+    props.days.findIndex((entry) => entry.day === (day <= 4 ? day : 0)),
+    0,
+  );
+  const count = props.days.length;
+  const withSlots = Array.from({ length: count }, (_, step) => (start + step) % count).find(
+    (index) => props.days[index]?.slots.length,
+  );
+  selected.value = withSlots ?? start;
   enhanced.value = true;
 });
 
