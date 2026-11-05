@@ -11,9 +11,10 @@ import { jourCourt } from '~/utils/cap-time';
  * inventé. Les prix et l'accès se trouvent en moins d'une minute.
  *
  * Hydraté jamais (v2.vue, hydrate-never) : tout est HTML et CSS natifs. La FAQ
- * est faite de <details name="faq"> (accordéon exclusif natif) ; elle s'ouvre en
- * douceur par ::details-content là où le navigateur sait animer vers `auto`,
- * instantanément ailleurs. Aucune entrée animée.
+ * est faite de <details name="faq"> (accordéon exclusif natif). Sous
+ * html.has-motion, la réponse se révèle comme une fiche de cours (hauteur, puis
+ * fondu du texte ; fermeture plus rapide), par app/plugins/faq.client.ts, dans
+ * tous les navigateurs. Sans JS ou en mouvement réduit : instantanée.
  *
  * Gabarit G6, sur photo : « Viens nous » en plein craie, puis « voir. » en délié
  * craie. Sous 64em, ce délié ferait moins de 64 px : il devient plein (R2). Les
@@ -530,12 +531,12 @@ const faq = cap.faq.map((item) => ({ ...item, parts: parts(item.reponse) }));
   content: '+';
 }
 
-.cap-practical__item[open] .cap-practical__sign {
+.cap-practical__item[open]:not([data-closing]) .cap-practical__sign {
   background: var(--cf-citron);
   color: var(--cf-noir);
 }
 
-.cap-practical__item[open] .cap-practical__sign::before {
+.cap-practical__item[open]:not([data-closing]) .cap-practical__sign::before {
   content: '−';
 }
 
@@ -560,33 +561,6 @@ const faq = cap.faq.map((item) => ({ ...item, parts: parts(item.reponse) }));
   font-weight: 400;
   line-height: 1.5; /* 18/27 */
   text-wrap: pretty;
-}
-
-/*
- * Ouverture douce, là où le navigateur anime vers `auto` (::details-content et
- * interpolate-size) ; ailleurs, sans JS ou en mouvement réduit : instantanée.
- * Fermeture en 0,65 × l'ouverture. Un navigateur qui connaît interpolate-size
- * sans ::details-content ignore simplement les deux dernières règles.
- * (Pas de `selector(::details-content)` dans la condition : autoprefixer ne
- * sait pas l'analyser et fait échouer la feuille.)
- */
-@supports (interpolate-size: allow-keywords) {
-  html.has-motion .cap-practical__item {
-    interpolate-size: allow-keywords;
-  }
-
-  html.has-motion .cap-practical__item::details-content {
-    block-size: 0;
-    overflow-y: clip;
-    transition:
-      block-size calc(var(--dur-layout) * 0.65) var(--ease-in-out),
-      content-visibility calc(var(--dur-layout) * 0.65) allow-discrete;
-  }
-
-  html.has-motion .cap-practical__item[open]::details-content {
-    block-size: auto;
-    transition-duration: var(--dur-layout);
-  }
 }
 
 /* ── Tablette : accès et accueil côte à côte, formules dessous ────────────── */
@@ -697,7 +671,7 @@ const faq = cap.faq.map((item) => ({ ...item, parts: parts(item.reponse) }));
     color: CanvasText;
   }
 
-  .cap-practical__item[open] .cap-practical__sign {
+  .cap-practical__item[open]:not([data-closing]) .cap-practical__sign {
     background: CanvasText;
     color: Canvas;
   }
