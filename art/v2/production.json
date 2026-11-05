@@ -1,0 +1,93 @@
+[
+  {
+    "id": "cap-couverture",
+    "target": "art/masters/v2/cap-couverture.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "4k",
+    "family": "nuit",
+    "references": [
+      "a",
+      "b",
+      "e",
+      "d"
+    ]
+  },
+  {
+    "id": "cap-pound",
+    "target": "art/masters/v2/cap-pound.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "4k",
+    "family": "nuit",
+    "references": [
+      "c",
+      "b"
+    ]
+  },
+  {
+    "id": "cap-jump",
+    "target": "art/masters/v2/cap-jump.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "4k",
+    "family": "nuit",
+    "references": [
+      "d"
+    ]
+  },
+  {
+    "id": "cap-step",
+    "target": "art/masters/v2/cap-step.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "4k",
+    "family": "nuit",
+    "references": []
+  },
+  {
+    "id": "cap-force",
+    "target": "art/masters/v2/cap-force.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "3:4",
+    "resolution": "2k",
+    "family": "nuit",
+    "references": []
+  },
+  {
+    "id": "cap-calme",
+    "target": "art/masters/v2/cap-calme.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "4:5",
+    "resolution": "2k",
+    "family": "nuit",
+    "references": [
+      "f"
+    ]
+  },
+  {
+    "id": "cap-famille",
+    "target": "art/masters/v2/cap-famille.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "16:9",
+    "resolution": "4k",
+    "family": "nuit",
+    "references": [
+      "a",
+      "c",
+      "d",
+      "e",
+      "f",
+      "b"
+    ]
+  },
+  {
+    "id": "cap-lieu",
+    "target": "art/masters/v2/cap-lieu.jpg",
+    "model": "nano_banana_pro",
+    "ratio": "21:9",
+    "resolution": "4k",
+    "family": "nuit",
+    "references": []
+  }
+]

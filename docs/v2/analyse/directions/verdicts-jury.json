@@ -1,0 +1,197 @@
+[
+  {
+    "scores": [
+      {
+        "key": "pouls",
+        "brandFidelity": 9,
+        "premium": 7.5,
+        "distinctiveness": 8,
+        "feasibility": 7,
+        "conversion": 7,
+        "accessibilityPerf": 8.5,
+        "verdict": "La plus fidèle et la plus rigoureuse. Chiasme du logo exact dans le hero (tracé blanc plein contre « rythme. » en contour, tube citron contre le plein). Plein en wdth 75, ce qui correspond aux proportions de FITNESS. Aucune couleur sur les photos, grain non cuit, une seule épinglée. Mais l'ECG est partout : moniteur permanent dans l'en-tête avec des mots de phase (« échauffement », « pic »…), 4 complexes empilés dans la marge du Manifeste, courbe d'effort à 8 pics, bande planning. Cette accumulation glisse vers le concept de moniteur médical, qui est le cliché santé que la forensique interdit. Le H1 à trois corps et trois largeurs (64 / 172 / 96) est fragmenté. La photo qui ondule en WebGL est un effet de glitch, pas un geste premium. Bug réel : le sous-ensemble Anybody en capitales seules est incompatible avec les données en bas de casse (« 18 h 15 », « Lundi · Pound », « en cours collectifs. »)."
+      },
+      {
+        "key": "editorial",
+        "brandFidelity": 8.5,
+        "premium": 9,
+        "distinctiveness": 8.5,
+        "feasibility": 7.5,
+        "conversion": 7,
+        "accessibilityPerf": 7.5,
+        "verdict": "La seule qui fait du logo un système typographique d'affiche et non un motif répété. Chaque titre est composé comme le logo : un mot délié citron, un mot plein, une signature en italique citron. Plusieurs idées vraiment éditoriales : couverture de magazine, titre de la Famille à cheval sur la rupture photo/noir, intensité codée plein/délié, scène Cardio collante. L'ECG est rationné : une occurrence par écran, hors planning, où il porte des données. C'est la moins « IA » et celle qui donne le plus envie. Défauts sérieux : plein en wdth 62 et 50 en mobile, trop condensé, qui dérive vers Anton/Bebas, le cliché de salle de sport (FITNESS est large). Délié citron composé en wdth 62 à 120 px : contrepoinçons bouchés. Bug du contour : `color: transparent` + `currentColor` donne un trait invisible. Rééclairage citron des photos, contraire à la règle 8. Dégradé « maillot » sur toute la section de Fin, risque de look esport."
+      },
+      {
+        "key": "experience",
+        "brandFidelity": 7.5,
+        "premium": 7,
+        "distinctiveness": 7.5,
+        "feasibility": 6.5,
+        "conversion": 9,
+        "accessibilityPerf": 7,
+        "verdict": "La plus utile au client. Prochain cours posé sur la ligne plate du tracé dans le hero, .ics statique comme action réelle, liste « À confirmer par le club » pour le gérant. La scène « Cinq dérivations » (curseur 12 h → 20 h sur 5 jours qui se pose sur « Maintenant ») est excellente. Le H1 justifié reprend fidèlement le logo carré. Mais la page tourne au produit : quiz « Ce soir, tu veux… », bande-tempo à 10 complexes serrés (effet moniteur d'hôpital), compteur « 62 bpm · tempo de ta visite », graisse du nom indexée sur une intensité inventée. Il y a aussi deux boutons citron pleins dans le même écran du hero. Duotone citron en `multiply` au survol des photos (filtre Instagram, contraire à la règle 8) et Phosphore en 2 passes. Faisabilité risquée : une semaine épinglée sur 100svh avec 5 rangées, filtres, idées et mentions ne tient pas dans 900 px."
+      }
+    ],
+    "winner": "editorial",
+    "graft": [
+      "De « experience » : un .ics statique par créneau réel (`scripts/build-ics.mjs`, `RRULE:FREQ=WEEKLY`, `TZID=Europe/Paris`, « durée provisoire 1 h, à confirmer » dans la description). Ajouter « Ajouter à mon agenda » dans chaque fiche, dans la bande Semaine et dans Réserver. C'est la seule action réelle disponible sans les liens de l'appli, et elle marche sans JS.",
+      "De « experience » : la liste « À confirmer par le club » (`#a-confirmer`) en pied de page, sur 2 colonnes. Contenu : commune et adresse, téléphone, horaires, durées, créneaux bien-être, tarifs, essai, coachs, appli, mentions légales, licence POUND, vraies photos. La lier depuis le bandeau maquette. C'est le message « il ne manque que vos infos » adressé au gérant.",
+      "De « experience » : la donnée portée par le tracé. Dans la Fin, poser « On t'attend mercredi à 19 h 00 ? » (Anybody `tnum`) sur la ligne plate du tube citron, au lieu d'une ligne isolée dans la bande lime.",
+      "De « experience » : la scène « Cinq dérivations » comme entrée de la Semaine. Remplacer le tracé rangée par rangée (800 ms × 5 + décalages) par un curseur vertical unique qui balaie 11 h 30 → 20 h sur les 5 pistes à la fois. Il trace chaque complexe à son passage, puis se pose sur « maintenant » à l'heure de Paris (420 ms `in-out`). Scrub sans épinglage, `focusin` qui pousse la progression à 1.",
+      "De « pouls » : le raccord du tracé de titre au pied de la première lettre et sa naissance au bord du viewport (la « marge du pouls » x 0 → fin de la colonne 1). Avec la règle « amplitude R = 1,1 × la capitale du mot porté, ligne isoélectrique = ligne de base ».",
+      "De « pouls » : le grain en tuile PNG 128×128 (σ 0,03, ≈ 3 Ko) en `::after` sur `.cap-photo`, en `overlay` à 0,07, au lieu du grain cuit. Une N&B lisse se compresse 30 à 40 % mieux, ce qui protège le LCP mobile.",
+      "De « pouls » : en plus de l'instanciation à wght 900, le sous-ensemble de glyphes réellement utilisés (capitales, bas de casse, accents français, Œ, chiffres, U+00A0, U+2019, « »). On passe de 32,5 à ≈ 22 Ko. Le bas de casse est indispensable : l'éditorial a un H2 en minuscules et des horaires « 18 h 15 ».",
+      "De « pouls » : la photo plein cadre 21:9 de la salle de biking vide, de nuit (`cap-lieu`), en écho réinterprété de la bannière `3.png`. Le titre « Viens nous voir. » est posé sur sa zone sombre, en tête de Pratique. C'est le seul visuel client qu'on peut honorer, et il ajoute une rupture d'image avant le carbone.",
+      "De « pouls » et « experience » : les « Idées de semaine » qui allument leurs créneaux en CSS seul (`:has(:checked)`). Les créneaux retenus restent pleins, les autres passent en tube #6E6C66 avec un libellé allégé. Dans l'éditorial, ces idées ne sont aujourd'hui que du texte.",
+      "De « pouls » : le test mesurable de part citron (masque OKLCH teinte 105–120°, chroma ≥ 0,12, ≤ 10 % par capture 1440×900) et les règles `forced-colors`. Les contours passent à `-webkit-text-stroke: 0` + `CanvasText`, les tracés en `CanvasText`.",
+      "De « pouls » : l'hydratation paresseuse des chapitres sous la ligne de flottaison (`<LazyCapWeek hydrate-on-visible>`, `<LazyCapGuide hydrate-never>`). Elle garde le JS initial ≤ 100 Ko avec la logique d'horloge et de filtres.",
+      "De « pouls » : le code d'état unique pris au logo, appliqué partout. Contour = inconnu, fermé ou à venir ; plein = confirmé, ouvert ou actif. Il s'applique à l'indicateur de la FAQ (carré 10 px contour → plein citron, à la place du filet vertical) et aux créneaux filtrés."
+    ],
+    "mustFix": [
+      "Bug du contour : `color: transparent` avec `-webkit-text-stroke: … currentColor` donne un trait transparent, donc un mot invisible. Écrire `color: var(--cf-citron); -webkit-text-fill-color: transparent; -webkit-text-stroke: max(2px,.04em) currentColor;`. Garder `color` comme repli pour `forced-colors`, où le remplissage revient à `CanvasText`. Vérifier en capture que le contour s'affiche.",
+      "Plein trop condensé : wdth 62 (et 50 en mobile) en 900 et en capitales, c'est le registre Anton/Bebas du template de salle. FITNESS mesure ≈ 0,74–0,77 de largeur par capitale et par lettre ; Anybody wdth 62 donne ≈ 0,55–0,63. Passer le plein à wdth 75–85 (mobile ≥ 70) et regénérer `cap-fit.ts` avec `measure-fit.py`.",
+      "Le délié n'est permis qu'en large (wdth ≥ 125) et ≥ 64 px. Corriger l'Édito, où « Dépasse-toi. » et « Atteins tes objectifs. » sont en délié wdth 62 à 120 px : trait de 4,8 px dans des contrepoinçons étroits, donc illisible. Garder ces lignes en délié large ferré à droite (quitte à réduire le corps), ou les passer en plein.",
+      "Pas de citron sur les photos (règle 8 : la couleur ne vient que du graphisme). Retirer de l'intro la couche de lumière citron qui « allume » les hautes lumières, et retirer O1 « Lumière de pouls » sur les sujets et la peau, qui donne un filtre verdâtre bon marché. Si un overdrive WebGL reste, il ne touche que les hautes lumières du fond (fenêtres), ne s'applique jamais aux visages et n'arrive qu'après le LCP. Il passe une revue capture contre la bannière `3.png`, sinon il est supprimé.",
+      "Dégradé « maillot » : il ne doit pas couvrir toute la section de Fin. En faire un ourlet ≤ 40svh au bas de la section, sans aucun texte entre 42 et 85 %. Le lime doit rester ≤ 12 % de la hauteur visible. Le CTA est le bouton standard (citron, texte noir) posé sur le noir au-dessus de la lumière, pas un bouton noir sur lime. Une seule occurrence par page, exception « fond clair » déclarée dans le test.",
+      "Ordre du hero : le H1 vient en premier dans le DOM (chapeau, CTA et prochain cours positionnés par la grille). L'ordre de lecture et de tabulation reste H1 → chapeau → action. Vérifier à 1440 et 390 que le CTA placé au-dessus du titre reste le premier aplat d'action perçu, et qu'il n'y a pas deux aplats citron dans l'écran (CTA de l'en-tête masqué tant que celui du hero est visible).",
+      "Rationner le citron dans les lockups. Le hero cumule délié « Chacun », signature, CTA plein et prochain cours. Au plus un élément citron dominant par écran : la signature passe en italique craie quand un délié citron est déjà présent dans le même écran, ou l'inverse. À valider par le test ≤ 10 %.",
+      "« Réserve ta place » ne doit pas mener à une impasse (stores « lien à venir »). `#reserver` doit proposer une action réelle immédiate : .ics du prochain cours ou du cours choisi, et la voie accueil avec « adresse à confirmer ». Le libellé doit être honnête sur ce qui existe.",
+      "Lockups : au plus 2 chapitres partagent le même gabarit délié + plein + signature (règle anti-tête clonée). Vérifier qu'Édito, Cours, Semaine, Famille et Fin restent 5 compositions distinctes en capture, pas cinq variantes du même logo posé.",
+      "Intensité « plein = intense, délié = calme » : c'est une donnée inventée. Elle doit toujours être doublée du texte « Intensité indicative : soutenue · 4 sur 5, à valider avec les coachs » et ne jamais être le seul vecteur (WCAG 1.4.1). Pas de « POUND® », jamais « CrossFit ».",
+      "Scène Cardio collante : sans JS et en mouvement réduit, aucune photo ne doit rester épinglée sous la liste. Le fondu de photo ne compte pas comme 5e fondu-translation. Repli IntersectionObserver testé là où `view-timeline` manque.",
+      "Tests de marque obligatoires dans `tests/e2e/v2/` : greps à 0 (`#0f5233`, `#ffd83d`, ALVAR, maillot, flocage, effectif, tribune, écharpe, match, 412, Lyon, Canaris, Drake, Saira) ; ≤ 6 capitales espacées ; ≥ 3 corps ≥ 170 px à 1440 ; rayon ≤ 4 px et aucune ombre floue ; aucune boucle `infinite` ; axe à 0 violation sur 4 états ; heure de Paris figée au mer. 4 nov. 2026, 18 h 20."
+    ]
+  },
+  {
+    "scores": [
+      {
+        "key": "pouls",
+        "brandFidelity": 9,
+        "premium": 8,
+        "distinctiveness": 9,
+        "feasibility": 6.5,
+        "conversion": 7,
+        "accessibilityPerf": 7,
+        "verdict": "La direction la plus rigoureuse et la plus propriétaire. Le chiasme du logo est recomposé dans le hero, les tracés sont générés côté serveur, et le planning à axe coupé est calculé au pixel (positions vérifiées : mer. 12 h 15 → x 349, mar. 17 h 15 → x 820). Il n'y a qu'un seul épinglage. Trois faiblesses côté front. (1) Le moniteur permanent de l'en-tête, avec ses battements au défilement, ses mots de phase et la coordination « un seul cœur à la fois », casse sa propre règle d'une occurrence d'ECG par écran et ajoute un système d'exécution fragile. (2) Le sous-ensemble Anybody de 18 Ko est en capitales seules : vérifié, 77 glyphes, aucune minuscule. Or le rôle --text-data compose « Lundi · 13 h 00 · Pound » et « Mer. 18 h 00 · CAF » en casse mixte : ces minuscules tomberaient sur la police de repli. (3) La Fin épinglée sur 200 svh retarde l'action finale, et la déformation WebGL de la photo apporte peu pour son coût. Le bouton « Réserve ta place » mène à un bloc où toutes les voies sont « à venir »."
+      },
+      {
+        "key": "editorial",
+        "brandFidelity": 8.5,
+        "premium": 9,
+        "distinctiveness": 8,
+        "feasibility": 7.5,
+        "conversion": 6.5,
+        "accessibilityPerf": 7.5,
+        "verdict": "Le meilleur rapport entre premium et robustesse. Le système délié/plein/signature est tiré du logo, avec un vrai contraste de largeur (wdth 150 contre 62). On obtient une échelle d'affiche (186 et 233 px) et une série photo de campagne, l'ECG restant rare et porteur de données. Côté pile, c'est la plus saine : Anybody instanciée en 900 fixe avec le jeu de caractères complet (32,5 Ko mesurés), pas de moniteur permanent, pas d'épinglage GSAP, pas d'état « en ce moment » fondé sur une durée inventée, JS visé à 100 Ko au plus, et un plan B chiffré pour le LCP. Points à corriger. La Fin met le dégradé « maillot » en fond de section entière, avec le bouton sur la bande lime : c'est le « cheap » relevé par l'analyse de marque. La scène épinglée du Cardio prévoit deux moteurs (view-timeline et IntersectionObserver). Le filtre de la semaine disparaît sans JS. Le délié est utilisé en wdth 62, ce qui risque de boucher les contreformes. Enfin, la couche de lumière AVIF et l'effet O1 font deux mécanismes pour un seul effet."
+      },
+      {
+        "key": "experience",
+        "brandFidelity": 7.5,
+        "premium": 6.5,
+        "distinctiveness": 7,
+        "feasibility": 5.5,
+        "conversion": 9,
+        "accessibilityPerf": 6,
+        "verdict": "La meilleure pensée de conversion : prochain cours géant dans le hero, sélecteur « Ce soir, tu veux… » en :has() sans JS, fichiers .ics statiques comme seule action réelle disponible, liste « à confirmer » pour le gérant. Mais c'est la plus fragile et la plus proche de l'écueil « gadgets à la place de l'art direction » que reprochait le post-mortem : compteur « 62 bpm · tempo de ta visite », bande-tempo à complexes répétés (effet moniteur d'hôpital), survol en duotone multiply, curseur WebGL « Phosphore » à rendu ping-pong. Problèmes concrets. Il y a deux aplats citron d'action dans le premier écran (bouton de l'en-tête et bouton du hero). Dans le planning épinglé, les étiquettes sont à 0,35 d'opacité tant que le curseur n'est pas passé : on arrive dessus par l'ancre « Voir le planning » avec un contraste en échec. content-visibility:auto fausse les mesures de ScrollTrigger. Le flash contour → plein → contour en 90 ms est répété sur 4 titres. Enfin, l'estimation d'≈ 35 Ko pour Anybody instanciée en wght 300–900 est irréaliste : l'éditorial a mesuré 49,8 Ko pour la seule plage 800–900."
+      }
+    ],
+    "winner": "editorial",
+    "graft": [
+      "Depuis pouls : générateur `app/utils/ecg.ts` pur, exécuté au rendu serveur. Il produit le complexe canonique, les bandes et le polygone effilé, avec positions analytiques sans getPointAtLength. Tous les tracés arrivent dans le HTML et aucun calcul n'est fait côté client.",
+      "Depuis pouls : code d'état unique pris au logo, appliqué à toutes les données. Contour = inconnu / à venir, plein = confirmé / actif. Concrètement : [Commune] en contour gris, créneaux bien-être en tube gris, marqueur de FAQ en carré contour qui devient plein. Ce code complète le pointillé « à confirmer » de l'éditorial.",
+      "Depuis pouls : le dégradé maillot se réduit à un « ourlet » de 160 px (120 px en mobile), sans texte, en bas du pied de page. La Fin de l'éditorial reste sur noir, avec « Ensemble, » et le tube citron qui bat une fois.",
+      "Depuis pouls : passage de témoin du bouton d'en-tête. Il est en contour craie tant que le bouton du hero est visible, puis passe en citron plein en 240 ms. Il n'est jamais masqué : pas de bouton invisible mais focalisable, et un seul aplat d'action par écran.",
+      "Depuis pouls : chapitres sous la ligne de flottaison en hydratation différée (`<LazyCap… hydrate-on-visible />`, `hydrate-never` pour les blocs statiques comme Pratique et le pied de page). Nuxt 4.5.2 le permet.",
+      "Depuis pouls : grain non cuit. Tuile PNG 128×128 en overlay à 0,07 sur `.cap-photo::after`. Une image N&B lisse se compresse 30 à 40 % mieux, ce qui aide le LCP mobile.",
+      "Depuis pouls : tests « interdits ». Part de pixels citron ≤ 10 % par capture 1440×900 (masque OKLCH, teinte 105–120°, chroma ≥ 0,12). Au moins 3 éléments ≥ 170 px. Aucune animation infinite de plus de 5 s. Luminance de chaque section ≤ #1c1c1c.",
+      "Depuis pouls : sur l'axe coupé du planning, la ligne isoélectrique de la coupure 14 h → 17 h est en pointillés 2/4 : une coupure dessinée plutôt qu'un simple libellé texte.",
+      "Depuis experience : un .ics statique par créneau, généré au build (`scripts/build-ics.mjs` → `public/v2/agenda/`, RRULE:FREQ=WEEKLY, TZID=Europe/Paris avec bloc VTIMEZONE, durée provisoire signalée « à confirmer »). Le lien « Ajouter à mon agenda » est mis dans chaque fiche et dans chaque créneau du planning. C'est la seule action réelle tant que l'appli n'a pas de liens, et elle fonctionne sans JS.",
+      "Depuis experience : liste « À confirmer par le club » (`#a-confirmer`) dans le pied de page, liée depuis le bandeau maquette. Elle porte le message au gérant : « il ne manque que vos infos ».",
+      "Depuis experience : tous les filtres et idées de semaine passent en radios natives + `:has()`, pour qu'ils marchent sans JS. Ils remplacent le filtre de l'éditorial, masqué en `html:not(.js)`.",
+      "Depuis experience : test e2e « 1 `[data-ecg]` persistant par viewport à chaque pas de 25 % de défilement », avec `#semaine` en exception déclarée. Plus un second scénario horaire : samedi 10 h 00, heure de Paris, où le prochain cours bascule sur lundi 13 h 00.",
+      "Depuis experience : `focusin` dans une zone animée force la progression à 1. À appliquer à la frappe des titres et au tracé des pistes."
+    ],
+    "mustFix": [
+      "Fin : supprimer le dégradé maillot en fond de section entière (`max(100svh, 52rem)`) et le bouton posé sur la bande lime. Garder la Fin sur noir, avec le bouton citron, et réduire le dégradé à l'ourlet sans texte du pied de page (≤ 160 px). Aucune section à fond clair.",
+      "Cardio en musique : un seul moteur pour la scène collante. IntersectionObserver qui bascule une classe + transitions CSS, sans double chemin view-timeline / IO. Les 3 photos plein cadre en lazy, avec `sizes` exacts pour éviter le flou constaté dans l'ancienne V2. Sans JS : chaque cours garde sa photo 4:5.",
+      "Délié uniquement en wdth ≥ 100 et à ≥ 64 px. « Dépasse-toi. » et « Atteins tes objectifs. » en délié wdth 62 / 120 px sont à recomposer (wdth ≥ 100, ou passage en plein) : sinon les contreformes se bouchent sous un trait de 0,04 em. Contrastes forcés : text-stroke 0 et CanvasText.",
+      "Filtre de la semaine : fonctionnel sans JS (`:has(:checked)`). L'état de chaque créneau doit être transmis autrement que par la couleur (texte visible ou masqué « hors filtre », graisse), et `aria-live` ne parle qu'après une action. Ne pas masquer les créneaux filtrés de la liste textuelle.",
+      "Hero : ordre du DOM H1 → chapeau → bouton, quel que soit le placement visuel (le chapeau est en haut, le H1 en bas). Le bouton est cliquable et opaque dès t = 0, jamais à opacité 0 avant 900 ms : le `:focus-visible` seul ne suffit pas pour un pointeur. La photo ne passe jamais à opacité 0.",
+      "LCP mobile ≤ 2,5 s : hero mobile ≤ 40 Ko en AVIF à 780w (et non 55), préchargé par media query avec `fetchpriority=\"high\"`. `hero-ready` ne doit pas retarder la peinture : le voile et l'intro restent en surcouche. Activer le plan B (H1 sur noir) si la médiane de 3 dépasse 2,5 s.",
+      "Police : la police instanciée maison (`Anybody CAP`, 900 fixe) doit avoir sa propre police de repli à métriques calculées. `sync-fonts.mjs` ne la couvre pas. Sous-ensemble en latin français (capitales et minuscules, accents, Œ, guillemets, U+00A0, U+2019) pour viser environ 28 Ko. Ne pas greffer le « poids du cours » d'experience, qui exige l'axe wght (+17 Ko au moins).",
+      "`cap-fit.ts` (largeurs en em) : contrôle au build qui compare l'empreinte des textes de `cap.ts` aux largeurs mesurées, et fait échouer le build s'ils divergent. Planchers en rem et `nowrap` levé sous 30 em pour le zoom à 400 %. Plafond de taille au-delà de 1 440 px (contenu max 1 760 px).",
+      "Heure : `club-time.ts` calculé en Europe/Paris via `Intl.DateTimeFormat`. Rendu serveur neutre (« Premier cours de la semaine · lun. 13 h 00 · Pound »), sans état « en ce moment ». e2e le mercredi 4 novembre 2026 à 18 h 20 et le samedi à 10 h 00.",
+      "Effets lumineux : un seul mécanisme. Soit la couche de lumière AVIF (une impulsion par interaction, au plus une toutes les 800 ms), soit O1 en WebGL chargé en temps libre derrière `canBlur()`. O1 est livré en dernier et doit pouvoir être désactivé sans rien casser ; pas de projecteur qui suit le pointeur sur mobile.",
+      "Budgets prouvés en CI : JS au premier chargement ≤ 100 Ko gzip (plafond 110), Lighthouse mobile ≥ 90 en médiane de 3, CLS 0, axe à 0 violation sur 5 états (repos, menu, fiche ouverte, filtre, FAQ). Aucune boucle autonome de plus de 5 s. GSAP et OGL jamais requêtés en mouvement réduit.",
+      "Honnêteté : bandeau maquette et noindex, intensité marquée « indicative, à valider avec les coachs », « Pound » sans ®, jamais « CrossFit », aucun nom de coach ni avis, liens des stores en texte non focalisable. Grep à 0 : ALVAR, 412, Lyon, Canaris, Drake, maillot/flocage/effectif/tribune/écharpe/match, #0f5233, #ffd83d, Saira."
+    ]
+  },
+  {
+    "scores": [
+      {
+        "key": "pouls",
+        "brandFidelity": 9,
+        "premium": 8.5,
+        "distinctiveness": 8.5,
+        "feasibility": 7.5,
+        "conversion": 8,
+        "accessibilityPerf": 8,
+        "verdict": "C'est la base la plus équilibrée. Le hero recompose fidèlement le logo horizontal, que la salle reconnaît tout de suite : ECG blanc plein, puis « rythme. » au trait, puis tube citron qui sort à droite. Le vrai planning devient un ECG lisible, et « Réserver » est collé au planning, ce qui donne un parcours court. Une seule scène épinglée, des surfaces sobres, de l'honnêteté sur les données. Points à corriger : le moniteur d'en-tête avec ses mots de phase (« échauffement », « pic »…) fait prétentieux pour des gens du village ; la photo qui se déforme (« l'image bat ») risque d'avoir l'air d'un bug ; la Fin épinglée sur 200svh fait défiler beaucoup de vide ; le sous-ensemble d'Anybody en capitales seules est fragile ; « En ce moment » repose sur une durée supposée de 45 min ; les tarifs sont introuvables depuis la navigation."
+      },
+      {
+        "key": "editorial",
+        "brandFidelity": 9,
+        "premium": 9,
+        "distinctiveness": 8.5,
+        "feasibility": 7,
+        "conversion": 7.5,
+        "accessibilityPerf": 7.5,
+        "verdict": "C'est la plus « campagne » et la plus fidèle au système du logo : chaque titre a son mot au trait (délié), son mot plein et sa signature en italique. Sa semaine est la plus honnête : pas d'« en ce moment », le tracé du jour est écrit jusqu'à maintenant, et le filtre aplatit les cours écartés. Elle propose aussi un tracé vertical sur mobile, en écho au short. Mais elle aligne trop d'affiches géantes d'affilée, ce qui fatigue et fait « agence ». Le bouton du hero passe visuellement avant le titre. Le dégradé maillot sert de fond à toute la section Fin, avec le bouton posé sur le vert lime, ce qui donne un effet esport. Enfin, la lumière citron en WebGL sous la souris frôle le néon."
+      },
+      {
+        "key": "experience",
+        "brandFidelity": 8,
+        "premium": 7,
+        "distinctiveness": 7.5,
+        "feasibility": 6.5,
+        "conversion": 9,
+        "accessibilityPerf": 6.5,
+        "verdict": "C'est la plus utile pour l'adhérent : prochain cours avec compte à rebours à l'heure de Paris, .ics réel, liste « à confirmer » qui parle directement au gérant. C'est aussi la plus gadget et la moins premium : ligne « 62 bpm · tempo de ta visite », bande-tempo, survol en duotone citron, graisse des noms de cours indexée sur une intensité inventée. Le planning épinglé laisse ses libellés à 35 % d'opacité tant que le curseur n'est pas passé, donc l'info est illisible en cours de défilement. Il y a deux boutons citron dans le hero (en-tête et moniteur). Enfin, « Ce soir, tu veux… » devient faux le jeudi et le week-end."
+      }
+    ],
+    "winner": "pouls",
+    "graft": [
+      "editorial → Titres de chapitre en « lockup » de logo : un mot au trait citron (≥ 64 px), un mot plein blanc, une signature en italique citron calée à droite. Les largeurs sont mesurées en em par script et les tailles ajustées en cqi. À appliquer à 3 ou 4 chapitres au plus (Hero, Cours, Famille, Fin), et jamais plus de 2 chapitres avec le même gabarit.",
+      "editorial → Semaine honnête : supprimer l'état « En ce moment » tant que les durées ne sont pas connues, et le remplacer par « Commencé à 18 h 00 ». La rangée du jour est tracée en craie jusqu'à l'heure de Paris, puis en gris après. Ligne citron « maintenant 18 h 20 » de 1 px.",
+      "editorial → Filtre du planning : les créneaux écartés s'aplatissent (scaleY 1 → 0,06 en 240 ms, out-soft), passent en gris avec `inert` + `aria-hidden`, et une zone `aria-live` annonce « 3 créneaux affichés » seulement après une action.",
+      "editorial → Sixième piste « Bien-être » en pointillé (Pilates, Yoga, Stretching : créneaux à confirmer), sur l'axe même du planning plutôt que dans une rangée à part.",
+      "editorial → Planning mobile : axe vertical à environ 96 px par heure, tracé au bord gauche et pics vers la droite (écho de l'ECG du short), au lieu d'une bande horizontale de 350×140 illisible.",
+      "editorial → Sur mobile, dans « Avant ton premier cours », la fiche pratique (adresse, accueil, formules à confirmer) passe avant la FAQ : l'info de conversion d'abord.",
+      "editorial → Contenu plafonné à 1760 px au-delà de 1440, pour que les mots géants grandissent à 1920 (corrige le hero perdu au centre de l'ancienne V2).",
+      "experience → Bloc « Prochain cours » du hero enrichi d'un compte à rebours « dans 2 h 40 · heure de Paris » (après montage seulement ; rendu serveur neutre « Premier cours de la semaine · lundi 13 h 00 · Pound »). Sans la ligne bpm.",
+      "experience → `.ics` statique par créneau, généré au build (`public/v2/agenda/*.ics`, `RRULE:FREQ=WEEKLY`, `TZID=Europe/Paris`, durée marquée « provisoire, à confirmer » dans la description). Lien « Ajouter à mon agenda » dans chaque fiche, chaque ligne du planning et le bloc #reserver. Fonctionne sans JS : c'est la seule action réelle disponible tant que l'appli n'a pas de lien.",
+      "experience → Liste « À confirmer par le club » (#a-confirmer) dans le pied de page : commune, adresse, téléphone, horaires, durées, créneaux bien-être, tarifs, essai, coachs, appli, mentions légales, licence POUND, vraies photos. Le bandeau maquette y renvoie (« Ce qui reste à confirmer »). C'est le message au gérant : « il ne manque que vos infos ».",
+      "experience → Mémoire du choix : un cours choisi dans une fiche ou le planning (`useState`) est repris dans #reserver et la Fin (« Tu as choisi : Cross training, mercredi 19 h 00 »).",
+      "experience → Dans chaque fiche de cours : « Prochain créneau : mardi 17 h 15 » calculé à l'heure de Paris, plus le bouton « Réserver ce cours ». Optionnel : un petit sélecteur « Quel cours pour toi ? » en radios natives et CSS `:has()`, branché sur la courbe d'effort, sans bande-tempo ni bpm, et formulé sans « ce soir ».",
+      "experience → `content-visibility: auto` sur les chapitres statiques ; `hydrate-never` pour la section Pratique (les `<details>` natifs suffisent) ; `hydrate-on-visible` pour le planning et les cours."
+    ],
+    "mustFix": [
+      "Police Anybody : abandonner le sous-ensemble en capitales seules. Le rôle données (« Lundi · 13 h 00 · Pound ») et le « h » minuscule des heures tomberaient sur la police de repli. Instancier plutôt l'Anybody latin complète, avec wght 700–900 et wdth 60–150 (environ 30–35 Ko), ou bien prouver par un test que chaque usage d'Anybody passe en capitales et que les heures n'utilisent pas Anybody.",
+      "Supprimer « En ce moment » fondé sur 45 min supposées. Aucun état temporel ne doit reposer sur une durée inventée. Seuls « Terminé », « Commencé à … » et « Prochain cours » sont autorisés.",
+      "Rendre prix et accès trouvables en moins d'une minute. La navigation affiche « Cours · Planning · Tarifs & infos » (ou équivalent), et les formules (« — € · tarif à confirmer ») vivent dans « Viens nous voir », pas cachées sous la FAQ.",
+      "Moniteur d'en-tête : retirer les mots de phase (« échauffement », « montée », « pic »…), qui sont prétentieux et opaques pour un adhérent. Garder au plus un mini-tracé muet en `aria-hidden`, ou le supprimer. Aucune ligne bpm ou « tempo de ta visite ».",
+      "Effet WebGL « l'image bat » : ne jamais déformer une photo de personnes, car ça se lit comme un bug d'affichage. Le WebGL arrive en dernier, désactivable, et n'est retenu qu'après validation sur captures.",
+      "Fin épinglée : réduire la course morte. Le pin dure au plus environ 100svh au total. Le bouton « Réserve ta place » et le prochain cours sont visibles et cliquables dès l'entrée dans la scène. `focusin` amène la progression à 1. Pas de pin sous 64em ni si la hauteur est inférieure à 700 px.",
+      "Dégradé maillot : jamais en fond de section entière et jamais sous un bouton. Une bande de 160 px au plus (120 px sur mobile), sans texte entre 42 et 85 % de sa hauteur.",
+      "Un seul bouton citron plein par écran : celui de l'en-tête reste secondaire (filet craie) tant que celui du hero est visible, puis prend le relais.",
+      "Le texte n'est jamais estompé par l'animation. Les heures et noms de cours du planning restent à pleine opacité et au contraste AA en permanence ; seuls les tracés s'écrivent au défilement.",
+      "Ordre DOM = ordre visuel = ordre de focus dans le hero : H1, puis chapô, puis bouton, puis prochain cours (critères 1.3.2 et 2.4.3).",
+      "Intensités 1 à 5 : elles ne viennent pas du club. Partout où elles apparaissent (courbe d'effort, fiches, sélecteur éventuel), les écrire en texte (« Intensité : soutenue · 4 sur 5 ») avec « repère indicatif, à valider par les coachs ».",
+      "#reserver doit dire honnêtement comment réserver aujourd'hui : « dans l'appli CAP Fitness (lien à venir) ou à l'accueil », et proposer « Ajouter à mon agenda » (.ics). Aucun faux bouton de store focusable, aucun lien mort.",
+      "Heure : tout calcul en `Europe/Paris` via `Intl`. Rendu serveur neutre (« Premier cours de la semaine »), jamais « Prochain cours » sans horloge. Tests à mercredi 18 h 20, jeudi et samedi 10 h 00.",
+      "Honnêteté de la maquette : bandeau « Maquette non officielle » visible, `noindex`, mention « Visuels d'illustration générés par IA, personnes fictives ». « Pound » sans ®, jamais « CrossFit », « coachs diplômés » sans « d'État », « sport santé » sans label. Aucun coach nommé, avis, adresse, téléphone ni tarif inventé. Grep à 0 pour ALVAR, 412, Lyon, Canaris, Drake et le vocabulaire foot.",
+      "Mobile : barre « Prochain cours » de 64 px + safe-area, compensée par le `padding-bottom` de `main`. Elle est masquée quand le menu est ouvert et quand #reserver ou la Fin sont visibles.",
+      "Contraste de l'en-tête transparent sur la photo du hero : zone de navigation et logo réduit à p95 ≤ 15 % de luminance, vérifiée par script sur les recadrages servis (bureau et 4:5 mobile)."
+    ]
+  }
+]

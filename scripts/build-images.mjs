@@ -34,10 +34,22 @@ const force = process.argv.includes('--force');
 /** Échelle de largeurs commune ; chaque image s'arrête à sa propre largeur. */
 const LADDER = [160, 320, 480, 640, 800, 960, 1280, 1600, 1920, 2400, 2880];
 
-/** Famille d'étalonnage par master (art/production.json) : les rouges saturés gardent leur chroma. */
-const production = JSON.parse(await readFile(join(root, 'art/production.json'), 'utf8'));
+/** Lit un JSON du dossier art/. */
+const readArt = async (path) => JSON.parse(await readFile(join(root, 'art', path), 'utf8'));
+
+/**
+ * Famille d'étalonnage par master (art/production.json, puis art/v2/ pour la
+ * V2, famille « nuit » en noir et blanc) : les rouges saturés gardent leur chroma.
+ */
+const production = [
+  ...(await readArt('production.json')),
+  ...(await readArt('v2/production.json')),
+];
 const family = Object.fromEntries(production.map((p) => [p.target, p.family]));
-const jobs = JSON.parse(await readFile(join(root, 'art/manifest.json'), 'utf8')).production.jobs;
+const jobs = [
+  ...(await readArt('manifest.json')).production.jobs,
+  ...(await readArt('v2/manifest.json')).jobs,
+];
 
 /** Version des réglages ci-dessous : à incrémenter pour réencoder toutes les variantes. */
 const ENCODING = 1;
@@ -117,6 +129,13 @@ async function processMaster(master) {
  */
 const CROPS = [
   { master: 'hero/hero-athlete', name: 'hero/hero-athlete-portrait', aspect: 3 / 4, focalX: 0.56 },
+  // V2 (CAP Fitness) : mêmes recadrages que art/v2/grade.py (vérifiés par --check).
+  { master: 'v2/cap-couverture', name: 'v2/cap-couverture-mobile', aspect: 1 / 2, focalX: 0.86 },
+  { master: 'v2/cap-pound', name: 'v2/cap-pound-mobile', aspect: 4 / 5, focalX: 0.74 },
+  { master: 'v2/cap-jump', name: 'v2/cap-jump-mobile', aspect: 4 / 5, focalX: 0.7 },
+  { master: 'v2/cap-step', name: 'v2/cap-step-mobile', aspect: 4 / 5, focalX: 0.64 },
+  { master: 'v2/cap-famille', name: 'v2/cap-famille-mobile', aspect: 4 / 5, focalX: 0.55 },
+  { master: 'v2/cap-lieu', name: 'v2/cap-lieu-mobile', aspect: 4 / 5, focalX: 0.4 },
 ];
 
 async function processCrop({ master, name, aspect, focalX }) {
@@ -201,6 +220,57 @@ for (let i = 0; i < masters.length; i += pool) {
 results.push(...(await Promise.all(STREAKS.map(processStreaks))));
 results.push(...(await Promise.all(CROPS.map(processCrop))));
 
+/**
+ * Plaques de chargement de la V2 : chaque image réduite à 24 px de large, en WebP,
+ * encodée en base64 dans le manifeste (≈ 1 Ko). Elle sert de fond au cadre photo
+ * pendant le chargement : aucune case vide sur une capture pleine page.
+ */
+async function placeholder(src) {
+  const name = src.replace(/^\/images\//, '').replace(/\.jpg$/, '');
+  const crop = CROPS.find((c) => c.name === name);
+  const file = join(MASTERS, `${crop ? crop.master : name}.jpg`);
+  let image = sharp(file);
+  if (crop) {
+    const source = await sharp(file).metadata();
+    const width = Math.round(source.height * crop.aspect);
+    const left = Math.min(
+      Math.max(Math.round(source.width * crop.focalX - width / 2), 0),
+      source.width - width,
+    );
+    image = image.extract({ left, top: 0, width, height: source.height });
+  }
+  const buffer = await image.resize({ width: 24 }).webp({ quality: 40 }).toBuffer();
+  return `data:image/webp;base64,${buffer.toString('base64')}`;
+}
+
+for (const result of results) {
+  if (result.src.startsWith('/images/v2/')) result.placeholder = await placeholder(result.src);
+}
+
+/**
+ * Budgets d'images de la V2 (brief §3.3), vérifiés à chaque build : le hero en AVIF
+ * (1920w sur ordinateur, 800w pour le recadrage mobile servi en 780w) et la plus
+ * large variante AVIF des autres images.
+ */
+const BUDGETS = [
+  { src: '/images/v2/cap-couverture.jpg', width: 1920, max: 140 },
+  { src: '/images/v2/cap-couverture-mobile.jpg', width: 800, max: 40 },
+];
+const overBudget = [];
+for (const result of results.filter((r) => r.src.startsWith('/images/v2/'))) {
+  const rule = BUDGETS.find((b) => b.src === result.src);
+  const width = rule ? rule.width : Math.max(...result.widths);
+  const max = rule ? rule.max : 180;
+  const file = result.files.find((f) => f.includes(`-${width}.`) && f.endsWith('.avif'));
+  if (!file) continue;
+  const kb = (await stat(file)).size / 1024;
+  if (kb > max) overBudget.push(`${result.src} ${width}w : ${kb.toFixed(1)} Ko > ${max} Ko`);
+}
+if (overBudget.length) {
+  console.error(`Budgets d'images dépassés :\n  ${overBudget.join('\n  ')}`);
+  process.exitCode = 1;
+}
+
 // Variantes orphelines (master modifié ou supprimé, réglages changés) : supprimées.
 const expected = new Set(results.flatMap((r) => r.files));
 let removed = 0;
@@ -212,7 +282,10 @@ for await (const file of glob('**/*.{avif,webp,jpg}', { cwd: OUTPUT })) {
 }
 
 const manifest = Object.fromEntries(
-  results.map(({ src, width, height, widths, hash }) => [src, { width, height, widths, hash }]),
+  results.map(({ src, width, height, widths, hash, placeholder: blur }) => [
+    src,
+    { width, height, widths, hash, ...(blur && { placeholder: blur }) },
+  ]),
 );
 await writeFile(MANIFEST, `${JSON.stringify(manifest, null, 2)}\n`);
 const written = results.reduce((n, r) => n + r.written, 0);

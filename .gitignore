@@ -34,3 +34,6 @@ public/img/
 
 # Wrangler (état local de wrangler dev)
 .wrangler
+
+# Fichiers .ics de la V2, générés par scripts/build-ics.mjs
+public/v2/agenda/

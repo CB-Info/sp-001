@@ -1,0 +1,214 @@
+{
+  "_comment": "Jobs Higgsfield retenus pour la V2 (maquette CAP Fitness). Les URL de résultat ne sont pas versionnées (elles contiennent l'identifiant du compte). Modèle demandé nano_banana_pro ; Higgsfield le sert sous le nom nano_banana_2. Les portraits de casting (non publiés) servent de références de visage.",
+  "casting": [
+    {
+      "id": "cap-casting-a",
+      "job_id": "e13acf49-45eb-4807-b451-8be6c6142100",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "prompt": "art/v2/prompts/cap-casting-a.prompt.txt",
+      "status": "référence"
+    },
+    {
+      "id": "cap-casting-b",
+      "job_id": "7989ddc8-03f6-4039-b680-56c238b34e55",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "prompt": "art/v2/prompts/cap-casting-b.prompt.txt",
+      "status": "référence"
+    },
+    {
+      "id": "cap-casting-c",
+      "job_id": "8bd9f5db-3073-46aa-b152-b247e93ff99d",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "prompt": "art/v2/prompts/cap-casting-c.prompt.txt",
+      "status": "référence"
+    },
+    {
+      "id": "cap-casting-d",
+      "job_id": "ca3c1de1-fd60-44f9-b436-bcbdbf32488d",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "prompt": "art/v2/prompts/cap-casting-d.prompt.txt",
+      "status": "référence"
+    },
+    {
+      "id": "cap-casting-e",
+      "job_id": "eb3f78b9-fa37-40c9-942d-4ce65501db4c",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "prompt": "art/v2/prompts/cap-casting-e.prompt.txt",
+      "status": "référence"
+    },
+    {
+      "id": "cap-casting-f",
+      "job_id": "ad0c5a0a-14de-4002-901c-b71ab3e559aa",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "1:1",
+      "resolution": "1k",
+      "prompt": "art/v2/prompts/cap-casting-f.prompt.txt",
+      "status": "référence"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "cap-couverture",
+      "job_id": "7a5ff23a-c81e-4f49-a835-4d1cf712945d",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "16:9",
+      "resolution": "4k",
+      "references": [
+        "cap-casting-a",
+        "cap-casting-b",
+        "cap-casting-e",
+        "cap-casting-d"
+      ],
+      "prompt": "art/v2/prompts/cap-couverture.prompt.txt",
+      "target": "art/masters/v2/cap-couverture.jpg",
+      "family": "nuit",
+      "status": "retenue",
+      "outpaint": [
+        {
+          "job_id": "e5c2ce90-f038-4c85-baf5-a1923247bee8",
+          "model": "outpaint",
+          "source": "art/masters/v2/cap-couverture.jpg (avant agrandissement)",
+          "aspect_ratio": "4:3",
+          "status": "intermédiaire"
+        },
+        {
+          "job_id": "40da30f3-80bb-44c7-a54b-8f9c54105ef0",
+          "model": "outpaint",
+          "source": "passe 4:3",
+          "aspect_ratio": "16:9",
+          "status": "retenue (bande du plafond, art/v2/extend.py)"
+        },
+        {
+          "job_id": "1c0b1fa6-2845-4bbc-ab3a-f421a014f012",
+          "model": "outpaint",
+          "source": "art/masters/v2/cap-couverture.jpg (avant agrandissement)",
+          "aspect_ratio": "4:3 en 2880 × 2160",
+          "status": "refusée par le filtre du service (faux positif)"
+        }
+      ]
+    },
+    {
+      "id": "cap-pound",
+      "job_id": "46361b46-1b3a-413a-93c9-6b8e597a64cb",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "16:9",
+      "resolution": "4k",
+      "references": [
+        "cap-casting-c",
+        "cap-casting-b"
+      ],
+      "prompt": "art/v2/prompts/cap-pound.prompt.txt",
+      "target": "art/masters/v2/cap-pound.jpg",
+      "family": "nuit",
+      "status": "retenue"
+    },
+    {
+      "id": "cap-jump",
+      "job_id": "70765e3c-56e2-46f7-ab64-345cbd473120",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "16:9",
+      "resolution": "4k",
+      "references": [
+        "cap-casting-d"
+      ],
+      "prompt": "art/v2/prompts/cap-jump.prompt.txt",
+      "target": "art/masters/v2/cap-jump.jpg",
+      "family": "nuit",
+      "status": "retenue"
+    },
+    {
+      "id": "cap-step",
+      "job_id": "addeec47-390d-428f-9774-8cbbf401f981",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "16:9",
+      "resolution": "4k",
+      "references": [],
+      "prompt": "art/v2/prompts/cap-step.prompt.txt",
+      "target": "art/masters/v2/cap-step.jpg",
+      "family": "nuit",
+      "status": "retenue"
+    },
+    {
+      "id": "cap-force",
+      "job_id": "4573649c-d702-4adf-833e-da3f64afdead",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "3:4",
+      "resolution": "2k",
+      "references": [],
+      "prompt": "art/v2/prompts/cap-force.prompt.txt",
+      "target": "art/masters/v2/cap-force.jpg",
+      "family": "nuit",
+      "status": "retenue"
+    },
+    {
+      "id": "cap-calme",
+      "job_id": "b8225b63-0d15-4b58-a431-e71b74509cc8",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "4:5",
+      "resolution": "2k",
+      "references": [
+        "cap-casting-f"
+      ],
+      "prompt": "art/v2/prompts/cap-calme.prompt.txt",
+      "target": "art/masters/v2/cap-calme.jpg",
+      "family": "nuit",
+      "status": "retenue"
+    },
+    {
+      "id": "cap-famille",
+      "job_id": "91b03d26-dbac-439a-b40a-6f8df3e6696c",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "16:9",
+      "resolution": "4k",
+      "references": [
+        "cap-casting-a",
+        "cap-casting-c",
+        "cap-casting-d",
+        "cap-casting-e",
+        "cap-casting-f",
+        "cap-casting-b"
+      ],
+      "prompt": "art/v2/prompts/cap-famille.prompt.txt",
+      "target": "art/masters/v2/cap-famille.jpg",
+      "family": "nuit",
+      "status": "retenue"
+    },
+    {
+      "id": "cap-lieu",
+      "job_id": "88986b72-162f-4d35-a0b5-beff83f56335",
+      "requested_model": "nano_banana_pro",
+      "model": "nano_banana_2",
+      "aspect_ratio": "21:9",
+      "resolution": "4k",
+      "references": [],
+      "prompt": "art/v2/prompts/cap-lieu.prompt.txt",
+      "target": "art/masters/v2/cap-lieu.jpg",
+      "family": "nuit",
+      "status": "retenue"
+    }
+  ],
+  "rejected": []
+}

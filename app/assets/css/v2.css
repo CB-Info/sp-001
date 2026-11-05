@@ -1,0 +1,519 @@
+/*
+ * V2 (/v2) : maquette CAP Fitness by EBC Sport, direction « Pleins & Déliés ».
+ * Brief : docs/brief/v2.md.
+ *
+ * La page pose <html data-site="v2"> (app/pages/v2.vue) : rien de ce fichier ne
+ * s'applique à la V1. Les rôles gardent les noms de la V1 (--bg, --ink,
+ * --accent-fill, --dur-*, --ease-*…), que base.css, layout.css et le JS du
+ * mouvement (tokens.ts, gsap.ts) lisent sans savoir quel site est servi.
+ *
+ * Monde : le noir chaud du logo, deux encres (craie, blanc) et un seul accent,
+ * le citron du contour de CAP, sur 10 % de la surface au plus. Les grands titres
+ * se composent comme le logo : un mot délié (au contour), un mot plein, une
+ * signature en italique. Rayon 0, aucune ombre, aucun flou.
+ */
+
+/*
+ * Même ordre de couches que main.css, redéclaré ici : la feuille de la page est
+ * insérée en ligne AVANT la feuille globale dans le HTML généré ; sans cette
+ * ligne, ses couches seraient créées les premières et « reset » passerait après
+ * « components ».
+ */
+@layer reset, tokens, base, layout, components, utilities;
+
+/*
+ * Police d'affiche « CAP Display » : Anybody (OFL) instanciée en 900, chasse
+ * 75–150 %, sous-ensemble du français, contours fusionnés à toutes les chasses
+ * (scripts/fonts/build-cap-display.py) : un délié au contour n'y trace aucun
+ * trait parasite. Déclarée ici et non dans fonts.css : la V1 ne la voit pas.
+ */
+@font-face {
+  font-family: 'CAP Display';
+  font-style: normal;
+  font-weight: 900;
+  font-stretch: 75% 150%;
+  font-display: swap;
+  src: url('/fonts/cap-display-900.woff2') format('woff2');
+}
+
+@layer tokens {
+  :root[data-site='v2'] {
+    /* ── 1. Primitives : couleurs (contrastes : brief §2.1) ─────────────────── */
+    --cf-noir: #0c0c0b;
+    --cf-carbone: #1c1b19; /* fond exact du logo ; 1,14:1 sur noir : filet obligatoire */
+    --cf-quadrillage: #1a1918; /* petits carreaux du papier ECG */
+    --cf-graphite: #2a2926; /* filets décoratifs, gros carreaux */
+    --cf-filet: #6e6c66; /* bordures interactives (3,73:1 sur noir) */
+    --cf-passe: #787670; /* tracé « pas encore » (4,31:1) */
+    --cf-pointille: #8c8a83; /* cadres « à confirmer » (5,66:1) */
+    --cf-gris: #a3a199; /* texte secondaire, jamais sur photo (7,56:1) */
+    --cf-craie: #f2f1ec; /* texte courant (17,30:1) */
+    --cf-blanc: #fff;
+    --cf-citron: #ccd52f; /* accent unique (12,23:1 sur noir) */
+    --cf-citron-vif: #d9e34a; /* survol du bouton */
+    --cf-lime: #99c336; /* uniquement au bout de l'ourlet */
+    --cf-ourlet: linear-gradient(180deg in oklab, #0c0c0b 0 42%, #2a331a 60%, #72902f 85%, #99c336);
+
+    /* ── 1. Primitives : typographie ──────────────────────────────────────── */
+    --font-display: 'CAP Display', 'CAP Display Fallback', 'Arial Black', sans-serif;
+    --font-body: 'Figtree', 'Figtree Fallback', system-ui, sans-serif;
+    --font-lead: var(--font-body);
+    --font-mono: var(--font-display);
+
+    /* Quatre réglages d'Anybody, graisse toujours 900. */
+    --wdth-delie: 150%;
+    --wdth-plein: 80%;
+    --wdth-donnee: 75%;
+
+    --text-small: clamp(0.875rem, 0.852rem + 0.095vw, 0.9375rem);
+    --text-body: clamp(1rem, 0.954rem + 0.19vw, 1.125rem);
+    --text-lead: clamp(1.125rem, 1.032rem + 0.381vw, 1.375rem);
+    --text-signature: clamp(1.25rem, 0.786rem + 1.905vw, 2.5rem);
+    --text-data-s: clamp(1rem, 0.907rem + 0.381vw, 1.25rem);
+    --text-data: clamp(1.25rem, 0.971rem + 1.143vw, 2rem);
+    --text-data-l: clamp(1.75rem, 1.286rem + 1.905vw, 3rem);
+    --text-block: clamp(1.5rem, 1.314rem + 0.762vw, 2rem);
+    --text-h3: clamp(2.5rem, 1.757rem + 3.048vw, 4.5rem);
+    --text-h2: clamp(3rem, 1.329rem + 6.857vw, 7.5rem);
+    --text-heading: var(--text-h2);
+    --text-micro: var(--text-small);
+    --text-label: var(--text-small);
+    --text-ui: 1.0625rem;
+
+    --leading-body: 1.55;
+    --leading-heading: 0.92;
+    --leading-display: 0.86;
+    --leading-tight: 1.1;
+    --tracking-heading: -0.005em;
+    --tracking-display: -0.005em;
+    --tracking-label: 0;
+
+    /* ── 2. Grille : 12 colonnes ≥ 64em, 8 entre 48 et 64em, 4 en dessous ───── */
+    --grid-columns: 4;
+    --page-gutter: clamp(1.25rem, 0.321rem + 3.81vw, 3.75rem);
+    --gap: clamp(1rem, 0.814rem + 0.762vw, 1.5rem);
+    --content-max: 110rem; /* 1760 px */
+    --pad-xl: clamp(6rem, 4.514rem + 6.095vw, 10rem);
+    --pad-l: clamp(4rem, 2.7rem + 5.333vw, 7.5rem);
+    --pad-s: clamp(3rem, 2.629rem + 1.524vw, 4rem);
+    --section-pad: var(--pad-l);
+    --header-gap: 3rem;
+    --header-height: 72px;
+    --header-height-compact: 56px;
+    --banner-height: 36px;
+
+    /* ── 2. Mouvement : « écrire, frapper, se poser » (battement à 75 bpm) ── */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-soft: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+    --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    --ease-strike: cubic-bezier(0.87, 0, 0.13, 1); /* la frappe, sans dépassement */
+    --ease-trace: cubic-bezier(0, 0, 1, 1); /* écriture à vitesse de papier */
+    --dur-press: 90ms; /* onde P */
+    --dur-feedback: 140ms;
+    --dur-state: 240ms; /* onde Q */
+    --dur-strike: 230ms; /* QRS */
+    --dur-layout: 430ms; /* pic R */
+    --dur-overlay: 480ms;
+    --dur-focal: 680ms; /* onde T */
+    --dur-beat: 800ms;
+    --dur-calm: 1200ms;
+    --dur-travel: 1200ms;
+    --seq-max: 1300ms;
+    --dur-underline-in: 140ms;
+    --dur-underline-out: 140ms;
+    --stagger-tight: 40ms;
+    --stagger-list: 60ms;
+    --stagger-lines: 92ms;
+    --move-xs: 5px;
+    --move-s: 12px;
+    --move-l: 17px;
+    --move-xl: 40px;
+
+    /* ── 2. Rôles (surface « nuit » par défaut) ───────────────────────────── */
+    --bg: var(--cf-noir);
+    --surface: var(--cf-carbone);
+    --surface-inverse: var(--cf-craie);
+    --ink: var(--cf-craie);
+    --ink-strong: var(--cf-blanc);
+    --ink-secondary: var(--cf-gris);
+    --ink-muted: var(--cf-gris);
+    --rule: var(--cf-graphite);
+    --pattern-line: var(--cf-quadrillage);
+    --accent: var(--cf-citron);
+    --accent-ink: var(--cf-citron);
+    --accent-fill: var(--cf-citron);
+    --accent-fill-hover: var(--cf-citron-vif);
+    --on-accent: var(--cf-noir);
+    --focus: var(--cf-citron);
+    --selection-bg: var(--cf-citron);
+    --selection-ink: var(--cf-noir);
+    /* Alias lus par base.css (couleurs de la barre de défilement). */
+    --ink-900: var(--cf-filet);
+    --paper-50: var(--cf-noir);
+
+    color-scheme: dark;
+  }
+
+  @media (min-width: 48em) {
+    :root[data-site='v2'] {
+      --grid-columns: 8;
+    }
+  }
+
+  @media (min-width: 64em) {
+    :root[data-site='v2'] {
+      --grid-columns: 12;
+    }
+  }
+
+  /* ── 3. Surfaces ──────────────────────────────────────────────────────────── */
+  [data-site='v2'] [data-surface='nuit'] {
+    --bg: var(--cf-noir);
+    --ink: var(--cf-craie);
+    --ink-muted: var(--cf-gris);
+    --rule: var(--cf-graphite);
+  }
+
+  [data-site='v2'] [data-surface='carbone'] {
+    --bg: var(--cf-carbone);
+    --ink: var(--cf-craie);
+    --ink-muted: var(--cf-gris);
+    --rule: var(--cf-graphite);
+  }
+
+  /* Sur une photo : jamais de gris, la craie sert aussi de texte secondaire. */
+  [data-site='v2'] [data-surface='photo'] {
+    --bg: transparent;
+    --ink: var(--cf-craie);
+    --ink-muted: var(--cf-craie);
+    --ink-secondary: var(--cf-craie);
+    --rule: rgb(242 241 236 / 0.28);
+  }
+}
+
+@layer base {
+  html[data-site='v2'] {
+    caret-color: var(--cf-citron);
+    accent-color: var(--cf-citron);
+    hanging-punctuation: first;
+  }
+
+  [data-site='v2'] :is(h1, h2, h3, h4) {
+    font-weight: inherit;
+    letter-spacing: 0;
+    line-height: var(--leading-heading);
+  }
+
+  [data-site='v2'] :focus-visible {
+    outline: 2px solid var(--cf-citron);
+    outline-offset: 2px;
+  }
+
+  [data-site='v2'] :target,
+  [data-site='v2'] [id] {
+    scroll-margin-top: 88px;
+  }
+
+  @media (forced-colors: active) {
+    [data-site='v2'] :focus-visible {
+      outline-color: CanvasText;
+    }
+  }
+}
+
+@layer layout {
+  /* Une seule grille pour toute la page. */
+  [data-site='v2'] .cap-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--grid-columns), minmax(0, 1fr));
+    column-gap: var(--gap);
+  }
+}
+
+@layer components {
+  /* ── Lockups : délié, plein, signature (brief §2.5) ─────────────────────── */
+  [data-site='v2'] .cap-display {
+    font-family: var(--font-display);
+    font-weight: 900;
+    line-height: var(--leading-display);
+    text-transform: uppercase;
+    font-kerning: normal;
+  }
+
+  /* R1. Délié : le trait vaut ≈ 6 % de la capitale, comme CAP. */
+  [data-site='v2'] .is-delie {
+    --delie-color: var(--cf-citron);
+
+    color: var(--delie-color);
+    font-stretch: var(--wdth-delie);
+    letter-spacing: 0.01em;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: max(2px, 0.04em) currentcolor;
+    paint-order: stroke fill;
+  }
+
+  [data-site='v2'] .is-delie--craie {
+    --delie-color: var(--cf-craie);
+  }
+
+  /* R3. Plein : craie, chasse 80 % (75 % sous 48em). */
+  [data-site='v2'] .is-plein {
+    color: var(--cf-craie);
+    font-stretch: 75%;
+    letter-spacing: -0.005em;
+  }
+
+  [data-site='v2'] .is-plein--citron {
+    color: var(--cf-citron);
+  }
+
+  @media (min-width: 48em) {
+    [data-site='v2'] .is-plein {
+      font-stretch: var(--wdth-plein);
+    }
+  }
+
+  /* R4. Signature : Figtree italique 500, casse normale. */
+  [data-site='v2'] .cap-signature {
+    display: block;
+    color: var(--cf-craie);
+    font-family: var(--font-body);
+    font-size: var(--text-signature);
+    font-style: italic;
+    font-weight: 500;
+    line-height: 1.1;
+    text-transform: none;
+  }
+
+  [data-site='v2'] .cap-signature--citron {
+    color: var(--cf-citron);
+  }
+
+  /* Donnée : horaires, chiffres. Casse normale, chiffres tabulaires. */
+  [data-site='v2'] .cap-data {
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-stretch: var(--wdth-donnee);
+    font-feature-settings: 'tnum';
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  @media (forced-colors: active) {
+    [data-site='v2'] .is-delie {
+      -webkit-text-fill-color: CanvasText;
+      -webkit-text-stroke: 0;
+    }
+  }
+
+  /* ── Boutons : deux styles seulement ────────────────────────────────────── */
+  [data-site='v2'] .cap-button {
+    --button-bg: var(--cf-citron);
+    --button-ink: var(--cf-noir);
+    --button-edge: var(--cf-citron);
+
+    position: relative;
+    display: inline-flex;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    min-block-size: 44px;
+    padding: 0 24px;
+    border: 1px solid var(--button-edge);
+    border-radius: 0;
+    background: var(--button-bg);
+    color: var(--button-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-ui);
+    font-weight: 600;
+    line-height: 1.1;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color var(--dur-feedback) var(--ease-out-soft),
+      color var(--dur-feedback) var(--ease-out-soft),
+      border-color var(--dur-feedback) var(--ease-out-soft),
+      translate var(--dur-press) var(--ease-out);
+  }
+
+  [data-site='v2'] .cap-button--l {
+    min-block-size: 52px;
+  }
+
+  [data-site='v2'] .cap-button:hover {
+    --button-bg: var(--cf-citron-vif);
+    --button-edge: var(--cf-citron-vif);
+  }
+
+  [data-site='v2'] .cap-button:active {
+    translate: 0 1px;
+  }
+
+  [data-site='v2'] .cap-button--secondaire {
+    --button-bg: transparent;
+    --button-ink: var(--cf-craie);
+    --button-edge: var(--cf-craie);
+  }
+
+  [data-site='v2'] .cap-button--secondaire:hover {
+    --button-bg: transparent;
+    --button-ink: var(--cf-citron);
+    --button-edge: var(--cf-citron);
+  }
+
+  /*
+   * Bouton à fente (brief §5.3) : une fente de 20 px à gauche du libellé, où un
+   * mini-complexe s'écrit au survol et au focus. Balisage commun :
+   *   <a class="cap-button cap-button--fente">
+   *     <span class="cap-button__libelle"><svg class="cap-button__pulse">…</svg>Libellé</span>
+   *   </a>
+   * La fente est posée hors du flux, 8 px avant le libellé : le libellé reste au
+   * centre du bouton, même étiré sur toute la largeur. Les marges intègrent la
+   * fente (24 + 20 + 8 px d'un côté, 24 de l'autre, répartis à parts égales) :
+   * la largeur ne change pas. Au repos, la fente est vide : une ligne plate s'y
+   * lisait comme un tiret de dialogue (« — Réserve ta place »).
+   */
+  [data-site='v2'] .cap-button--fente {
+    --button-pad: 24px;
+
+    padding-inline: calc(var(--button-pad) + 14px);
+  }
+
+  [data-site='v2'] .cap-button__libelle {
+    position: relative;
+  }
+
+  [data-site='v2'] .cap-button__pulse {
+    position: absolute;
+    inset-block-start: calc(50% - 7px);
+    inset-inline-end: calc(100% + 8px);
+    inline-size: 20px;
+    block-size: 14px;
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 1.5;
+    stroke-linejoin: miter;
+    stroke-miterlimit: 20; /* pointes vives, comme le logo */
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 160ms var(--ease-in);
+  }
+
+  [data-site='v2'] .cap-button:is(:hover, :focus-visible) .cap-button__pulse {
+    clip-path: inset(0);
+    transition: clip-path var(--dur-state) var(--ease-trace);
+  }
+
+  @media (forced-colors: active) {
+    [data-site='v2'] .cap-button {
+      border-color: ButtonText;
+    }
+  }
+
+  /*
+   * Donnée que le club doit encore fournir (CapPending) : discrète, en gris, et
+   * jamais soulignée (un soulignement signale un lien sur cette page). Le texte
+   * reste écrit (WCAG 1.4.1) ; une valeur seule s'écrit « — ». Ici et non dans
+   * le composant : partagé entre la page et les chapitres chargés à l'approche,
+   * il sortait en feuille à part, bloquante, en plus de sa copie en ligne. En
+   * couche : une surcharge d'un chapitre (hors couche) l'emporte.
+   */
+  [data-site='v2'] .cap-pending {
+    color: var(--ink-muted);
+    font-family: var(--font-body);
+    font-weight: 400;
+    text-decoration: none;
+  }
+
+  [data-site='v2'] .cap-pending--dash {
+    color: var(--ink-muted);
+  }
+
+  /* ── Liens : soulignés citron ───────────────────────────────────────────── */
+  [data-site='v2'] .cap-link {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--cf-citron);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    transition: text-decoration-thickness var(--dur-feedback) var(--ease-out-soft);
+  }
+
+  [data-site='v2'] .cap-link:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  /* ── Cadre photo : plaque de chargement et grain posé en CSS ─────────────── */
+  [data-site='v2'] .cap-photo {
+    position: relative;
+    display: block;
+    overflow: clip;
+    background: var(--cf-quadrillage) var(--placeholder, none) center / cover no-repeat;
+  }
+
+  [data-site='v2'] .cap-photo :where(img) {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  [data-site='v2'] .cap-photo::after {
+    position: absolute;
+    inset: 0;
+    background: url('/v2/grain.png');
+    content: '';
+    mix-blend-mode: overlay;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+
+  @media (forced-colors: active) {
+    [data-site='v2'] .cap-photo::after {
+      display: none;
+    }
+  }
+
+  /* ── Carré indicateur : contour = fermé, plein = ouvert (code du logo) ──── */
+  [data-site='v2'] .cap-square {
+    display: inline-block;
+    inline-size: 10px;
+    block-size: 10px;
+    flex: none;
+    border: 1px solid var(--cf-filet);
+    background: transparent;
+    transition:
+      background-color var(--dur-feedback) var(--ease-out-soft),
+      border-color var(--dur-feedback) var(--ease-out-soft);
+  }
+
+  [data-site='v2'] .cap-square.is-on {
+    border-color: var(--cf-citron);
+    background: var(--cf-citron);
+  }
+
+  @media (forced-colors: active) {
+    [data-site='v2'] .cap-square {
+      border-color: CanvasText;
+    }
+
+    [data-site='v2'] .cap-square.is-on {
+      background: CanvasText;
+    }
+  }
+
+  /* ── Tracés ECG : jamais de lueur ; CanvasText en contrastes forcés ─────── */
+  @media (forced-colors: active) {
+    [data-site='v2'] [data-ecg] :is(path, polyline, line) {
+      stroke: CanvasText;
+    }
+  }
+}
+
+/* Mouvement réduit ou JS absent : aucune transition décorative. */
+@layer utilities {
+  html[data-site='v2']:not(.has-motion) .cap-button__pulse {
+    transition: none;
+  }
+}

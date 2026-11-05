@@ -1,0 +1,96 @@
+# Brief de surface : direction B, « Le Club » (route `/v2`)
+
+> **Statut** : direction choisie et construite le 2026-11-04 ; vérification et écarts dans [`docs/verification/v2.md`](../verification/v2.md). Langue : français, au tutoiement.
+> **Contexte** : l'auteur veut, pour de futurs clients (salles de sport de quartier), des modèles qui répondent à des envies différentes. La V1 (`/`) reste intacte ; la V2 en est le contrepoint (voir l'[analyse de la V1](../v2/analyse-v1.md)).
+> **Contrat de direction** : `.impeccable/surfaces/app-pages-v2-vue.md` (développement seulement, jamais copié dans le code livré).
+> **Méthode** : Impeccable, `new-work` en mode Persuade, construction code-led (`.impeccable/config.json`). La direction a été tirée par `concept-seed` parmi sept candidates ancrées dans le monde des pratiquants, puis relevée par les challengers du catalogue (§3).
+
+## 1. Mission et public
+
+- **Mode visiteur** : Persuade. Une page qui donne envie de s'inscrire.
+- **Public réel** : un gérant ou une gérante de salle qui choisit un modèle de site ; derrière, ses futurs adhérents, sur mobile d'abord.
+- **Public fictif** : un habitant du quartier qui hésite à s'inscrire. Il doit trouver en une minute **les cours, les horaires, les prix, l'adresse et l'essai gratuit**.
+- **Ce que le visiteur doit vivre** :
+  - **en 5 s** : « ici, je ferais partie d'un club », et son prénom floqué sur le maillot ;
+  - **en 60 s** : le calendrier de la semaine, l'effectif, les abonnements, l'accès, et un formulaire d'essai qui répond.
+
+## 2. Résultat attendu et preuves
+
+- **Résultat** : une deuxième direction de qualité égale ou supérieure, sans aucun trait partagé en surface avec la V1, et plus complète pour un vrai client.
+- **Preuves** : mêmes garanties que la V1 : WCAG 2.2 AA (axe 0), Lighthouse mobile ≥ 90, parcours sans JS et en mouvement réduit, tests e2e, document de vérification.
+- **Fiction étiquetée** : chiffres, tarifs, avis, adresse et horaires sont fictifs et la page le dit. Le formulaire n'envoie rien.
+
+## 3. Direction retenue : « Le Club »
+
+### Thèse
+
+- **Ce que la page possède** : l'appartenance. CLUSEM n'est pas une salle qu'on loue, c'est un club qu'on rejoint : un maillot, un numéro, un calendrier, une équipe.
+- **Ce qu'elle refuse** : la landing de salle de sport par défaut (hero photo sombre, néon, « No pain no gain »), et l'esthétique éditoriale crème des sites générés.
+
+### Monde
+
+| Axe          | Direction B                                                                                                                                                                                                     |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Couleurs     | Couleurs de club : **vert bouteille** (champs entiers : hero, calendrier, footer) et **jaune canari** (la bande du maillot, les actions), sur **blanc maillot** et gris-vert froid. Aucun crème, aucun noir pur |
+| Typographie  | **Saira** variable (graisse et chasse) : chasse large et grasse pour le flocage et les titres, étroite pour les numéros ; **Schibsted Grotesk** pour le texte, la voix des pages sport des journaux             |
+| Matières     | Le maillot (bande, cerclages, col), l'écusson, l'écharpe tricotée en jacquard, la carte de saison à talon détachable, la feuille de match                                                                       |
+| Formes       | Panneaux droits aux coins légèrement arrondis comme une carte plastifiée, filets de terrain (lignes blanches, arcs du rond central), numéros d'effectif                                                         |
+| Photographie | Plein jour, fenêtres d'atelier, béton clair, sol caoutchouc ; tout le monde porte le kit du club ; portraits officiels sur fond gris-vert comme une journée photo d'avant-saison                                |
+
+### Moment signature : « Floque ton maillot »
+
+Le hero présente le maillot du club, dos tourné. Le visiteur écrit son prénom : il se floque sur le maillot, lettre par lettre, au fer à transfert (chaque lettre se pose, s'écrase d'un cheveu, puis le vinyle refroidit, du gris-vert au blanc). Le numéro est celui de la saison. Le bouton « Prendre ma séance d'essai » emporte ce prénom jusqu'au formulaire, qui le reprend.
+
+- Sans JS : le maillot montre « TON NOM » et le champ reste un lien vers le formulaire.
+- Mouvement réduit : les lettres apparaissent sans pression ni écrasement.
+
+### Relevé par les challengers (verdicts de `concept-seed`)
+
+| Challenger                     | Verdict    | Ce que la direction B en retient                                                                                         |
+| ------------------------------ | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Boîte à rythmes, rangée de pas | Écarté     | **Un « maintenant » toujours lisible** : le calendrier porte une ligne du temps qui avance et désigne le prochain cours  |
+| Rendu ASCII en direct          | Écarté     | **Une seule grille stricte** pour toute la page                                                                          |
+| Colonne de tenségrité          | Compétitif | **Des annotations aux valeurs réelles, épinglées par des lignes de rappel** sur la photo de la méthode (séries, charges) |
+| Soleil intérieur               | Écarté     | **Une ligne d'horizon continue** : la ligne de touche qui court sous chaque section                                      |
+| Rayon des céréales             | Écarté     | **Un macaron qui signale ce qui change** : « 2 mois offerts » quand on passe à la saison                                 |
+| Murs d'affiches suisses        | Compétitif | **Les sections varient par motif, jamais par anarchie de mise en page**                                                  |
+
+## 4. Parcours et sections
+
+| #   | Section             | Rôle                                                                                                                        |
+| --- | ------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| 0   | En-tête             | Écusson, navigation, bouton « Séance d'essai » ; collant et compact au défilement ; tiroir « vestiaire » sur mobile         |
+| 1   | Hero                | Titre « Rejoins le club », maillot à floquer, deux actions, ligne de programme (saison, club, ville)                        |
+| 2   | Le club en chiffres | Tableau des scores : membres, coachs, cours par semaine, amplitude d'ouverture (fictifs)                                    |
+| 3   | La méthode          | Bilan, plan de jeu, saison : trois temps, et la photo du squat annotée de valeurs réelles                                   |
+| 4   | Disciplines         | Six disciplines ; sur ordinateur, la liste pilote une grande photo ; sur mobile, des cartes                                 |
+| 5   | Calendrier          | Onglets des jours (aujourd'hui sélectionné), filtres par discipline, cours présentés comme des matchs, ligne « maintenant » |
+| 6   | L'effectif          | Photo d'équipe, puis cinq cartes à collectionner (portrait officiel, numéro, poste) qui se retournent sur la fiche du coach |
+| 7   | Abonnements         | Trois cartes de saison à talon détachable, bascule mois / saison, prix qui roulent, macaron « 2 mois offerts »              |
+| 8   | Tribune             | La parole aux membres, en grandes citations ; avis fictifs                                                                  |
+| 9   | Écharpe             | Bandeau tricoté en jacquard « ALLEZ CLUSEM », qui avance avec le défilement                                                 |
+| 10  | Questions           | FAQ en accordéon natif                                                                                                      |
+| 11  | Club-house          | Horaires avec le jour courant et « ouvert maintenant », adresse fictive, plan stylisé, photos du lieu                       |
+| 12  | Séance d'essai      | Formulaire validé (prénom repris du maillot) ; à l'envoi, un billet d'essai s'imprime ; rien n'est transmis                 |
+| 13  | Pied de page        | Grand écusson, liens, mentions, crédit, lien vers la direction A                                                            |
+
+## 5. Grammaire de mouvement
+
+Un seul geste fondateur : **le flocage**. Ce qui arrive se **pose** comme un transfert pressé à chaud (légère surpression, puis repos), ce qui change d'état **bascule** comme une carte qu'on retourne, et le temps **avance** sur une ligne (calendrier, écharpe).
+
+- Durées et courbes propres à la V2, déclarées comme tokens sous `html[data-site='v2']`.
+- Fondations partagées avec la V1 : `useMotion`, `ENTRY`, `capped`, `followScroll`, ticker endormi au repos, état final par défaut.
+- Pas de flou de vitesse, pas d'échos, pas de stries : la V1 les possède.
+
+## 6. Contraintes
+
+- Même pile, même dépôt, même déploiement : Nuxt 4.5 statique, GSAP, Lenis, images pré-générées.
+- La V1 ne change pas d'apparence. Ses fondations ne s'élargissent que là où la V2 l'exige (tokens par site, amorce générique).
+- Les deux directions ne se lient que par des liens pleine page (pas de navigation client entre elles) : chacune charge ses tokens et ses courbes.
+- Budget JS au premier chargement ≤ 110 Ko gzip pour `/v2`, LCP mobile simulé visé ≤ 2,5 s (pas de photo dans le hero).
+- Images Higgsfield : mêmes règles (aucune marque, aucun texte, personnes fictives, provenance embarquée).
+
+## 7. Décisions ouvertes
+
+- Le nom du club reste CLUSEM ; un client réel remplacera nom, écusson, couleurs et contenus.
+- Crédit au designer de la maquette d'origine : toujours en attente (concerne la V1).

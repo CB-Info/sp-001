@@ -30,3 +30,25 @@
   descent-override: 25.4%;
   line-gap-override: 0%;
 }
+
+/*
+ * V2 (CAP Fitness). CAP Display est mesurée à sa chasse de plein (80 %), contre
+ * Arial Bold ; Figtree en 400 contre Arial. Valeurs : scripts/fonts/fallback-metrics.py.
+ */
+@font-face {
+  font-family: 'CAP Display Fallback';
+  src: local('Arial Bold'), local('Arial');
+  size-adjust: 92.8%;
+  ascent-override: 85.6%;
+  descent-override: 25.9%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Figtree Fallback';
+  src: local('Arial');
+  size-adjust: 99.6%;
+  ascent-override: 95.4%;
+  descent-override: 25.1%;
+  line-gap-override: 0%;
+}
