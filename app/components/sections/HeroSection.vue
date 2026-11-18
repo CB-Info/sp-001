@@ -229,6 +229,7 @@ useHead({
         />
         <img
           class="hero__photo"
+          data-intro-media
           :src="$img(photo.src, { width: 1280, format: 'jpg' })"
           :srcset="srcset(photo.src, 'jpg')"
           :sizes="LANDSCAPE_SIZES"
@@ -246,6 +247,7 @@ useHead({
       -->
       <NuxtImg
         class="hero__streaks"
+        data-intro-media
         :src="STREAKS"
         format="webp"
         densities="x1"

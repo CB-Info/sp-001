@@ -1,4 +1,4 @@
-import { motionAllowed } from '~/motion/env';
+import { introDone, motionAllowed } from '~/motion/env';
 import { loadGsap } from '~/motion/gsap';
 import { startScroll } from '~/motion/scroll';
 
@@ -11,7 +11,10 @@ export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.hook('app:mounted', () => {
     if (!motionAllowed()) return;
     const start = () => loadGsap().then(startScroll);
-    if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1500 });
-    else setTimeout(start, 200);
+    // V2 : après l'intro de la couverture (immédiat ailleurs, la V1 ne change pas).
+    void introDone().then(() => {
+      if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1500 });
+      else setTimeout(start, 200);
+    });
   });
 });

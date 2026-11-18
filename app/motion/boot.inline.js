@@ -8,8 +8,10 @@
 //               (mouvement réduit, JS en panne), tout est visible, état final.
 //   hero-intro  l'intro du hero va jouer (arrivée en haut de page, sans ancre) :
 //               ses états initiaux s'appliquent.
-//   hero-ready  l'intro démarre (keyframes CSS) : dès que la photo du hero et sa
-//               plaque de stries sont décodées, au plus tard 1,2 s après le parsing.
+//   hero-ready  l'intro démarre (keyframes CSS) : dès que les images marquées
+//               [data-intro-media] sont décodées (V1 : photo du hero et plaque de
+//               stries) et que la police nommée par <html data-intro-font> est
+//               chargée (V2 : CAP Display), au plus tard 1,2 s après le parsing.
 (() => {
   const root = document.documentElement;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
@@ -29,9 +31,12 @@
   const start = () => root.classList.add('hero-ready');
   const fallback = setTimeout(start, 1200);
   const whenParsed = () => {
-    const images = [...document.querySelectorAll('.hero__photo, .hero__streaks')];
+    const images = [...document.querySelectorAll('[data-intro-media]')];
+    const font = root.dataset.introFont;
     // decode() résout aussi si l'image est déjà là ; une erreur ne bloque pas l'intro.
-    Promise.all(images.map((image) => image.decode().catch(() => {}))).then(() => {
+    const ready = images.map((image) => image.decode().catch(() => {}));
+    if (font && document.fonts) ready.push(document.fonts.load(font).catch(() => {}));
+    Promise.all(ready).then(() => {
       clearTimeout(fallback);
       start();
     });

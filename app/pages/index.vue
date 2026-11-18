@@ -10,6 +10,21 @@ useSeoMeta({
   ogType: 'website',
 });
 
+useHead({
+  meta: [{ name: 'theme-color', content: '#600305' }],
+  link: [
+    // Le H1 du hero est l'élément LCP : sa police (Tektur, sous-ensemble latin) part
+    // dès le HTML au lieu d'attendre la découverte de la feuille de style.
+    {
+      rel: 'preload',
+      as: 'font',
+      type: 'font/woff2',
+      href: '/fonts/tektur-latin-wght-normal.woff2',
+      crossorigin: '',
+    },
+  ],
+});
+
 const coaches = home.why.coaches;
 </script>
 
