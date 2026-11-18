@@ -1,0 +1,5 @@
+# Redirections appliquées par Cloudflare Workers (static assets) :
+# https://developers.cloudflare.com/workers/static-assets/redirects/
+# La maquette CAP Fitness a quitté /v2 pour /v-cap-fitness : les anciens liens suivent.
+/v2 /v-cap-fitness 301
+/v2/* /v-cap-fitness/:splat 301

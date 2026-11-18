@@ -46,7 +46,7 @@ test('l’intro de la couverture joue, puis finit dans sa partition', async ({ p
       observer.observe(document, { subtree: true, attributes: true, attributeFilter: ['class'] });
     });
   });
-  await page.goto('/v2', { waitUntil: 'commit' });
+  await page.goto('/v-cap-fitness', { waitUntil: 'commit' });
   const html = page.locator('html');
   await expect(html).toHaveClass(/\bhero-intro\b/);
   // Le bouton n'est jamais animé : cliquable et opaque dès le départ.

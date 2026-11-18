@@ -3,14 +3,14 @@
 // JS et sans compte. Les créneaux viennent du flyer du club (à confirmer) ; la
 // durée d'une heure est provisoire et le fichier le dit.
 //
-// Sortie : public/v2/agenda/{id}.ics et semaine.ics (non versionnés).
+// Sortie : public/v-cap-fitness/agenda/{id}.ics et semaine.ics (non versionnés).
 // Usage : node scripts/build-ics.mjs (lancé par `build` et `generate`).
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { loadCap, root } from './fit-words.mjs';
 
 const cap = await loadCap();
-const out = join(root, 'public/v2/agenda');
+const out = join(root, 'public/v-cap-fitness/agenda');
 await rm(out, { recursive: true, force: true });
 await mkdir(out, { recursive: true });
 
@@ -96,4 +96,4 @@ for (const session of cap.sessions) {
   await writeFile(join(out, `${session.id}.ics`), calendar([event(session)]));
 }
 await writeFile(join(out, 'semaine.ics'), calendar(cap.sessions.map(event)));
-console.log(`agenda : ${cap.sessions.length + 1} fichiers .ics → public/v2/agenda`);
+console.log(`agenda : ${cap.sessions.length + 1} fichiers .ics → public/v-cap-fitness/agenda`);

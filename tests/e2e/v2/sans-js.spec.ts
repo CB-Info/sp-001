@@ -7,7 +7,7 @@ import { expect, test } from '@playwright/test';
 test.use({ javaScriptEnabled: false });
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/v2');
+  await page.goto('/v-cap-fitness');
 });
 
 test('chaque section et son titre sont visibles', async ({ page }) => {
@@ -21,7 +21,7 @@ test('chaque section et son titre sont visibles', async ({ page }) => {
 });
 
 test('le HTML servi ouvre les huit fiches de cours', async ({ page, request }) => {
-  const html = await (await request.get('/v2')).text();
+  const html = await (await request.get('/v-cap-fitness')).text();
   const buttons = html.match(/<button[^>]*data-accordion-head[^>]*>/g) ?? [];
   expect(buttons).toHaveLength(8);
   for (const button of buttons) expect(button).toContain('aria-expanded="true"');
@@ -77,14 +77,16 @@ test('les liens .ics sont dans la page', async ({ page }) => {
     .locator('a[href$=".ics"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href') ?? ''));
   const unique = new Set(hrefs);
-  expect([...unique].every((href) => /^\/v2\/agenda\/[a-z0-9-]+\.ics$/.test(href))).toBe(true);
+  expect([...unique].every((href) => /^\/v-cap-fitness\/agenda\/[a-z0-9-]+\.ics$/.test(href))).toBe(
+    true,
+  );
   // Huit créneaux, plus la semaine entière.
   expect(unique.size).toBe(9);
-  expect(unique).toContain('/v2/agenda/semaine.ics');
+  expect(unique).toContain('/v-cap-fitness/agenda/semaine.ics');
   // Rendu neutre : le bouton de #reserver vise le premier cours de la semaine.
   await expect(
     page.locator('#reserver').getByRole('link', { name: /^Ajouter ce cours à mon agenda/ }),
-  ).toHaveAttribute('href', '/v2/agenda/lun-1300-pound.ics');
+  ).toHaveAttribute('href', '/v-cap-fitness/agenda/lun-1300-pound.ics');
   for (const link of await page.locator('a[href$=".ics"]').all()) {
     await expect(link).toHaveAttribute('download');
   }

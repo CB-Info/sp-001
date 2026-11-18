@@ -120,7 +120,7 @@ useMotion(section, ({ gsap, ScrollTrigger }, root) => {
   /*
    * Le voile : lié au défilement, du bas de l'écran (100 %) à son milieu (50 %).
    * Il n'est posé que si la section est encore sous l'écran. Hydratée « à la
-   * vue » sans marge (v2.vue), elle y est déjà quand ce code tourne : le voile
+   * vue » sans marge (v-cap-fitness.vue), elle y est déjà quand ce code tourne : le voile
    * n'existe alors qu'avec une marge d'hydratation (rootMargin) d'un écran.
    */
   const veil = root.querySelector<HTMLElement>('[data-motion="famille-voile"]');

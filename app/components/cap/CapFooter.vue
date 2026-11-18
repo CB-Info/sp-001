@@ -24,13 +24,13 @@ import { duration } from '~/motion/tokens';
  * clavier dans le pied de page, il se découvre de gauche à droite (clip-path,
  * --dur-focal, --ease-in-out), une seule fois, comme un tracé qui s'écrit.
  * L'état initial n'est posé que si le logo est encore sous l'écran : hydraté à
- * la vue (v2.vue), le pied de page arrive souvent avec son logo déjà visible,
+ * la vue (v-cap-fitness.vue), le pied de page arrive souvent avec son logo déjà visible,
  * qui reste alors tel quel.
  */
 
 const titleId = 'a-confirmer-titre';
 
-/** Haut de page, et cible du lien d'évitement (pages/v2.vue). */
+/** Haut de page, et cible du lien d'évitement (pages/v-cap-fitness.vue). */
 const PAGE_TOP = '#haut';
 const SKIP_TARGET = '#contenu';
 

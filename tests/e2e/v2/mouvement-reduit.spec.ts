@@ -29,7 +29,7 @@ test('aucune animation en boucle', async ({ page }) => {
 });
 
 test('la couverture est entière dès le premier rendu', async ({ page }) => {
-  await page.goto('/v2', { waitUntil: 'domcontentloaded' });
+  await page.goto('/v-cap-fitness', { waitUntil: 'domcontentloaded' });
   const cover = page.locator('#haut');
   const animated = await page.evaluate(
     () =>

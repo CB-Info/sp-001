@@ -1,4 +1,4 @@
-// Configuration Nuxt : génération statique des deux directions (/ et /v2).
+// Configuration Nuxt : génération statique des deux directions (/ et /v-cap-fitness).
 // Les décisions de stack sont documentées dans docs/adr/0001-stack-nuxt-gsap.md.
 import { readFileSync } from 'node:fs';
 
@@ -29,20 +29,20 @@ export default defineNuxtConfig({
      * (/_nuxt immuable). La V1 garde ses styles en ligne.
      */
     inlineStyles: (id) =>
-      !/\/app\/(pages\/v2\.vue|components\/cap\/|assets\/css\/v2\.css)/.test(id ?? ''),
+      !/\/app\/(pages\/v-cap-fitness\.vue|components\/cap\/|assets\/css\/v2\.css)/.test(id ?? ''),
   },
 
   app: {
     head: {
       htmlAttrs: { lang: 'fr' },
       // Titre, description, couleur du navigateur et police préchargée sont propres à
-      // chaque direction : posés par leur page (pages/index.vue, pages/v2.vue).
+      // chaque direction : posés par leur page (pages/index.vue, pages/v-cap-fitness.vue).
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1, viewport-fit=cover' },
         { name: 'robots', content: 'noindex' },
       ],
       // Icône déclarée : sans elle, le navigateur demande /favicon.ico (404 en console).
-      // La clé laisse une page la remplacer (pages/v2.vue) : un seul rel="icon" servi.
+      // La clé laisse une page la remplacer (pages/v-cap-fitness.vue) : un seul rel="icon" servi.
       link: [{ key: 'icon', rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
       script: [{ innerHTML: motionBoot, tagPriority: 'critical' }],
     },
@@ -72,7 +72,7 @@ export default defineNuxtConfig({
         /*
          * V2 : les chapitres sous la ligne de flottaison (composants cap/) et les
          * logos chargés à la demande (assets/brand/cap-*.svg) arrivent à
-         * l'approche, un écran avant (pages/v2.vue). Leur préchargement
+         * l'approche, un écran avant (pages/v-cap-fitness.vue). Leur préchargement
          * spéculatif, avant la photo de la couverture, retardait le LCP mobile.
          * La V1 n'utilise aucun de ces fichiers. `src` est relatif à app/.
          */
@@ -95,7 +95,7 @@ export default defineNuxtConfig({
     // Nitro détecte WORKERS_CI=1 et bascule sur cloudflare-module (un Worker SSR),
     // en écrivant une config Wrangler qui court-circuite wrangler.jsonc.
     preset: 'static',
-    prerender: { routes: ['/', '/v2'] },
+    prerender: { routes: ['/', '/v-cap-fitness'] },
   },
 
   typescript: {

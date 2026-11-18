@@ -1,18 +1,18 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
 /**
- * Outils communs des tests de la V2 (/v2, CAP Fitness by EBC Sport, maquette).
+ * Outils communs des tests de la V2 (/v-cap-fitness, CAP Fitness by EBC Sport, maquette).
  */
 
 /** Marge haute des ancres (v2.css : `[data-site='v2'] [id] { scroll-margin-top: 88px }`). */
 export const MARGE_ANCRE = 88;
 
 /**
- * Ouvre /v2 et attend l'app montée : le bouton « Menu » (CapHeader) n'existe
+ * Ouvre /v-cap-fitness et attend l'app montée : le bouton « Menu » (CapHeader) n'existe
  * qu'après l'hydratation ; sans JS, c'est un lien vers #menu.
  */
 export async function ouvrirV2(page: Page, fragment = '') {
-  await page.goto(`/v2${fragment}`);
+  await page.goto(`/v-cap-fitness${fragment}`);
   await expect(page.locator('button[data-cap-menu-trigger]')).toBeAttached();
 }
 

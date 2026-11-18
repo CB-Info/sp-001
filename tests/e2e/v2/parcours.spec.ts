@@ -21,7 +21,7 @@ test('chaque section a un titre visible', async ({ page }) => {
 });
 
 test('le bandeau « maquette non officielle » est visible au chargement', async ({ page }) => {
-  await page.goto('/v2');
+  await page.goto('/v-cap-fitness');
   const bandeau = page.getByRole('complementary', { name: 'Maquette non officielle' });
   await expect(bandeau).toBeInViewport();
   await expect(bandeau).toContainText(/maquette non officielle/i);

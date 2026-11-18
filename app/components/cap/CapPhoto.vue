@@ -16,7 +16,7 @@ const manifest = variants as Record<string, Entry>;
  * moins aussi large que demandé, plafonnée à la largeur du master. Même règle que
  * le provider de la V1 (app/providers/variants.ts), sans le runtime de
  * @nuxt/image (environ 3 Ko gzip au premier chargement), qui ne servait ici qu'à
- * composer ces URL. Partagée avec le préchargement de pages/v2.vue.
+ * composer ces URL. Partagée avec le préchargement de pages/v-cap-fitness.vue.
  */
 export function capImage(src: string, width: number, format: 'avif' | 'webp' | 'jpg'): string {
   const entry = manifest[src];

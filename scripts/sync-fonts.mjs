@@ -12,7 +12,7 @@ mkdirSync(outDir, { recursive: true });
 /**
  * Familles servies : nom CSS, paquet, motif de fichier par sous-ensemble, graisses,
  * chasses (axe `wdth`, facultatif), feuille du paquet où lire l'unicode-range, et
- * style (facultatif) et nom du fichier de licence copié. Figtree sert la V2 (/v2), dont la
+ * style (facultatif) et nom du fichier de licence copié. Figtree sert la V2 (/v-cap-fitness), dont la
  * police d'affiche « CAP Display » est construite à part (scripts/fonts/build-cap-display.py).
  */
 const families = [

@@ -154,7 +154,7 @@ function choose() {
             <a
               v-if="agendaSession"
               class="cap-sheet__agenda cap-link"
-              :href="`/v2/agenda/${agendaSession.id}.ics`"
+              :href="`/v-cap-fitness/agenda/${agendaSession.id}.ics`"
               download
               :aria-label="agendaName(agendaSession)"
               ><span aria-hidden="true">＋ </span>{{ cs.agenda }}</a

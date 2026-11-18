@@ -10,7 +10,7 @@ import { jourCourt } from '~/utils/cap-time';
  * soulignement pointillé), aucun lien mort, ni « ouvert maintenant » ni tarif
  * inventé. Les prix et l'accès se trouvent en moins d'une minute.
  *
- * Hydraté jamais (v2.vue, hydrate-never) : tout est HTML et CSS natifs. La FAQ
+ * Hydraté jamais (v-cap-fitness.vue, hydrate-never) : tout est HTML et CSS natifs. La FAQ
  * est faite de <details name="faq"> (accordéon exclusif natif) ; elle s'ouvre en
  * douceur par ::details-content là où le navigateur sait animer vers `auto`,
  * instantanément ailleurs. Aucune entrée animée.

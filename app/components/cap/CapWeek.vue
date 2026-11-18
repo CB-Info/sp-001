@@ -122,7 +122,7 @@ const days: WeekDay[] = WEEKDAYS.map((day) => {
         heure,
         nom,
         tags: session.tags.join(' '),
-        ics: `/v2/agenda/${session.id}.ics`,
+        ics: `/v-cap-fitness/agenda/${session.id}.ics`,
         suffixe: w.reserverSuffixe.replace('{jour}', jourLong(day)),
         agenda: cap.courseSection.ajouter
           .replace('{cours}', nom)
@@ -200,7 +200,7 @@ useMotion(section, ({ gsap }, root, contextSafe) => {
    * - déjà à l'écran à l'arrivée de GSAP (rechargement, saut d'ancre natif) ;
    * - ou pendant le trajet de Lenis vers une ancre de la section (« Semaine »,
    *   « Voir le planning », « Réserve ta place ») : la section s'hydrate un écran
-   *   avant (v2.vue), donc en route, bande encore hors de l'écran, et l'adresse
+   *   avant (v-cap-fitness.vue), donc en route, bande encore hors de l'écran, et l'adresse
    *   porte déjà le fragment. Armée, la bande s'arrêterait dans la plage du
    *   scrub (à 1440 × 900, l'ancre #semaine pose son haut à 580 px, 64 % de
    *   l'écran) et y resterait à moitié écrite : rien n'y prend le focus.

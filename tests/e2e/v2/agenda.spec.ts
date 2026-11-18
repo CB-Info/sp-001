@@ -16,19 +16,21 @@ const lignes = (ics: string) => ics.replace(/\r\n[ \t]/g, '').split('\r\n');
 
 test('le planning compte huit séances, toutes en lien .ics dans la page', async ({ page }) => {
   expect(SESSIONS).toHaveLength(8);
-  await page.goto('/v2');
+  await page.goto('/v-cap-fitness');
   const hrefs = await page
     .locator('a[href$=".ics"]')
     .evaluateAll((links) => links.map((link) => link.getAttribute('href')));
-  const seances = new Set(hrefs.filter((href) => href !== '/v2/agenda/semaine.ics'));
-  expect([...seances].sort()).toEqual(SESSIONS.map((id) => `/v2/agenda/${id}.ics`).sort());
+  const seances = new Set(hrefs.filter((href) => href !== '/v-cap-fitness/agenda/semaine.ics'));
+  expect([...seances].sort()).toEqual(
+    SESSIONS.map((id) => `/v-cap-fitness/agenda/${id}.ics`).sort(),
+  );
 });
 
 test('chaque lien .ics répond en text/calendar, un cours hebdomadaire à l’heure de Paris', async ({
   page,
   request,
 }) => {
-  await page.goto('/v2');
+  await page.goto('/v-cap-fitness');
   // Nom du cours, lu dans le nom accessible : « Ajouter le CAF du mercredi, 18 h 00 à mon agenda ».
   const links = await page.locator('a[href$=".ics"]').evaluateAll((elements) =>
     elements.map((link) => ({
@@ -80,7 +82,7 @@ test('chaque lien .ics répond en text/calendar, un cours hebdomadaire à l’he
 });
 
 test('semaine.ics réunit toutes les séances du planning', async ({ request }) => {
-  const response = await request.get('/v2/agenda/semaine.ics');
+  const response = await request.get('/v-cap-fitness/agenda/semaine.ics');
   expect(response.status()).toBe(200);
   const ics = lignes(await response.text());
   expect(ics.filter((line) => line === 'BEGIN:VEVENT')).toHaveLength(SESSIONS.length);
@@ -115,7 +117,7 @@ test.describe('choix d’un cours, mercredi 18 h 20 à Paris', () => {
       /^Tu as choisi\s+:\s+CAF · cuisses, abdos, fessiers,\s+mer\.\s+prochain\s+18\s+h\s+00$/,
     );
     const bouton = reserver.getByRole('link', { name: /^Ajouter ce cours à mon agenda/ });
-    await expect(bouton).toHaveAttribute('href', '/v2/agenda/mer-1800-caf.ics');
+    await expect(bouton).toHaveAttribute('href', '/v-cap-fitness/agenda/mer-1800-caf.ics');
     await expect(bouton).toHaveAccessibleName(/pour CAF,\s+mercredi\s+prochain\s+18\s+h\s+00$/);
   });
 
@@ -133,7 +135,7 @@ test.describe('choix d’un cours, mercredi 18 h 20 à Paris', () => {
     await expect(choix).not.toContainText('prochain');
     await expect(
       reserver.getByRole('link', { name: /^Ajouter ce cours à mon agenda/ }),
-    ).toHaveAttribute('href', '/v2/agenda/mer-1900-cross-training.ics');
+    ).toHaveAttribute('href', '/v-cap-fitness/agenda/mer-1900-cross-training.ics');
   });
 
   test('sans choix, le prochain cours à Paris', async ({ page }) => {

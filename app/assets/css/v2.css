@@ -1,8 +1,8 @@
 /*
- * V2 (/v2) : maquette CAP Fitness by EBC Sport, direction « Pleins & Déliés ».
+ * V2 (/v-cap-fitness) : maquette CAP Fitness by EBC Sport, direction « Pleins & Déliés ».
  * Brief : docs/brief/v2.md.
  *
- * La page pose <html data-site="v2"> (app/pages/v2.vue) : rien de ce fichier ne
+ * La page pose <html data-site="v2"> (app/pages/v-cap-fitness.vue) : rien de ce fichier ne
  * s'applique à la V1. Les rôles gardent les noms de la V1 (--bg, --ink,
  * --accent-fill, --dur-*, --ease-*…), que base.css, layout.css et le JS du
  * mouvement (tokens.ts, gsap.ts) lisent sans savoir quel site est servi.
@@ -462,7 +462,7 @@
   [data-site='v2'] .cap-photo::after {
     position: absolute;
     inset: 0;
-    background: url('/v2/grain.png');
+    background: url('/v-cap-fitness/grain.png');
     content: '';
     mix-blend-mode: overlay;
     opacity: 0.07;

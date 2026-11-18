@@ -26,7 +26,7 @@ useSeoMeta({
   description: cap.meta.description,
   ogTitle: cap.meta.title,
   ogDescription: cap.meta.description,
-  ogImage: '/v2/og.png',
+  ogImage: '/v-cap-fitness/og.png',
   ogImageWidth: 1200,
   ogImageHeight: 630,
   ogImageType: 'image/png',
@@ -56,8 +56,8 @@ useHead({
   htmlAttrs: { 'data-site': 'v2', 'data-intro-font': '900 1em "CAP Display"' },
   meta: [{ name: 'theme-color', content: '#0c0c0b' }],
   link: [
-    { key: 'icon', rel: 'icon', type: 'image/svg+xml', href: '/v2/favicon.svg' },
-    { rel: 'apple-touch-icon', href: '/v2/apple-touch-icon.png' },
+    { key: 'icon', rel: 'icon', type: 'image/svg+xml', href: '/v-cap-fitness/favicon.svg' },
+    { rel: 'apple-touch-icon', href: '/v-cap-fitness/apple-touch-icon.png' },
     {
       rel: 'preload',
       as: 'font',

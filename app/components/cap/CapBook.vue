@@ -76,7 +76,7 @@ function shown(label: string, session: Session, now?: ParisNow) {
     suite: cap.book.boutonSuite
       .replace('{cours}', name)
       .replace('{quand}', `${jourLong(session.day)}${prochain}${NBSP}${heure}`),
-    href: `/v2/agenda/${session.id}.ics`,
+    href: `/v-cap-fitness/agenda/${session.id}.ics`,
   };
 }
 

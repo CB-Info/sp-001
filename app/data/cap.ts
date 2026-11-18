@@ -356,7 +356,7 @@ export const cap = typesetDeep({
     title: 'CAP Fitness by EBC Sport : cours collectifs, planning et réservation (maquette)',
     description:
       'Maquette non officielle de site pour CAP Fitness by EBC Sport : cours collectifs, planning de la saison d’après le flyer du club, réservation dans l’appli ou à l’accueil.',
-    /** Texte de remplacement de l'image de partage (public/v2/og.png). */
+    /** Texte de remplacement de l'image de partage (public/v-cap-fitness/og.png). */
     imageAlt: 'Logo CAP Fitness by EBC Sport, avec la mention « Maquette non officielle »',
   },
   brand: 'CAP Fitness by EBC Sport',
@@ -518,7 +518,10 @@ export const cap = typesetDeep({
      * d'un élément hors flux, ce qui donnerait « agenda , Pound ».
      */
     boutonSuite: ' pour {cours}, {quand}',
-    semaine: { label: 'ou toute la semaine (8 créneaux)', href: '/v2/agenda/semaine.ics' },
+    semaine: {
+      label: 'ou toute la semaine (8 créneaux)',
+      href: '/v-cap-fitness/agenda/semaine.ics',
+    },
     /** Les trois questions d'un premier visiteur, sans attendre la FAQ du bas de page. */
     premiereFois: {
       titre: 'Première fois ?',
